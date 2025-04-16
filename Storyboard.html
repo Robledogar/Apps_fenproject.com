@@ -196,10 +196,10 @@
                     <i class="fas fa-check mr-2"></i> Guardado
                 </button>
                 <div class="relative">
-                    <button id="view-dropdown-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center">
+                    <!-- <button id="view-dropdown-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center">
                         <i class="fas fa-eye mr-2"></i> Vista
                         <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                    </button>
+                    </button> -->
                     <div id="view-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                         <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50 view-switch" data-view="free-view">Vista Libre</a>
                         <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50 view-switch" data-view="timeline-view">Línea de Tiempo</a>
@@ -217,44 +217,31 @@
     <div class="container mx-auto px-4 py-4">
         <div class="flex mb-4">
             <!-- Sidebar -->
-            <div class="w-64 bg-white rounded-lg shadow-md p-4 mr-4 flex-shrink-0">
-                <h2 class="text-lg font-semibold mb-4">Herramientas</h2>
+            <div class="w-64 bg-white rounded-lg shadow-md p-4 mr-4 flex-shrink-0 flex flex-col"> 
+                <div> 
+                    <h2 class="text-lg font-semibold mb-4">Herramientas</h2>
 
-                <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">AÑADIR TARJETA</h3>
-                    <button id="add-scene-btn" data-type="scene" class="add-card-btn w-full p-2 bg-blue-50 hover:bg-blue-100 rounded-md text-sm text-blue-700 mb-2 flex items-center">
-                        <i class="fas fa-film mr-2"></i> Añadir Escena
-                    </button>
-                    <button id="add-chapter-btn" data-type="chapter" class="add-card-btn w-full p-2 bg-purple-50 hover:bg-purple-100 rounded-md text-sm text-purple-700 mb-2 flex items-center">
-                        <i class="fas fa-book-open mr-2"></i> Añadir Capítulo
-                    </button>
-                    <button id="add-idea-btn" data-type="idea" class="add-card-btn w-full p-2 bg-green-50 hover:bg-green-100 rounded-md text-sm text-green-700 mb-2 flex items-center">
-                        <i class="fas fa-lightbulb mr-2"></i> Añadir Idea
-                    </button>
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">AÑADIR TARJETA</h3>
+                        <button id="add-scene-btn" data-type="scene" class="add-card-btn w-full p-2 bg-blue-50 hover:bg-blue-100 rounded-md text-sm text-blue-700 mb-2 flex items-center">
+                            <i class="fas fa-film mr-2"></i> Añadir Escena
+                        </button>
+                        <button id="add-chapter-btn" data-type="chapter" class="add-card-btn w-full p-2 bg-purple-50 hover:bg-purple-100 rounded-md text-sm text-purple-700 mb-2 flex items-center">
+                            <i class="fas fa-book-open mr-2"></i> Añadir Capítulo
+                        </button>
+                        <button id="add-idea-btn" data-type="idea" class="add-card-btn w-full p-2 bg-green-50 hover:bg-green-100 rounded-md text-sm text-green-700 mb-2 flex items-center">
+                            <i class="fas fa-lightbulb mr-2"></i> Añadir Idea
+                        </button>
+                    </div>
+
+
                 </div>
 
-                 <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">PLANTILLAS (Próximamente)</h3>
-                    <select class="w-full p-2 border rounded-md mb-2 text-sm text-gray-500" disabled>
-                        <option>Estructura en Tres Actos</option>
-                        <option>Viaje del Héroe</option>
-                    </select>
-                </div>
-
-                <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">FILTROS (Próximamente)</h3>
-                     <input type="text" placeholder="Buscar por título..." class="w-full p-2 border rounded-md text-sm mb-2">
-                     <button class="w-full p-2 bg-gray-100 rounded-md text-sm text-gray-500 cursor-not-allowed">
-                        Aplicar Filtros
-                    </button>
-                </div>
-
-                <div class="mt-auto">
+                <div class="mt-auto"> 
                     <button id="clear-storage-btn" class="w-full p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-md text-sm flex items-center justify-center">
                         <i class="fas fa-trash-alt mr-2"></i> Limpiar Todo
                     </button>
                  </div>
-
             </div>
 
             <!-- Canvas Area -->
@@ -289,6 +276,7 @@
     </div>
 
 <script>
+// --- El código JavaScript permanece exactamente igual que en la respuesta anterior ---
 document.addEventListener('DOMContentLoaded', () => {
     const STORAGE_KEY = 'storyCanvasData_v1'; // Clave para localStorage
 
