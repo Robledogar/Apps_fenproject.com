@@ -116,7 +116,6 @@
             height: 100%;
             overflow-y: auto;
         }
-        /* (Estilos de timeline y outline omitidos por brevedad, ya los tienes) */
 
         .thumbnail {
             width: 100%;
@@ -191,15 +190,15 @@
                 <h1 class="text-2xl font-bold">StoryCanvas</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <!-- El botón de guardar ahora solo sirve como indicador visual, guarda automáticamente -->
                 <button id="save-indicator" class="px-4 py-2 bg-indigo-600 rounded-md flex items-center opacity-50 cursor-not-allowed">
                     <i class="fas fa-check mr-2"></i> Guardado
                 </button>
                 <div class="relative">
-                    <!-- <button id="view-dropdown-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center">
+                     {/* BOTÓN DESCOMENTADO PARA SOLUCIONAR EL ERROR */}
+                    <button id="view-dropdown-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center">
                         <i class="fas fa-eye mr-2"></i> Vista
                         <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                    </button> -->
+                    </button>
                     <div id="view-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                         <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50 view-switch" data-view="free-view">Vista Libre</a>
                         <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50 view-switch" data-view="timeline-view">Línea de Tiempo</a>
@@ -217,12 +216,12 @@
     <div class="container mx-auto px-4 py-4">
         <div class="flex mb-4">
             <!-- Sidebar -->
-            <div class="w-64 bg-white rounded-lg shadow-md p-4 mr-4 flex-shrink-0 flex flex-col"> 
-                <div> 
+            <div class="w-64 bg-white rounded-lg shadow-md p-4 mr-4 flex-shrink-0 flex flex-col">
+                <div>
                     <h2 class="text-lg font-semibold mb-4">Herramientas</h2>
 
                     <div class="mb-6">
-                        <h3 class="text-sm font-medium text-gray-500 mb-2">AÑADIR TARJETA</h3>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2 uppercase">Añadir Tarjeta</h3> {/* Cambiado a mayúsculas por consistencia */}
                         <button id="add-scene-btn" data-type="scene" class="add-card-btn w-full p-2 bg-blue-50 hover:bg-blue-100 rounded-md text-sm text-blue-700 mb-2 flex items-center">
                             <i class="fas fa-film mr-2"></i> Añadir Escena
                         </button>
@@ -233,11 +232,9 @@
                             <i class="fas fa-lightbulb mr-2"></i> Añadir Idea
                         </button>
                     </div>
-
-
                 </div>
 
-                <div class="mt-auto"> 
+                <div class="mt-auto">
                     <button id="clear-storage-btn" class="w-full p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-md text-sm flex items-center justify-center">
                         <i class="fas fa-trash-alt mr-2"></i> Limpiar Todo
                     </button>
@@ -260,14 +257,12 @@
 
                 <div id="timeline-view" class="canvas-container hidden">
                     <div class="timeline-view">
-                        <!-- Contenido de Timeline se generará aquí -->
-                         <p class="p-4 text-gray-500">Vista de Línea de Tiempo (Próximamente)</p>
+                        <p class="p-4 text-gray-500">Vista de Línea de Tiempo (Próximamente)</p>
                     </div>
                 </div>
 
                 <div id="outline-view" class="canvas-container hidden">
                      <div class="outline-view">
-                         <!-- Contenido de Outline se generará aquí -->
                          <p class="p-4 text-gray-500">Vista de Esquema (Próximamente)</p>
                     </div>
                 </div>
@@ -276,7 +271,6 @@
     </div>
 
 <script>
-// --- El código JavaScript permanece exactamente igual que en la respuesta anterior ---
 document.addEventListener('DOMContentLoaded', () => {
     const STORAGE_KEY = 'storyCanvasData_v1'; // Clave para localStorage
 
@@ -285,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineView = document.getElementById('timeline-view');
     const outlineView = document.getElementById('outline-view');
     const canvasContent = document.getElementById('canvas-content-free');
+    // Asegurarse de que el botón existe antes de intentar usarlo
     const viewDropdownBtn = document.getElementById('view-dropdown-btn');
     const viewDropdown = document.getElementById('view-dropdown');
     const viewSwitchLinks = document.querySelectorAll('.view-switch');
@@ -304,6 +299,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let saveTimeout = null; // Para debounce del guardado
 
+    // --- Nombres en español para tipos ---
+    const typeTranslations = {
+        scene: "Escena",
+        chapter: "Capítulo",
+        idea: "Idea"
+    };
+
+    function getSpanishTypeName(type) {
+        return typeTranslations[type] || type; // Devuelve traducción o el tipo original si no existe
+    }
+
+
     // --- Funciones de Guardado y Carga ---
 
     function showSaveIndicator(saving = false) {
@@ -319,25 +326,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveData() {
-        // Debounce: esperar un poco antes de guardar para no sobrecargar localStorage en operaciones rápidas (como drag)
         clearTimeout(saveTimeout);
-        showSaveIndicator(true); // Mostrar "Guardando..."
+        showSaveIndicator(true);
         saveTimeout = setTimeout(() => {
             try {
                 const dataToSave = {
                     cards: cards,
                     scale: currentScale,
-                    // Podrías guardar la vista activa también si quisieras
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-                 console.log('Data saved to localStorage');
-                 showSaveIndicator(false); // Mostrar "Guardado"
+                 console.log('Datos guardados en localStorage'); // Traducido
+                 showSaveIndicator(false);
             } catch (error) {
-                console.error("Error saving to localStorage:", error);
-                alert("Error al guardar los datos. Es posible que el almacenamiento esté lleno.");
-                showSaveIndicator(false); // Volver a "Guardado" aunque falle
+                console.error("Error al guardar en localStorage:", error); // Traducido
+                alert("Error al guardar los datos. Es posible que el almacenamiento local esté lleno."); // Traducido
+                showSaveIndicator(false);
             }
-        }, 500); // Espera 500ms antes de guardar
+        }, 500);
     }
 
     function loadData() {
@@ -347,24 +352,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parsedData = JSON.parse(savedData);
                 cards = parsedData.cards || [];
                 currentScale = parsedData.scale || 1;
-                console.log('Data loaded from localStorage');
+                console.log('Datos cargados desde localStorage'); // Traducido
             } catch (error) {
-                console.error("Error parsing localStorage data:", error);
-                alert("Error al cargar los datos guardados. Empezando con un lienzo vacío.");
-                cards = []; // Resetear si hay error
+                console.error("Error al parsear datos de localStorage:", error); // Traducido
+                alert("Error al cargar los datos guardados. Empezando con un lienzo vacío."); // Traducido
+                cards = [];
                 currentScale = 1;
             }
         } else {
-            // Inicializar con datos de ejemplo si no hay nada guardado
-            cards = [
-                // Puedes añadir aquí tarjetas iniciales si quieres
-                // { id: Date.now(), type: 'chapter', title: 'Capítulo 1', content: 'Inicio de la aventura...', x: 50, y: 50, color: '#ffebee', tags: ['Acto 1'] },
-            ];
+            cards = [];
             currentScale = 1;
-            console.log('No saved data found. Initializing.');
+            console.log('No se encontraron datos guardados. Inicializando.'); // Traducido
         }
         renderAllCards();
-        applyZoom(); // Aplicar el zoom cargado
+        applyZoom();
     }
 
     // --- Funciones de Renderizado ---
@@ -379,17 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
             cardElement.style.backgroundColor = cardData.color;
         }
 
-        // Header (con título editable y botón de borrar)
         const cardHeader = document.createElement('div');
         cardHeader.className = 'card-header';
         const titleSpan = document.createElement('span');
         titleSpan.className = 'card-header-title';
-        titleSpan.textContent = cardData.title || `Nueva ${cardData.type}`;
-        titleSpan.contentEditable = true; // Permitir editar título
-        titleSpan.addEventListener('blur', (e) => { // Guardar al perder foco
+        // Usar nombre en español para título por defecto
+        titleSpan.textContent = cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`;
+        titleSpan.contentEditable = true;
+        titleSpan.addEventListener('blur', (e) => {
             updateCardData(cardData.id, { title: e.target.textContent });
         });
-        titleSpan.addEventListener('keydown', (e) => { // Evitar nueva línea, guardar con Enter
+        titleSpan.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 e.target.blur();
@@ -398,10 +399,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const deleteBtn = document.createElement('i');
         deleteBtn.className = 'fas fa-times card-delete-btn';
-        deleteBtn.title = 'Eliminar tarjeta';
+        deleteBtn.title = 'Eliminar tarjeta'; // Traducido
         deleteBtn.addEventListener('click', (e) => {
-             e.stopPropagation(); // Evitar que inicie el drag
-             if (confirm(`¿Seguro que quieres eliminar la tarjeta "${cardData.title || ''}"?`)) {
+             e.stopPropagation();
+             // Mensaje de confirmación en español
+             if (confirm(`¿Seguro que quieres eliminar la tarjeta "${cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`}"?`)) {
                  deleteCard(cardData.id);
              }
         });
@@ -409,48 +411,38 @@ document.addEventListener('DOMContentLoaded', () => {
         cardHeader.appendChild(titleSpan);
         cardHeader.appendChild(deleteBtn);
 
-        // Body (con textarea para contenido)
         const cardBody = document.createElement('div');
         cardBody.className = 'card-body';
         const contentTextarea = document.createElement('textarea');
-        contentTextarea.placeholder = 'Escribe aquí los detalles...';
+        contentTextarea.placeholder = 'Escribe aquí los detalles...'; // Traducido
         contentTextarea.value = cardData.content || '';
         contentTextarea.addEventListener('input', (e) => {
-            // Actualizar altura dinámicamente si es necesario (simple)
             e.target.style.height = 'auto';
             e.target.style.height = (e.target.scrollHeight) + 'px';
         });
-         contentTextarea.addEventListener('change', (e) => { // Guardar al cambiar y perder foco
+         contentTextarea.addEventListener('change', (e) => {
             updateCardData(cardData.id, { content: e.target.value });
         });
-        // Detener la propagación del mousedown en el textarea para no iniciar drag
         contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation());
-
         cardBody.appendChild(contentTextarea);
 
-        // Footer (tipo de tarjeta, tags, etc. - simplificado por ahora)
         const cardFooter = document.createElement('div');
         cardFooter.className = 'card-footer';
         const typeSpan = document.createElement('span');
-        typeSpan.textContent = `Tipo: ${cardData.type}`;
-        // Podrías añadir aquí lógica para mostrar/editar tags
+         // Mostrar tipo en español en el footer
+        typeSpan.textContent = `Tipo: ${getSpanishTypeName(cardData.type)}`;
         cardFooter.appendChild(typeSpan);
 
-        // Ensamblar tarjeta
         cardElement.appendChild(cardHeader);
         cardElement.appendChild(cardBody);
         cardElement.appendChild(cardFooter);
 
-
-        // Añadir evento de drag
         cardElement.addEventListener('mousedown', startDrag);
-
-        // Añadir al canvas
         canvasContent.appendChild(cardElement);
     }
 
     function renderAllCards() {
-        canvasContent.innerHTML = ''; // Limpiar canvas antes de renderizar
+        canvasContent.innerHTML = '';
         cards.forEach(card => renderCard(card));
     }
 
@@ -458,17 +450,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addCard(type) {
         const newCard = {
-            id: crypto.randomUUID(), // ID único más robusto
+            id: crypto.randomUUID(),
             type: type,
-            title: `Nueva ${type}`,
+             // Título por defecto en español
+            title: `Nueva ${getSpanishTypeName(type)}`,
             content: '',
-            x: 50 + Math.random() * 100, // Posición inicial aleatoria ligera
+            x: 50 + Math.random() * 100,
             y: 50 + Math.random() * 100,
-            color: getRandomColor(), // Color aleatorio inicial
+            color: getRandomColor(),
             tags: []
         };
         cards.push(newCard);
-        renderCard(newCard); // Renderizar solo la nueva tarjeta
+        renderCard(newCard);
         saveData();
     }
 
@@ -485,109 +478,74 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardIndex = cards.findIndex(card => card.id === cardId);
         if (cardIndex > -1) {
             cards[cardIndex] = { ...cards[cardIndex], ...updates };
-            saveData(); // Guardar los cambios
+            saveData();
         }
     }
 
     // --- Funcionalidad de Drag and Drop ---
 
     function startDrag(e) {
-        // Solo iniciar drag con el botón izquierdo y no en elementos editables
         if (e.button !== 0 || e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.classList.contains('card-delete-btn')) {
             return;
         }
-
-        activeCard = e.currentTarget; // El div .card
+        activeCard = e.currentTarget;
         activeCard.classList.add('dragging');
         isDragging = true;
-
-        // Calcular offset relativo al viewport y luego ajustar por escala
-         const rect = activeCard.getBoundingClientRect();
-         offsetX = e.clientX - rect.left;
-         offsetY = e.clientY - rect.top;
-
-
-        // Escuchar movimientos en todo el documento
+        const rect = activeCard.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', stopDrag);
-         // Prevenir selección de texto durante drag
-         document.body.style.userSelect = 'none';
+        document.body.style.userSelect = 'none';
     }
 
     function drag(e) {
         if (!isDragging || !activeCard) return;
-
-        e.preventDefault(); // Evitar comportamiento por defecto (scroll, etc.)
-
-        // Posición del ratón en el viewport
+        e.preventDefault();
         const mouseX = e.clientX;
         const mouseY = e.clientY;
-
-        // Posición del contenedor del canvas relativo al viewport
         const canvasRect = canvasContent.getBoundingClientRect();
-
-        // Calcular la nueva posición (top, left) de la tarjeta DENTRO del canvas-content
-        // Ajustando por el offset inicial y la escala actual
         let newX = (mouseX - canvasRect.left - offsetX) / currentScale;
         let newY = (mouseY - canvasRect.top - offsetY) / currentScale;
-
-         // Opcional: Limitar el movimiento dentro del canvas visible (o permitir que se salgan)
-         // const cardRect = activeCard.getBoundingClientRect();
-         // const parentRect = canvasContent.getBoundingClientRect();
-         // newX = Math.max(0, Math.min(newX, (parentRect.width / currentScale) - (cardRect.width / currentScale)));
-         // newY = Math.max(0, Math.min(newY, (parentRect.height / currentScale) - (cardRect.height / currentScale)));
-
-
         activeCard.style.left = `${newX}px`;
         activeCard.style.top = `${newY}px`;
     }
 
     function stopDrag() {
         if (!isDragging || !activeCard) return;
-
         isDragging = false;
         activeCard.classList.remove('dragging');
-
-        // Actualizar la posición en el array de datos
         const cardId = activeCard.dataset.id;
         const finalX = parseFloat(activeCard.style.left);
         const finalY = parseFloat(activeCard.style.top);
         updateCardData(cardId, { x: finalX, y: finalY });
-
-        // Limpiar listeners y estilos
         document.removeEventListener('mousemove', drag);
         document.removeEventListener('mouseup', stopDrag);
-        document.body.style.userSelect = ''; // Restaurar selección de texto
+        document.body.style.userSelect = '';
         activeCard = null;
-
-        // saveData() ya se llama dentro de updateCardData
     }
-
 
     // --- Funcionalidad de Vistas ---
 
     function switchView(viewId) {
-        // Ocultar todas las vistas
         [freeView, timelineView, outlineView].forEach(view => view.classList.add('hidden'));
-        // Mostrar la vista seleccionada
         const selectedView = document.getElementById(viewId);
         if (selectedView) {
             selectedView.classList.remove('hidden');
         } else {
-            freeView.classList.remove('hidden'); // Default a free view si algo falla
+            freeView.classList.remove('hidden');
         }
-         // Cerrar dropdown
-         viewDropdown.classList.add('hidden');
-         // Aquí iría la lógica para renderizar el contenido específico de cada vista si fuera necesario
+        if (viewDropdown) { // Asegurarse de que el dropdown existe
+             viewDropdown.classList.add('hidden');
+        }
+
          if (viewId === 'free-view') {
-             renderAllCards(); // Asegurarse de que las tarjetas estén en la vista libre
+             renderAllCards();
              applyZoom();
          } else if (viewId === 'timeline-view') {
-             // renderTimelineView(); // Función a implementar
-             console.log("Timeline view selected - rendering not implemented yet");
+             console.log("Vista de Línea de Tiempo seleccionada - renderizado no implementado"); // Traducido
          } else if (viewId === 'outline-view') {
-             // renderOutlineView(); // Función a implementar
-              console.log("Outline view selected - rendering not implemented yet");
+              console.log("Vista de Esquema seleccionada - renderizado no implementado"); // Traducido
          }
     }
 
@@ -596,7 +554,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyZoom() {
         canvasContent.style.transform = `scale(${currentScale})`;
         scaleLabel.textContent = `${Math.round(currentScale * 100)}%`;
-        // Opcional: Podrías ajustar el background-size del grid para que escale también
     }
 
     function zoom(direction) {
@@ -604,19 +561,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (direction === 'in') {
             currentScale += zoomStep;
         } else if (direction === 'out') {
-            currentScale = Math.max(0.2, currentScale - zoomStep); // Limitar zoom out
+            currentScale = Math.max(0.2, currentScale - zoomStep);
         }
-        currentScale = Math.round(currentScale * 10) / 10; // Redondear a 1 decimal
+        currentScale = Math.round(currentScale * 10) / 10;
         applyZoom();
-        saveData(); // Guardar el nivel de zoom
+        saveData();
     }
 
     // --- Exportación ---
     function exportToJson() {
-        const dataStr = JSON.stringify({ cards: cards, scale: currentScale }, null, 2); // Pretty print JSON
+        const dataStr = JSON.stringify({ cards: cards, scale: currentScale }, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
         const exportFileDefaultName = 'storycanvas_export.json';
-
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
@@ -625,13 +581,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Limpiar Almacenamiento ---
      function clearStorage() {
+         // Mensaje de confirmación en español
         if (confirm("¿Estás segura de que quieres borrar TODO el progreso? Esta acción no se puede deshacer.")) {
             localStorage.removeItem(STORAGE_KEY);
             cards = [];
             currentScale = 1;
             renderAllCards();
             applyZoom();
-            alert("Datos borrados.");
+            alert("Datos borrados."); // Traducido
         }
     }
 
@@ -641,28 +598,34 @@ document.addEventListener('DOMContentLoaded', () => {
       return colors[Math.floor(Math.random() * colors.length)];
     }
 
-
     // --- Inicialización y Event Listeners ---
 
-    // Cargar datos al inicio
     loadData();
 
-    // Dropdown de vistas
-    viewDropdownBtn.addEventListener('click', () => {
-        viewDropdown.classList.toggle('hidden');
-    });
-    // Cerrar dropdown si se hace clic fuera
-    document.addEventListener('click', (event) => {
-        if (!viewDropdownBtn.contains(event.target) && !viewDropdown.contains(event.target)) {
-            viewDropdown.classList.add('hidden');
-        }
-    });
-    viewSwitchLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchView(e.target.dataset.view);
+    // Dropdown de vistas - Solo añadir listeners si los elementos existen
+    if (viewDropdownBtn && viewDropdown) {
+        viewDropdownBtn.addEventListener('click', () => {
+            viewDropdown.classList.toggle('hidden');
         });
-    });
+        document.addEventListener('click', (event) => {
+            // Comprobar si el botón existe antes de acceder a contains
+            if (viewDropdownBtn && !viewDropdownBtn.contains(event.target) && !viewDropdown.contains(event.target)) {
+                viewDropdown.classList.add('hidden');
+            } else if (!viewDropdownBtn && !viewDropdown.contains(event.target)){
+                 // Si el botón no existe, cerrar si se clica fuera del dropdown
+                 viewDropdown.classList.add('hidden');
+            }
+        });
+    }
+     if (viewSwitchLinks.length > 0) {
+        viewSwitchLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(e.target.dataset.view);
+            });
+        });
+    }
+
 
     // Botones de añadir tarjeta
     addCardButtons.forEach(button => {
@@ -681,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botón de limpiar
     clearStorageBtn.addEventListener('click', clearStorage);
 
-    // Establecer la vista inicial (podría guardarse/cargarse también)
+    // Establecer la vista inicial
     switchView('free-view');
 
 });
