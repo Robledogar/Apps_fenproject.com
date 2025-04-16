@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Didáctica de Costes y Beneficios para Escritoras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Estilos CSS Incrustados -->
+    <style>
+        /* --- Estilos Base (como antes) --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; font-weight: 600; }
+        h2 { color: #34495e; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; }
+        .mode-selector { text-align: center; margin-bottom: 20px; }
+        .mode-selector label { font-weight: 600; margin-right: 10px; }
+        select, input[type="number"], button#calculateBtn /* Select only calculate button */ {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 15px; /* Reduced margin for inputs */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        input[type="number"]:focus, select:focus { border-color: #3498db; outline: none; }
+        button#calculateBtn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 20px; /* Add margin top to separate from last input */
+        }
+        button#calculateBtn:hover { background-color: #2980b9; }
+        .input-group { margin-bottom: 5px; /* Reduced margin */ } /* Reduce gap between label/input and explanation */
+        .input-group label { display: block; margin-bottom: 3px; font-weight: 400; color: #555; }
+        .input-sections { border-radius: 8px; overflow: hidden; }
+        .mode-section, .common-costs { background-color: #f9f9f9; padding: 20px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #eee; }
+        .mode-section.hidden { display: none; }
+        fieldset { border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+        legend { font-weight: 600; color: #34495e; padding: 0 10px; margin-bottom: 10px; background-color: #f9f9f9; border-radius: 4px; }
+        .results-section { background-color: #ecf0f1; padding: 20px; border-radius: 8px; margin-top: 30px; border: 1px solid #bdc3c7; }
+        .results-section p { margin: 10px 0; font-size: 1.1em; font-weight: 400; color: #2c3e50; }
+        .results-section p strong { font-weight: 600; color: #2980b9; }
+        .results-section hr { border: 0; border-top: 1px dashed #bdc3c7; margin: 15px 0; }
+
+        /* --- Nuevos Estilos para Explicaciones Desplegables --- */
+        .label-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px; /* Space between label+button and input */
+        }
+        .label-group label {
+            margin-bottom: 0; /* Remove default label margin */
+            margin-right: 8px; /* Space between label and button */
+            flex-grow: 1; /* Allow label to take available space */
+        }
+        .info-toggle {
+            background-color: #bdc3c7;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 22px; /* Center the '?' vertically */
+            text-align: center;
+            cursor: pointer;
+            padding: 0;
+            flex-shrink: 0; /* Prevent button from shrinking */
+            transition: background-color 0.3s ease;
+            margin-left: auto; /* Pushes button to the right if label is short */
+        }
+        .info-toggle:hover { background-color: #95a5a6; }
+        .info-toggle[aria-expanded="true"] { background-color: #3498db; } /* Indicate open state */
+
+        .info-details {
+            background-color: #eaf2f8; /* Light blue background */
+            border: 1px solid #aed6f1;
+            border-radius: 4px;
+            padding: 10px 15px;
+            margin-top: 5px; /* Space between input and explanation */
+            margin-bottom: 15px; /* Space before next input group */
+            font-size: 0.9em;
+            color: #283747;
+            /* Animation */
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out, margin-top 0.4s ease-out, margin-bottom 0.4s ease-out;
+        }
+        .info-details[hidden] {
+             /* Use JS to remove 'hidden', CSS handles the transition */
+             padding-top: 0;
+             padding-bottom: 0;
+             margin-top: 0;
+             margin-bottom: 0;
+             border-width: 0;
+        }
+        .info-details:not([hidden]) {
+            /* State when visible */
+            max-height: 500px; /* Adjust as needed, large enough for content */
+             /* Re-apply padding/margin when not hidden */
+            padding: 10px 15px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-width: 1px;
+        }
+        .info-details p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        .info-details strong { color: #2980b9; } /* Highlight term within explanation */
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.5em; }
+            select, input[type="number"], button#calculateBtn { font-size: 14px; padding: 8px 10px; }
+            .info-toggle { width: 20px; height: 20px; line-height: 20px; font-size: 12px; }
+            .info-details { font-size: 0.85em; }
+        }
+    </style>
+    <!-- Fin de Estilos CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Calculadora Didáctica de Costes y Beneficios</h1>
+        <p style="text-align: center; margin-top: -20px; margin-bottom: 25px;">Haz clic en los botones ❔ para ver la explicación de cada campo.</p>
+
+        <div class="mode-selector">
+            <label for="modeSelect">Selecciona el Modo:</label>
+            <select id="modeSelect">
+                <option value="kdp">Amazon KDP (Print & eBook)</option>
+                <option value="traditional">Imprenta Tradicional</option>
+            </select>
+        </div>
+
+        <div class="input-sections">
+            <!-- Sección KDP -->
+            <div id="kdpSection" class="mode-section">
+                <h2>Amazon KDP (Print & eBook)</h2>
+
+                <fieldset>
+                    <legend>Detalles del Libro (Print)</legend>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpListPricePrint">Precio de Venta (Impreso) (€):</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpListPricePrint" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="kdpListPricePrint" value="15.00" step="0.01" min="0">
+                        <div class="info-details" id="info-kdpListPricePrint" hidden>
+                            <p><strong>Precio de Venta (Impreso):</strong> Es el precio que pagará el cliente final por tu libro en formato físico en Amazon. Este precio influye directamente en tu royalty (beneficio por libro).</p>
+                            <p>KDP tiene precios mínimos basados en el coste de impresión.</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpPages">Número de Páginas:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpPages" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="kdpPages" value="300" min="24">
+                         <div class="info-details" id="info-kdpPages" hidden>
+                            <p><strong>Número de Páginas:</strong> El total de páginas de tu libro maquetado. Es un factor clave para calcular el coste de impresión en KDP (más páginas = mayor coste).</p>
+                             <p>KDP requiere un mínimo de 24 páginas para libros impresos.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpInk">Tipo de Tinta:</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpInk" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <select id="kdpInk">
+                            <option value="bw">Blanco y Negro</option>
+                            <option value="color_standard">Color Estándar</option>
+                            <option value="color_premium">Color Premium</option>
+                        </select>
+                         <div class="info-details" id="info-kdpInk" hidden>
+                            <p><strong>Tipo de Tinta:</strong> Define si el interior del libro se imprime en blanco y negro o a color.</p>
+                            <ul>
+                                <li><strong>Blanco y Negro:</strong> Opción más económica, ideal para novelas y libros de texto sin imágenes a color.</li>
+                                <li><strong>Color Estándar:</strong> Más caro que B/N. Buena calidad para libros con gráficos o imágenes, como infantiles o de no ficción ilustrados. Papel específico.</li>
+                                <li><strong>Color Premium:</strong> La opción más cara. Mayor calidad de color y papel más grueso, ideal para libros de fotografía o arte.</li>
+                            </ul>
+                            <p>El tipo de tinta afecta significativamente el coste de impresión.</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpPaper">Tipo de Papel:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpPaper" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <select id="kdpPaper">
+                            <option value="white">Blanco</option>
+                            <option value="cream">Crema</option>
+                        </select>
+                        <div class="info-details" id="info-kdpPaper" hidden>
+                            <p><strong>Tipo de Papel:</strong> KDP ofrece principalmente dos tipos para impresión en blanco y negro.</p>
+                            <ul>
+                                <li><strong>Blanco:</strong> Papel más brillante, común en libros de no ficción.</li>
+                                <li><strong>Crema:</strong> Tono más cálido, preferido para novelas, cansa menos la vista.</li>
+                            </ul>
+                             <p>El papel para impresión a color es diferente y viene determinado por el tipo de tinta (Estándar o Premium).</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpTrim">Tamaño (Trim Size):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpTrim" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <select id="kdpTrim">
+                            <option value="6x9">6x9 pulgadas (aprox. 15x23 cm)</option>
+                            <option value="5x8">5x8 pulgadas (aprox. 13x20 cm)</option>
+                            <option value="5.5x8.5">5.5x8.5 pulgadas (aprox. 14x22 cm)</option>
+                            <option value="8.5x11">8.5x11 pulgadas (aprox. 22x28 cm - A4)</option>
+                            <!-- Añadir más opciones si es necesario -->
+                        </select>
+                         <div class="info-details" id="info-kdpTrim" hidden>
+                            <p><strong>Tamaño (Trim Size):</strong> Las dimensiones físicas de tu libro (ancho x alto). KDP ofrece varios tamaños estándar.</p>
+                            <p>La elección depende del género y las convenciones del mercado. El tamaño puede afectar ligeramente el coste de impresión.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpDistribution">Distribución:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpDistribution" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <select id="kdpDistribution">
+                            <option value="standard">Estándar</option>
+                            <option value="expanded">Expandida</option>
+                        </select>
+                        <div class="info-details" id="info-kdpDistribution" hidden>
+                            <p><strong>Distribución:</strong> Define dónde estará disponible tu libro impreso.</p>
+                             <ul>
+                                <li><strong>Estándar:</strong> Venta solo en las tiendas Amazon del marketplace donde publicas (y otros marketplaces de Amazon seleccionados). Ofrece un royalty del 60% (antes de costes de impresión).</li>
+                                <li><strong>Expandida:</strong> Permite que tu libro esté disponible para distribuidores externos, librerías online y físicas (principalmente en USA, UK). El royalty baja al 40% (antes de costes de impresión) y no todos los libros son elegibles.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpRoyaltyPrint">Royalty Print (% Base):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpRoyaltyPrint" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                         <input type="number" id="kdpRoyaltyPrint" value="60" step="1" min="0" max="100" readonly>
+                         <div class="info-details" id="info-kdpRoyaltyPrint" hidden>
+                            <p><strong>Royalty Print (% Base):</strong> Es el porcentaje del precio de venta que KDP usa como base para calcular tu beneficio. Se aplica <strong>antes</strong> de restar el coste de impresión.</p>
+                            <p>Este campo se actualiza automáticamente: <strong>60%</strong> para Distribución Estándar y <strong>40%</strong> para Distribución Expandida.</p>
+                             <p><strong>Tu royalty real por libro = (Precio Venta * % Base) - Coste Impresión.</strong></p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                     <legend>Detalles del Libro (eBook)</legend>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpListPriceEbook">Precio de Venta (eBook) (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpListPriceEbook" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="kdpListPriceEbook" value="4.99" step="0.01" min="0">
+                        <div class="info-details" id="info-kdpListPriceEbook" hidden>
+                            <p><strong>Precio de Venta (eBook):</strong> El precio que pagará el cliente por la versión digital (Kindle) de tu libro en Amazon.</p>
+                             <p>El precio que elijas (junto con el marketplace) determinará si puedes optar por el royalty del 35% o del 70%.</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                             <label for="kdpRoyaltyEbook">Opción de Royalty eBook (%):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpRoyaltyEbook" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <select id="kdpRoyaltyEbook">
+                            <option value="70">70%</option>
+                            <option value="35">35%</option>
+                        </select>
+                         <div class="info-details" id="info-kdpRoyaltyEbook" hidden>
+                            <p><strong>Opción de Royalty eBook:</strong> KDP ofrece dos opciones principales:</p>
+                            <ul>
+                                <li><strong>70%:</strong> Disponible para precios entre 2.99€ y 9.99€ (en la mayoría de marketplaces). Se aplican "costes de entrega" (delivery fees) basados en el tamaño del archivo del eBook, que se restan de tu royalty.</li>
+                                <li><strong>35%:</strong> Disponible para precios fuera del rango 2.99€-9.99€, o si eliges esta opción voluntariamente. No se aplican costes de entrega.</li>
+                            </ul>
+                             <p>La elección óptima depende de tu precio y del tamaño del archivo.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpEbookSize">Tamaño archivo eBook (MB):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpEbookSize" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <input type="number" id="kdpEbookSize" value="5" step="0.1" min="0.1">
+                         <div class="info-details" id="info-kdpEbookSize" hidden>
+                            <p><strong>Tamaño archivo eBook (MB):</strong> El tamaño en Megabytes de tu archivo final de eBook (generalmente .kpf o .epub subido a KDP).</p>
+                             <p>Este tamaño se usa para calcular los <strong>costes de entrega</strong> si eliges la opción de royalty del 70%. En marketplaces como Amazon.es, el coste es aprox. 0.15€ por MB.</p>
+                             <p>Un libro de solo texto suele ser pequeño (1-3 MB), pero si incluye muchas imágenes, puede ser significativamente mayor.</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Ventas Estimadas (KDP)</legend>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpSalesPrint">Unidades Impresas Vendidas:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpSalesPrint" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <input type="number" id="kdpSalesPrint" value="100" min="0">
+                         <div class="info-details" id="info-kdpSalesPrint" hidden>
+                            <p><strong>Unidades Impresas Vendidas:</strong> Tu estimación de cuántos ejemplares físicos esperas vender a través de KDP en un período determinado (ej. un año). Se usa para proyectar ingresos y beneficios.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="kdpSalesEbook">Unidades eBook Vendidas:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-kdpSalesEbook" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="kdpSalesEbook" value="200" min="0">
+                        <div class="info-details" id="info-kdpSalesEbook" hidden>
+                            <p><strong>Unidades eBook Vendidas:</strong> Tu estimación de cuántos ejemplares digitales (Kindle) esperas vender a través de KDP en el mismo período. Se usa para proyectar ingresos y beneficios.</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+            </div>
+
+            <!-- Sección Imprenta Tradicional -->
+            <div id="traditionalSection" class="mode-section hidden">
+                <h2>Imprenta Tradicional</h2>
+
+                <fieldset>
+                    <legend>Costes de Impresión y Distribución</legend>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                             <label for="tradListPrice">Precio de Venta (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-tradListPrice" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <input type="number" id="tradListPrice" value="18.00" step="0.01" min="0">
+                         <div class="info-details" id="info-tradListPrice" hidden>
+                            <p><strong>Precio de Venta (€):</strong> El Precio de Venta al Público (PVP) que estableces para tu libro. Este es el precio que pagará el cliente final si compra directamente o en librerías (aunque las librerías aplicarán descuentos al comprarte a ti).</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="tradPrintRun">Tirada (Cantidad Impresa):</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-tradPrintRun" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="tradPrintRun" value="500" min="1">
+                         <div class="info-details" id="info-tradPrintRun" hidden>
+                            <p><strong>Tirada (Cantidad Impresa):</strong> El número total de ejemplares que encargas imprimir a la imprenta. Una tirada mayor suele reducir el coste por unidad, pero aumenta la inversión inicial y el riesgo de inventario no vendido.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                            <label for="tradCostPerUnit">Coste Unitario de Impresión (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-tradCostPerUnit" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="tradCostPerUnit" value="4.50" step="0.01" min="0">
+                         <div class="info-details" id="info-tradCostPerUnit" hidden>
+                            <p><strong>Coste Unitario de Impresión (€):</strong> El coste que te cobra la imprenta por cada libro individual impreso y entregado en tu almacén o domicilio. Este coste depende de la tirada, número de páginas, tipo de papel, tinta, encuadernación, acabados y el transporte desde la imprenta.</p>
+                             <p>Pide presupuestos detallados a varias imprentas.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                             <label for="tradShippingCustomer">Coste Envío por Venta (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-tradShippingCustomer" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="tradShippingCustomer" value="3.00" step="0.01" min="0">
+                         <div class="info-details" id="info-tradShippingCustomer" hidden>
+                            <p><strong>Coste Envío por Venta (€):</strong> El coste medio que te supone enviar un libro <strong>vendido</strong> al cliente final o a un distribuidor/librería. Incluye el embalaje y la tarifa postal o de mensajería.</p>
+                             <p>Este es un coste variable que solo se aplica a las unidades vendidas.</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                        <div class="label-group">
+                            <label for="tradSales">Unidades Vendidas Estimadas:</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-tradSales" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="tradSales" value="100" min="0">
+                        <div class="info-details" id="info-tradSales" hidden>
+                            <p><strong>Unidades Vendidas Estimadas:</strong> Tu estimación de cuántos ejemplares de la tirada impresa esperas vender directamente o a través de distribuidores/librerías en un período determinado.</p>
+                             <p>Este número no puede ser mayor que la tirada impresa.</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                 <fieldset>
+                    <legend>Inventario (Calculado)</legend>
+                    <div class="input-group readonly-display">
+                        <p><strong>Coste Total de la Tirada:</strong> <span id="tradTotalPrintRunCost">€0.00</span></p>
+                        <p><strong>Unidades en Inventario (no vendidas):</strong> <span id="tradInventoryUnits">0</span></p>
+                        <p><strong>Valor del Inventario (a coste):</strong> <span id="tradInventoryValue">€0.00</span></p>
+                         <div class="info-details" id="info-inventory" hidden> <!-- Link this manually if needed, or just keep general -->
+                            <p>Esta sección muestra cálculos basados en la Tirada, Coste Unitario y Ventas:</p>
+                            <ul>
+                                <li><strong>Coste Total Tirada:</strong> Inversión inicial en la impresión (Tirada * Coste Unitario).</li>
+                                <li><strong>Unidades en Inventario:</strong> Libros impresos que aún no se han vendido (Tirada - Ventas).</li>
+                                <li><strong>Valor del Inventario:</strong> Coste de los libros no vendidos (Unidades Inventario * Coste Unitario). Representa capital inmovilizado.</li>
+                            </ul>
+                        </div>
+                    </div>
+                 </fieldset>
+            </div>
+
+            <!-- Sección de Costes Comunes -->
+            <div class="common-costs">
+                <h2>Costes Fijos Comunes (Ambos Modos)</h2>
+                <fieldset>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                            <label for="editingCost">Coste de Edición (€):</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-editingCost" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="editingCost" value="500" step="0.01" min="0">
+                        <div class="info-details" id="info-editingCost" hidden>
+                            <p><strong>Coste de Edición:</strong> Incluye la revisión profesional del manuscrito para corregir errores gramaticales, de estilo, coherencia y estructura. Puede incluir edición de desarrollo, de línea y/o corrección de pruebas (proofreading). Es un coste crucial para la calidad del libro.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                             <label for="coverCost">Coste Diseño de Cubierta (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-coverCost" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="coverCost" value="250" step="0.01" min="0">
+                        <div class="info-details" id="info-coverCost" hidden>
+                            <p><strong>Coste Diseño de Cubierta:</strong> Inversión en un diseñador gráfico profesional para crear una portada atractiva y comercial, tanto para el eBook como para la versión impresa. La portada es una herramienta de marketing fundamental.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                             <label for="formattingCost">Coste Maquetación (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-formattingCost" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="formattingCost" value="150" step="0.01" min="0">
+                         <div class="info-details" id="info-formattingCost" hidden>
+                            <p><strong>Coste Maquetación:</strong> Coste de dar formato profesional al interior del libro, tanto para la versión digital (eBook, .epub, .mobi) como para la versión impresa (PDF listo para imprenta). Una buena maquetación mejora la legibilidad y la experiencia del lector.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-group">
+                             <label for="isbnCost">Coste de ISBN(s) (€):</label>
+                             <button class="info-toggle" aria-expanded="false" aria-controls="info-isbnCost" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <input type="number" id="isbnCost" value="0" step="0.01" min="0">
+                        <div class="info-details" id="info-isbnCost" hidden>
+                            <p><strong>Coste de ISBN(s):</strong> El ISBN (International Standard Book Number) es un identificador único para tu libro.</p>
+                            <ul>
+                                <li><strong>KDP:</strong> Ofrece un ISBN gratuito para libros impresos, pero solo es válido dentro de la plataforma de Amazon. No ofrece ISBN para eBooks.</li>
+                                <li><strong>Impr. Tradicional / Distribución Amplia:</strong> Necesitarás comprar tus propios ISBNs (uno para cada formato: tapa blanda, tapa dura, eBook) si quieres figurar como la editorial y distribuir fuera de KDP. En España, se gestionan a través de la Agencia del ISBN.</li>
+                            </ul>
+                             <p>Introduce aquí el coste total si has comprado ISBNs propios.</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                         <div class="label-group">
+                            <label for="marketingCost">Coste Marketing/Publicidad (€):</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-marketingCost" title="Mostrar/Ocultar explicación">?</button>
+                         </div>
+                        <input type="number" id="marketingCost" value="100" step="0.01" min="0">
+                         <div class="info-details" id="info-marketingCost" hidden>
+                            <p><strong>Coste Marketing/Publicidad:</strong> Presupuesto total destinado a promocionar tu libro. Puede incluir publicidad en Amazon Ads, Facebook Ads, creación de material promocional (marcadores, web), envíos a blogueros, etc.</p>
+                        </div>
+                    </div>
+
+                     <div class="input-group">
+                         <div class="label-group">
+                            <label for="otherCost">Otros Costes Fijos (€):</label>
+                            <button class="info-toggle" aria-expanded="false" aria-controls="info-otherCost" title="Mostrar/Ocultar explicación">?</button>
+                        </div>
+                        <input type="number" id="otherCost" value="50" step="0.01" min="0">
+                        <div class="info-details" id="info-otherCost" hidden>
+                            <p><strong>Otros Costes Fijos:</strong> Un cajón de sastre para cualquier otro gasto inicial no cubierto anteriormente. Ejemplos: compra de software específico, tarifas de registro de autor, coste de copias de prueba (author copies), ilustraciones internas, etc.</p>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <button id="calculateBtn">Calcular Resultados</button>
+
+        <div id="results" class="results-section">
+            <h2>📊 Resultados</h2>
+            <p>Introduce los datos y pulsa Calcular, o modifica cualquier valor para actualizar los resultados.</p>
+        </div>
+    </div>
+
+    <!-- Script JavaScript Incrustado -->
+    <script>
+        // --- Funciones de Cálculo (sin cambios importantes) ---
+        function getNumValue(id) { /* ... (igual que antes) ... */
+            const element = document.getElementById(id);
+            if (!element) { console.error(`Element with ID ${id} not found.`); return 0; }
+            const value = element.value;
+            // Treat empty string as 0, otherwise parse
+            return value === '' ? 0 : (parseFloat(value) || 0);
+        }
+
+        function estimateKdpPrintCost(pages, inkType, paperType, trimSize, distribution) { /* ... (igual que antes) ... */
+            let fixedCost = 0; let perPageCost = 0;
+            // Example costs for amazon.es (Check official KDP calculator!)
+            if (inkType === 'bw') { fixedCost = 0.60; perPageCost = 0.012; }
+            else if (inkType === 'color_standard') { if (pages <= 40) { fixedCost = 0.70; perPageCost = 0.05; } else { fixedCost = 0.70; perPageCost = 0.04; } }
+            else if (inkType === 'color_premium') { fixedCost = 0.70; perPageCost = 0.07; }
+            let royaltyRate = (distribution === 'expanded') ? 0.40 : 0.60;
+            if (pages < 24) return { cost: 0, royaltyRate: royaltyRate };
+            let totalCost = fixedCost + (pages * perPageCost);
+            return { cost: Math.round(totalCost * 100) / 100, royaltyRate: royaltyRate };
+        }
+
+        function calculateKdpEbookDeliveryFee(royaltyRatePercent, ebookSizeMB) { /* ... (igual que antes) ... */
+             if (royaltyRatePercent === 70 && ebookSizeMB > 0) {
+                 const feePerMB = 0.15; // Example for EUR/ES
+                 return feePerMB * ebookSizeMB;
+             } return 0;
+        }
+
+        // --- Función Principal de Cálculo (adaptada ligeramente para claridad) ---
+        function calculateCosts() {
+            const mode = document.getElementById('modeSelect').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>📊 Resultados</h2>'; // Clear previous results but keep header
+
+            // --- Variables de Cálculo (igual que antes) ---
+             let totalFixedCosts = 0;
+             let totalVariableCostsPerUnitSold = 0;
+             let totalRevenue = 0;
+             let estimatedUnitsSold = 0;
+             let averageUnitCost = 0; // Average variable cost per unit *sold*
+             let breakEvenUnits = 0;
+             let profitPerUnitSold = 0; // Average profit per unit *sold*
+             let additionalInfo = '';
+
+            // --- Recolección de Datos (igual que antes) ---
+            totalFixedCosts = getNumValue('editingCost') + getNumValue('coverCost') + getNumValue('formattingCost') + getNumValue('isbnCost') + getNumValue('marketingCost') + getNumValue('otherCost');
+
+            // --- Cálculos por Modo (igual que antes, con pequeños ajustes de texto) ---
+            if (mode === 'kdp') {
+                 // KDP Inputs
+                const kdpListPricePrint = getNumValue('kdpListPricePrint');
+                const kdpListPriceEbook = getNumValue('kdpListPriceEbook');
+                const kdpPages = getNumValue('kdpPages');
+                const kdpInk = document.getElementById('kdpInk').value;
+                const kdpPaper = document.getElementById('kdpPaper').value;
+                const kdpTrim = document.getElementById('kdpTrim').value;
+                const kdpDistribution = document.getElementById('kdpDistribution').value;
+                const kdpRoyaltyEbookPercent = getNumValue('kdpRoyaltyEbook');
+                const kdpEbookSize = getNumValue('kdpEbookSize');
+                const kdpSalesPrint = getNumValue('kdpSalesPrint');
+                const kdpSalesEbook = getNumValue('kdpSalesEbook');
+
+                estimatedUnitsSold = kdpSalesPrint + kdpSalesEbook;
+
+                let totalPrintRevenue = 0, totalPrintVariableCosts = 0, printCostPerUnit = 0, printRoyaltyPerUnit = 0;
+                if (kdpSalesPrint > 0 && kdpListPricePrint > 0 && kdpPages >= 24) {
+                    const printCostResult = estimateKdpPrintCost(kdpPages, kdpInk, kdpPaper, kdpTrim, kdpDistribution);
+                    printCostPerUnit = printCostResult.cost;
+                    const printRoyaltyRate = printCostResult.royaltyRate;
+                    printRoyaltyPerUnit = Math.max(0, (printRoyaltyRate * kdpListPricePrint) - printCostPerUnit);
+                    totalPrintRevenue = printRoyaltyPerUnit * kdpSalesPrint;
+                    totalPrintVariableCosts = printCostPerUnit * kdpSalesPrint;
+                }
+
+                let totalEbookRevenue = 0, totalEbookVariableCosts = 0, ebookDeliveryFeePerUnit = 0, ebookRoyaltyPerUnit = 0;
+                if (kdpSalesEbook > 0 && kdpListPriceEbook > 0) {
+                    ebookDeliveryFeePerUnit = calculateKdpEbookDeliveryFee(kdpRoyaltyEbookPercent, kdpEbookSize);
+                    const ebookRoyaltyRate = kdpRoyaltyEbookPercent / 100;
+                    ebookRoyaltyPerUnit = Math.max(0, (ebookRoyaltyRate * kdpListPriceEbook) - ebookDeliveryFeePerUnit);
+                    totalEbookRevenue = ebookRoyaltyPerUnit * kdpSalesEbook;
+                    totalEbookVariableCosts = ebookDeliveryFeePerUnit * kdpSalesEbook;
+                }
+
+                totalRevenue = totalPrintRevenue + totalEbookRevenue; // Total income received
+                totalVariableCostsPerUnitSold = totalPrintVariableCosts + totalEbookVariableCosts; // Total CoGS
+
+                if (estimatedUnitsSold > 0) {
+                    averageUnitCost = totalVariableCostsPerUnitSold / estimatedUnitsSold;
+                    const averageRoyaltyPerUnit = totalRevenue / estimatedUnitsSold; // Use actual average royalty for BEP
+                     if (averageRoyaltyPerUnit > 0) {
+                         breakEvenUnits = totalFixedCosts / averageRoyaltyPerUnit;
+                     } else if (totalFixedCosts > 0) { breakEvenUnits = Infinity; }
+                     // Profit per unit sold = Avg Royalty per Unit - (Total Fixed Costs / Total Units Sold)
+                     profitPerUnitSold = averageRoyaltyPerUnit - (totalFixedCosts / estimatedUnitsSold);
+
+                    additionalInfo = `
+                        <p><strong>Detalles KDP Print:</strong> Coste Impresión/ud: €${printCostPerUnit.toFixed(2)}, Royalty Neto/ud: €${printRoyaltyPerUnit.toFixed(2)}</p>
+                        <p><strong>Detalles KDP eBook:</strong> Coste Entrega/ud: €${ebookDeliveryFeePerUnit.toFixed(2)}, Royalty Neto/ud: €${ebookRoyaltyPerUnit.toFixed(2)}</p>
+                        <p><strong>Royalty Total Neto Estimado (Ingresos):</strong> €${totalRevenue.toFixed(2)}</p>
+                    `;
+                } else { /* ... handling for zero sales ... */
+                     averageUnitCost = 0; profitPerUnitSold = 0;
+                     breakEvenUnits = (totalFixedCosts > 0) ? Infinity : 0;
+                 }
+
+            } else if (mode === 'traditional') {
+                 // Traditional Inputs
+                const tradListPrice = getNumValue('tradListPrice');
+                const tradPrintRun = getNumValue('tradPrintRun');
+                const tradCostPerUnitPrinted = getNumValue('tradCostPerUnit');
+                const tradShippingCustomer = getNumValue('tradShippingCustomer');
+                const tradSales = getNumValue('tradSales');
+
+                estimatedUnitsSold = Math.min(tradSales, tradPrintRun); // Cannot sell more than printed
+
+                 // Calculate inventory first for display
+                const totalPrintRunCost = tradCostPerUnitPrinted * tradPrintRun;
+                const inventoryUnits = Math.max(0, tradPrintRun - estimatedUnitsSold);
+                const inventoryValue = inventoryUnits * tradCostPerUnitPrinted;
+
+                document.getElementById('tradTotalPrintRunCost').textContent = `€${totalPrintRunCost.toFixed(2)}`;
+                document.getElementById('tradInventoryUnits').textContent = inventoryUnits.toFixed(0);
+                document.getElementById('tradInventoryValue').textContent = `€${inventoryValue.toFixed(2)}`;
+
+                if (estimatedUnitsSold > 0) {
+                    totalRevenue = tradListPrice * estimatedUnitsSold;
+                    averageUnitCost = tradCostPerUnitPrinted + tradShippingCustomer; // Variable cost per unit *sold*
+                    totalVariableCostsPerUnitSold = averageUnitCost * estimatedUnitsSold;
+                    const profitPerSoldUnitBeforeFixed = tradListPrice - averageUnitCost;
+                     if (profitPerSoldUnitBeforeFixed > 0) {
+                         breakEvenUnits = totalFixedCosts / profitPerSoldUnitBeforeFixed;
+                     } else if (totalFixedCosts > 0) { breakEvenUnits = Infinity; }
+                    // Profit per unit sold = Profit Before Fixed - (Total Fixed Costs / Units Sold)
+                    profitPerUnitSold = profitPerSoldUnitBeforeFixed - (totalFixedCosts / estimatedUnitsSold);
+
+                } else { /* ... handling for zero sales ... */
+                     totalRevenue = 0; totalVariableCostsPerUnitSold = 0;
+                     averageUnitCost = tradCostPerUnitPrinted + tradShippingCustomer;
+                     profitPerUnitSold = 0;
+                     const profitPerSoldUnitBeforeFixed = tradListPrice - averageUnitCost;
+                     if (profitPerSoldUnitBeforeFixed > 0 && totalFixedCosts > 0) { breakEvenUnits = totalFixedCosts / profitPerSoldUnitBeforeFixed;}
+                     else if (totalFixedCosts > 0) { breakEvenUnits = Infinity; }
+                     else { breakEvenUnits = 0; }
+                 }
+
+                additionalInfo = `
+                    <p><strong>Coste Total Tirada (Inversión Inicial):</strong> €${totalPrintRunCost.toFixed(2)} (${tradPrintRun} unidades)</p>
+                    <p><strong>Coste Variable por Unidad Vendida:</strong> €${averageUnitCost.toFixed(2)} (Imprenta: ${tradCostPerUnitPrinted.toFixed(2)} + Envío: ${tradShippingCustomer.toFixed(2)})</p>
+                    <p><strong>Beneficio Bruto por Unidad Vendida (Antes de Fijos):</strong> €${(tradListPrice - averageUnitCost).toFixed(2)}</p>
+                    <p><strong>Inventario Restante:</strong> ${inventoryUnits} unidades (Valor a coste: €${inventoryValue.toFixed(2)})</p>
+                `;
+            }
+
+            // --- Cálculo de Métricas Finales (igual que antes) ---
+            const totalCosts = totalFixedCosts + totalVariableCostsPerUnitSold;
+            const totalProfit = totalRevenue - totalCosts;
+            const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+
+            // --- Visualización de Resultados (igual que antes) ---
+            let resultsHTML = `
+                <h2>📊 Resultados Finales</h2>
+                <p><strong>Unidades Vendidas Estimadas:</strong> ${estimatedUnitsSold.toFixed(0)}</p>
+                <p><strong>Costes Fijos Totales:</strong> €${totalFixedCosts.toFixed(2)}</p>
+                <p><strong>Costes Variables Totales (para unidades vendidas):</strong> €${totalVariableCostsPerUnitSold.toFixed(2)}</p>
+                <p><strong>Coste Variable Medio por Unidad Vendida:</strong> €${averageUnitCost.toFixed(2)}</p>
+                <p><strong>Costes Totales (Fijos + Variables de Ventas):</strong> €${totalCosts.toFixed(2)}</p>
+                <p><strong>Ingresos Totales Brutos (Trad) / Royalty Neto (KDP):</strong> €${totalRevenue.toFixed(2)}</p>
+                <p><strong>Beneficio Neto Total Estimado:</strong> <strong style="font-size: 1.1em; color: ${totalProfit >= 0 ? '#27ae60' : '#c0392b'};">€${totalProfit.toFixed(2)}</strong></p>
+                <p><strong>Beneficio Neto Medio por Unidad Vendida:</strong> €${profitPerUnitSold.toFixed(2)}</p>
+                <p><strong>Margen de Beneficio Neto:</strong> ${profitMargin.toFixed(2)}%</p>
+                <p><strong>Punto de Equilibrio (Unidades a vender para cubrir costes fijos):</strong> ${isFinite(breakEvenUnits) ? Math.ceil(breakEvenUnits).toFixed(0) : 'Inalcanzable con estos datos'}</p>
+                <hr>
+                <h3>Detalles Adicionales (${mode === 'kdp' ? 'KDP' : 'Imprenta Tradicional'}):</h3>
+                ${additionalInfo}
+            `;
+            resultsDiv.innerHTML = resultsHTML;
+        }
+
+
+        // --- Funciones de UI (Modificadas para manejar los toggles) ---
+
+        function toggleModeSections() {
+             // ... (igual que antes, gestionando visibilidad de secciones y texto ISBN) ...
+            const mode = document.getElementById('modeSelect').value;
+            const kdpSection = document.getElementById('kdpSection');
+            const traditionalSection = document.getElementById('traditionalSection');
+            const isbnInput = document.getElementById('isbnCost');
+            const isbnInfoDetails = document.getElementById('info-isbnCost'); // Target the explanation div
+            const isbnInfoButton = isbnInfoDetails.previousElementSibling.querySelector('.info-toggle'); // Find the button
+
+            if (mode === 'kdp') {
+                kdpSection.classList.remove('hidden');
+                traditionalSection.classList.add('hidden');
+                if (isbnInput.value === '' || parseFloat(isbnInput.value) === 0) { // Only set to 0 if it was empty or 0 before
+                     isbnInput.value = "0";
+                }
+                 // Update explanation text dynamically if needed, or keep it general
+                 // Example: isbnInfoDetails.querySelector('p').innerHTML = "<strong>Coste de ISBN(s):</strong> KDP ofrece uno gratis...";
+            } else {
+                kdpSection.classList.add('hidden');
+                traditionalSection.classList.remove('hidden');
+                 // Example: isbnInfoDetails.querySelector('p').innerHTML = "<strong>Coste de ISBN(s):</strong> Imprenta tradicional requiere comprar...";
+            }
+            // Recalculate when mode changes
+             calculateCosts();
+        }
+
+        function updateKdpPrintRoyaltyDisplay() {
+             // ... (igual que antes) ...
+             const distribution = document.getElementById('kdpDistribution').value;
+             const royaltyInput = document.getElementById('kdpRoyaltyPrint');
+             royaltyInput.value = (distribution === 'expanded') ? 40 : 60;
+        }
+
+        // --- NUEVO: Manejador para los botones de información ---
+        function handleInfoToggle(event) {
+            const button = event.target.closest('.info-toggle');
+            if (!button) return; // Exit if click wasn't on a toggle button
+
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            const detailsId = button.getAttribute('aria-controls');
+            const detailsPanel = document.getElementById(detailsId);
+
+            if (detailsPanel) {
+                button.setAttribute('aria-expanded', !isExpanded);
+                detailsPanel.hidden = !detailsPanel.hidden; // Toggle visibility
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('calculateBtn').addEventListener('click', calculateCosts);
+        document.getElementById('modeSelect').addEventListener('change', toggleModeSections);
+        document.getElementById('kdpDistribution').addEventListener('change', () => {
+            updateKdpPrintRoyaltyDisplay();
+            calculateCosts(); // Recalculate if distribution change affects royalty/costs
+        });
+
+        // Add listeners to all inputs/selects for live calculation
+        const inputs = document.querySelectorAll('input[type="number"], select');
+        inputs.forEach(input => {
+            // Recalculate on change (when focus is lost) or keyup (as typing)
+            input.addEventListener('change', calculateCosts);
+            input.addEventListener('keyup', calculateCosts);
+        });
+
+        // Add delegated event listener for all info toggle buttons
+        document.addEventListener('click', handleInfoToggle);
+
+
+        // --- Initial Setup ---
+        updateKdpPrintRoyaltyDisplay();
+        toggleModeSections(); // Sets initial visibility and runs first calculation
+        // calculateCosts(); // Already called within toggleModeSections
+
+    </script>
+    <!-- Fin de Script JavaScript -->
+
+</body>
+</html>

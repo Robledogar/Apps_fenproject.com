@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Reacción Avanzada (25 Clics)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { /* Definir variables de color para fácil mantenimiento */
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-dark: #343a40;
+            --text-light: #f8f9fa;
+            --moving-avg-color: #ff7f0e; /* Naranja para media móvil */
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            box-sizing: border-box;
+        }
+        #gameContainer {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 95%; /* Usar más ancho */
+            max-width: 800px; /* Aumentar ancho máximo */
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        #gameArea {
+            width: 100%;
+            height: 380px; /* Ligeramente más alta */
+            border: 3px solid #adb5bd;
+            background-color: #e9ecef;
+            position: relative;
+            overflow: hidden; /* Importante: Oculta cualquier desbordamiento accidental */
+            cursor: crosshair;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            box-sizing: border-box; /* Asegura que el borde esté incluido en el tamaño */
+        }
+        #target {
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-color);
+            /* No añadir borde aquí, usar offsetWidth/Height que ya lo incluyen si lo tuviera */
+            position: absolute;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+            display: none;
+            border-radius: 50%;
+            box-sizing: border-box; /* El tamaño incluye padding/borde si los tuviera */
+        }
+        #target:hover {
+             background-color: #0056b3;
+        }
+        #liveStats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            flex-wrap: wrap;
+            background-color: #e9ecef;
+            padding: 10px 0;
+            border-radius: 5px;
+        }
+        .stat-item { margin: 5px 10px; min-width: 100px; text-align: center; }
+        .stat-label { font-weight: bold; display: block; color: #495057; font-size: 0.85em; margin-bottom: 3px; }
+
+        #startButton {
+            padding: 12px 25px; font-size: 1.2em; cursor: pointer; background-color: var(--success-color);
+            color: var(--text-light); border: none; border-radius: 5px; margin-bottom: 20px; transition: background-color 0.2s ease;
+        }
+        #startButton:hover { background-color: #218838; }
+        #startButton:disabled { background-color: var(--secondary-color); cursor: not-allowed; }
+
+        h1 { color: var(--text-dark); margin-bottom: 5px; }
+        #instructions { font-size: 0.95em; color: var(--secondary-color); margin-bottom: 15px; }
+
+        /* --- Área de Resultados y Gráfica --- */
+        #resultsArea {
+            margin-top: 25px; padding: 25px; background-color: #fff;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); text-align: left;
+            display: none; width: 95%; max-width: 850px; /* Más ancho */
+            box-sizing: border-box;
+        }
+        #resultsArea h2 { text-align: center; color: var(--primary-color); margin-bottom: 20px; }
+        #resultsArea .result-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; margin-bottom: 25px; /* Más espacio antes de la gráfica */
+        }
+         #resultsArea .result-item { background-color: var(--light-bg); padding: 12px; border-radius: 5px; border: 1px solid #e9ecef; }
+        #resultsArea .result-label { font-weight: bold; color: #495057; display: block; margin-bottom: 5px; font-size: 0.9em; }
+        #resultsArea .result-value { font-size: 1.2em; color: var(--text-dark); }
+
+        /* Controles de la Gráfica */
+        #chartControls {
+             text-align: center;
+             margin-bottom: 15px;
+        }
+        #chartControls button {
+            padding: 8px 15px; margin: 0 5px; font-size: 0.9em; cursor: pointer;
+            border: 1px solid var(--secondary-color); border-radius: 4px; background-color: #fff;
+            color: var(--secondary-color); transition: all 0.2s ease;
+        }
+        #chartControls button.active { /* Estilo para botón activo */
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            font-weight: bold;
+        }
+         #chartControls button:hover:not(.active) {
+             background-color: #f1f1f1;
+         }
+
+        /* Contenedor y Canvas de la Gráfica */
+        #chartContainer {
+            width: 100%; background-color: #fff; padding: 15px;
+            border-radius: 8px; /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); */
+            box-sizing: border-box;
+        }
+         #resultsChart {
+             max-height: 450px; /* Más altura para la gráfica */
+             width: 100% !important; /* Asegurar que ocupe el contenedor */
+         }
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <h1>Prueba de Velocidad de Reacción</h1>
+        <div id="instructions">Haz clic en "Iniciar Prueba". Clica en el círculo azul 25 veces lo más rápido posible.</div>
+        <button id="startButton">Iniciar Prueba</button>
+        <div id="liveStats">
+            <div class="stat-item"><span class="stat-label">Aciertos:</span><span id="currentScore">0 / 25</span></div>
+            <div class="stat-item"><span class="stat-label">Errores:</span><span id="currentErrors">0</span></div>
+            <div class="stat-item"><span class="stat-label">Último Tiempo:</span><span id="currentLastTime">N/A</span></div>
+        </div>
+        <div id="gameArea"><div id="target"></div></div>
+    </div>
+
+    <div id="resultsArea">
+        <h2>Resultados de la Prueba</h2>
+        <div class="result-grid">
+            <div class="result-item"><span class="result-label">Aciertos Totales:</span><span class="result-value" id="finalScore">--</span></div>
+            <div class="result-item"><span class="result-label">Errores Totales:</span><span class="result-value" id="finalErrors">--</span></div>
+            <div class="result-item"><span class="result-label">Tiempo Medio Reacción:</span><span class="result-value" id="finalAvgTime">--</span></div>
+            <div class="result-item"><span class="result-label">Mejor Tiempo (Min):</span><span class="result-value" id="finalMinTime">--</span></div>
+            <div class="result-item"><span class="result-label">Peor Tiempo (Max):</span><span class="result-value" id="finalMaxTime">--</span></div>
+            <div class="result-item"><span class="result-label">Desviación Estándar:</span><span class="result-value" id="finalStdDev">--</span></div>
+            <div class="result-item"><span class="result-label">Tiempo Total Prueba:</span><span class="result-value" id="finalTotalTime">--</span></div>
+        </div>
+
+        <!-- Controles de la Gráfica -->
+        <div id="chartControls">
+            <button id="toggleTimesBtn" data-dataset="reactionTimes" class="active">Mostrar/Ocultar Tiempos</button>
+            <button id="toggleAvgBtn" data-dataset="movingAverage">Mostrar/Ocultar Media Móvil</button>
+        </div>
+
+        <!-- Contenedor para la gráfica -->
+        <div id="chartContainer">
+            <canvas id="resultsChart"></canvas>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Elementos DOM ---
+        const gameArea = document.getElementById('gameArea');
+        const target = document.getElementById('target');
+        const currentScoreDisplay = document.getElementById('currentScore');
+        const currentErrorsDisplay = document.getElementById('currentErrors');
+        const currentLastTimeDisplay = document.getElementById('currentLastTime');
+        const startButton = document.getElementById('startButton');
+        const resultsArea = document.getElementById('resultsArea');
+        const chartControls = document.getElementById('chartControls');
+        const chartCanvas = document.getElementById('resultsChart');
+
+        // --- Constantes y Estado ---
+        const MAX_CLICKS = 25;
+        const MOVING_AVERAGE_WINDOW = 3; // Ventana para la media móvil
+        let score = 0;
+        let errors = 0;
+        let targetAppearTime = 0;
+        let testStartTime = 0;
+        let testEndTime = 0;
+        let reactionTimes = []; // Guarda los tiempos individuales
+        let movingAverages = []; // Guarda las medias móviles calculadas
+        let gameRunning = false;
+        let chartInstance = null;
+        let visibleDatasets = { // Estado para controlar qué líneas se ven
+            reactionTimes: true,
+            movingAverage: false
+        };
+
+        // --- Funciones del Juego ---
+
+        function resetGame() {
+            // ... (resetear variables como antes)
+            score = 0; errors = 0; targetAppearTime = 0; testStartTime = 0;
+            testEndTime = 0; reactionTimes = []; movingAverages = []; gameRunning = false;
+            // Resetear visibilidad inicial de datasets
+            visibleDatasets = { reactionTimes: true, movingAverage: false };
+
+            // Actualizar UI
+            currentScoreDisplay.textContent = `0 / ${MAX_CLICKS}`;
+            currentErrorsDisplay.textContent = '0';
+            currentLastTimeDisplay.textContent = 'N/A';
+            target.style.display = 'none';
+            resultsArea.style.display = 'none';
+            startButton.disabled = false;
+            startButton.textContent = 'Iniciar Prueba';
+
+            // Actualizar estado visual de botones de control de gráfica
+            updateChartControlButtons();
+
+            // Destruir gráfica anterior
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+        }
+
+        function startGame() {
+            resetGame();
+            gameRunning = true;
+            startButton.disabled = true;
+            startButton.textContent = '¡Prueba en Curso!';
+            moveTarget();
+        }
+
+        function moveTarget() {
+            if (!gameRunning) return;
+
+            // Usar clientWidth/clientHeight para dimensiones internas
+            const innerWidth = gameArea.clientWidth;
+            const innerHeight = gameArea.clientHeight;
+
+            // Usar offsetWidth/offsetHeight para el tamaño total del target (incluye su borde si lo tuviera)
+            const targetWidth = target.offsetWidth;
+            const targetHeight = target.offsetHeight;
+
+            // Calcular posición máxima segura
+            const maxX = Math.max(0, innerWidth - targetWidth);
+            const maxY = Math.max(0, innerHeight - targetHeight);
+
+            // Generar coordenadas aleatorias DENTRO de los límites seguros
+            const randomX = Math.floor(Math.random() * (maxX + 1));
+            const randomY = Math.floor(Math.random() * (maxY + 1));
+
+            // Mover target
+            target.style.left = randomX + 'px';
+            target.style.top = randomY + 'px';
+
+            // Mostrar y medir tiempo después del renderizado
+            requestAnimationFrame(() => {
+                 if (!gameRunning) return;
+                 target.style.display = 'block';
+                 targetAppearTime = performance.now();
+                 if (score === 0 && reactionTimes.length === 0) {
+                     testStartTime = targetAppearTime;
+                 }
+            });
+        }
+
+        function handleTargetClick() {
+            if (!gameRunning || targetAppearTime === 0 || target.style.display === 'none') return;
+
+            const clickTime = performance.now();
+            const reactionTime = clickTime - targetAppearTime;
+
+            target.style.display = 'none';
+            targetAppearTime = 0;
+
+            score++;
+            reactionTimes.push(reactionTime);
+
+            currentScoreDisplay.textContent = `${score} / ${MAX_CLICKS}`;
+            currentLastTimeDisplay.textContent = `${reactionTime.toFixed(0)} ms`;
+
+            if (score >= MAX_CLICKS) {
+                testEndTime = clickTime;
+                endGame();
+            } else {
+                 setTimeout(moveTarget, 100 + Math.random() * 200); // Pausa antes del siguiente
+            }
+        }
+
+        function handleMissClick(event) {
+            if (gameRunning && event.target === gameArea) {
+                errors++;
+                currentErrorsDisplay.textContent = errors;
+                gameArea.style.boxShadow = `0 0 10px 3px ${getComputedStyle(document.documentElement).getPropertyValue('--danger-color')}80`; // Usar variable CSS con opacidad
+                setTimeout(() => { gameArea.style.boxShadow = 'none'; }, 150);
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            startButton.disabled = false;
+            startButton.textContent = 'Jugar de Nuevo';
+            movingAverages = calculateMovingAverage(reactionTimes, MOVING_AVERAGE_WINDOW); // Calcular media móvil una vez
+            displayFinalResults();
+            generateChart(); // Genera la gráfica con los datos iniciales visibles
+            resultsArea.style.display = 'block'; // Mostrar resultados ahora
+        }
+
+        // --- Funciones de Estadísticas y Gráfica ---
+
+        function calculateStats(times) {
+            // ... (igual que antes)
+             if (!times || times.length === 0) return { avg: 0, min: 0, max: 0, stdDev: 0 };
+             const sum = times.reduce((a, b) => a + b, 0);
+             const avg = sum / times.length;
+             const min = Math.min(...times);
+             const max = Math.max(...times);
+             const squareDiffs = times.map(value => (value - avg) ** 2);
+             const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / times.length;
+             const stdDev = Math.sqrt(avgSquareDiff);
+             return { avg, min, max, stdDev };
+        }
+
+        function calculateMovingAverage(data, windowSize) {
+            if (!data || data.length < windowSize) return [];
+            let result = [];
+             // Llenar los primeros puntos con null o NaN para indicar que no hay suficiente data
+            for (let i = 0; i < windowSize - 1; i++) {
+                 result.push(null);
+            }
+            // Calcular la media móvil
+            for (let i = windowSize - 1; i < data.length; i++) {
+                let sum = 0;
+                for (let j = 0; j < windowSize; j++) {
+                    sum += data[i - j];
+                }
+                result.push(sum / windowSize);
+            }
+            return result;
+        }
+
+
+        function displayFinalResults() {
+            // ... (igual que antes, rellenar los spans de resultados)
+             const stats = calculateStats(reactionTimes);
+             const totalTestTime = testStartTime > 0 ? (testEndTime - testStartTime) / 1000 : 0;
+
+             document.getElementById('finalScore').textContent = `${score} / ${MAX_CLICKS}`;
+             document.getElementById('finalErrors').textContent = errors;
+             document.getElementById('finalAvgTime').textContent = `${stats.avg.toFixed(1)} ms`;
+             document.getElementById('finalMinTime').textContent = `${stats.min.toFixed(1)} ms`;
+             document.getElementById('finalMaxTime').textContent = `${stats.max.toFixed(1)} ms`;
+             document.getElementById('finalStdDev').textContent = `${stats.stdDev.toFixed(1)} ms`;
+             document.getElementById('finalTotalTime').textContent = `${totalTestTime.toFixed(2)} s`;
+        }
+
+        // Nueva función para actualizar los datasets visibles en la gráfica existente
+        function updateChartData() {
+            if (!chartInstance) return; // Salir si la gráfica no existe
+
+            const datasetsToShow = [];
+
+            // Añadir dataset de Tiempos de Reacción si está visible
+            if (visibleDatasets.reactionTimes) {
+                datasetsToShow.push({
+                    label: 'Tiempo de Reacción (ms)',
+                    data: reactionTimes.map(rt => rt.toFixed(1)),
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.1, fill: false, // No rellenar la línea principal por defecto
+                    pointBackgroundColor: '#0056b3', pointRadius: 3, pointHoverRadius: 5,
+                    yAxisID: 'y' // Asociar al eje Y principal
+                });
+            }
+
+            // Añadir dataset de Media Móvil si está visible
+            if (visibleDatasets.movingAverage) {
+                 datasetsToShow.push({
+                    label: `Media Móvil (${MOVING_AVERAGE_WINDOW} puntos)`,
+                    data: movingAverages.map(ma => ma !== null ? ma.toFixed(1) : null), // Manejar nulls
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--moving-avg-color'), // Color naranja
+                    backgroundColor: 'rgba(255, 127, 14, 0.1)',
+                    tension: 0.2, fill: false, // No rellenar
+                    pointRadius: 1, // Puntos más pequeños para la media
+                    borderDash: [5, 5], // Línea discontinua
+                    yAxisID: 'y' // Asociar al mismo eje Y
+                });
+            }
+
+            chartInstance.data.datasets = datasetsToShow; // Actualizar los datasets
+            chartInstance.update(); // Redibujar la gráfica
+        }
+
+        // Actualiza el estado visual de los botones de control
+        function updateChartControlButtons() {
+             document.getElementById('toggleTimesBtn').classList.toggle('active', visibleDatasets.reactionTimes);
+             document.getElementById('toggleAvgBtn').classList.toggle('active', visibleDatasets.movingAverage);
+        }
+
+
+        function generateChart() {
+             if (chartInstance) { chartInstance.destroy(); } // Destruir anterior
+
+             const ctx = chartCanvas.getContext('2d');
+             const labels = Array.from({ length: reactionTimes.length }, (_, i) => i + 1);
+
+             chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { // Los datos se llenarán con updateChartData
+                    labels: labels,
+                    datasets: [] // Empezar vacío, se llena al final
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permitir control de altura
+                    interaction: { // Mejorar interacción
+                        mode: 'index', // Mostrar tooltips para todos los puntos en el mismo índice X
+                        intersect: false,
+                    },
+                    scales: {
+                         y: { // Configuración eje Y principal
+                            beginAtZero: false,
+                            title: { display: true, text: 'Tiempo (milisegundos)' },
+                            grid: { color: '#e0e0e0' } // Color de rejilla más suave
+                        },
+                        x: {
+                            title: { display: true, text: 'Número de Clic' },
+                            grid: { display: false } // Ocultar rejilla vertical
+                        }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Rendimiento Durante la Prueba', font: { size: 18 } },
+                        tooltip: {
+                             callbacks: {
+                                 label: function(context) {
+                                      return `${context.dataset.label || ''}: ${context.parsed.y} ms`;
+                                 }
+                             }
+                         }
+                    }
+                }
+            });
+
+             updateChartControlButtons(); // Asegurar estado inicial correcto de botones
+             updateChartData(); // Llenar la gráfica con los datos iniciales visibles
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startGame);
+        target.addEventListener('click', handleTargetClick);
+        gameArea.addEventListener('click', handleMissClick);
+
+        // Listener para los botones de control de la gráfica
+        chartControls.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON' && event.target.dataset.dataset) {
+                const datasetKey = event.target.dataset.dataset;
+                if (visibleDatasets.hasOwnProperty(datasetKey)) {
+                    // Alternar visibilidad
+                    visibleDatasets[datasetKey] = !visibleDatasets[datasetKey];
+                    // Actualizar estado visual del botón
+                    event.target.classList.toggle('active');
+                    // Actualizar la gráfica
+                    updateChartData();
+                }
+            }
+        });
+
+        // Inicializar estado al cargar
+        document.addEventListener('DOMContentLoaded', resetGame);
+
+    </script>
+
+</body>
+</html>

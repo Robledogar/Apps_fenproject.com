@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryBook Illustrator Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Personalizado para etiquetas de estado */
+        .status-badge {
+            padding: 0.25rem 0.5rem; /* px-2 py-1 */
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            line-height: 1rem;
+        }
+        .status-pendiente {
+            background-color: #e5e7eb; /* bg-gray-200 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        .status-en-proceso {
+            background-color: #dbeafe; /* bg-blue-100 */
+            color: #1e40af; /* text-blue-800 */
+        }
+        .status-en-revision {
+            background-color: #ffedd5; /* bg-orange-100 */
+            color: #9a3412; /* text-orange-800 */
+        }
+        .status-aprobado {
+            background-color: #d1fae5; /* bg-green-100 */
+            color: #065f46; /* text-green-800 */
+        }
+
+        /* Barra de desplazamiento personalizada (solo WebKit/Blink) */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background-color: #f3f4f6; /* bg-gray-100 */ }
+        ::-webkit-scrollbar-thumb { background-color: #bfdbfe; border-radius: 9999px; /* bg-blue-200 rounded-full */ }
+        ::-webkit-scrollbar-thumb:hover { background-color: #93c5fd; /* bg-blue-300 */ }
+
+        /* Animación para modales */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-animation { animation: fadeIn 0.2s ease-out; }
+
+        /* Ocultar elementos */
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans flex h-screen overflow-hidden">
+    <!-- Barra Lateral -->
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
+        <div class="p-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-indigo-700 flex items-center">
+                <i class="fas fa-book-open mr-2" aria-hidden="true"></i>
+                Illustrator Hub
+            </h1>
+        </div>
+        <div class="p-4 border-b border-gray-200">
+            <button id="newProjectBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center justify-center transition-colors">
+                <i class="fas fa-plus mr-2" aria-hidden="true"></i> Nuevo Proyecto
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <h2 class="px-4 py-2 text-sm font-semibold text-gray-500 uppercase tracking-wider">Mis Proyectos</h2>
+            <ul id="projectList" class="space-y-1 px-2"></ul>
+        </div>
+        <div class="p-4 border-t border-gray-200 text-sm text-gray-500">
+            <p>Gestor de flujo de ilustraciones</p>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Cabecera -->
+        <header class="bg-white border-b border-gray-200 p-4">
+            <div class="flex justify-between items-center">
+                <h2 id="currentProjectTitle" class="text-lg font-semibold text-gray-800">Selecciona un proyecto para empezar</h2>
+                <button id="newIllustrationBtn" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center transition-colors">
+                    <i class="fas fa-plus mr-2" aria-hidden="true"></i> Añadir Ilustración
+                </button>
+            </div>
+        </header>
+        <!-- Cuadrícula de Ilustraciones -->
+        <main id="illustrationContent" class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            <div id="emptyState" class="h-full flex flex-col items-center justify-center text-gray-400">
+                <i class="fas fa-book-reader text-5xl mb-4" aria-hidden="true"></i>
+                <p class="text-lg">Selecciona un proyecto para ver sus ilustraciones</p>
+                <p class="text-sm mt-2">o crea un nuevo proyecto para empezar</p>
+            </div>
+            <div id="illustrationGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Proyecto -->
+    <div id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="projectModalTitle" class="text-lg font-semibold text-gray-800">Crear Nuevo Proyecto</h3>
+                    <button id="closeProjectModal" aria-label="Cerrar modal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <form id="projectForm" class="space-y-4">
+                    <div>
+                        <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Proyecto</label>
+                        <input type="text" id="projectName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" id="cancelProjectBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Crear Proyecto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva/Editar Ilustración -->
+    <div id="illustrationModal" role="dialog" aria-modal="true" aria-labelledby="illustrationModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="illustrationModalTitle" class="text-lg font-semibold text-gray-800">Añadir/Editar Ilustración</h3>
+                    <button id="closeIllustrationModal" aria-label="Cerrar modal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <form id="illustrationForm" class="space-y-4">
+                    <input type="hidden" id="illustrationId">
+                    <div>
+                        <label for="illustrationTitle" class="block text-sm font-medium text-gray-700 mb-1">Título/Descripción</label>
+                        <input type="text" id="illustrationTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="illustrationImageUrl" class="block text-sm font-medium text-gray-700 mb-1">URL de la Imagen (Opcional)</label>
+                        <input type="url" id="illustrationImageUrl" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="illustrationStatus" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <select id="illustrationStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="En Revisión">En Revisión</option>
+                            <option value="Aprobado">Aprobado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="illustrationNotes" class="block text-sm font-medium text-gray-700 mb-1">Notas/Briefing</label>
+                        <textarea id="illustrationNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" id="cancelIllustrationBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Guardar Ilustración</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Eliminación -->
+    <div id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="deleteModalTitle" class="text-lg font-semibold text-gray-800">Confirmar Eliminación</h3>
+                    <button id="closeDeleteModal" aria-label="Cerrar modal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p id="deleteMessage" class="mb-6">¿Estás seguro de que quieres eliminar este elemento?</p>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelDeleteBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancelar</button>
+                    <button type="button" id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Estado de la Aplicación ---
+        let projects = JSON.parse(localStorage.getItem('storybookProjects_es')) || [];
+        let currentProjectId = null;
+        let deleteType = null;
+        let deleteId = null;
+        let lastFocusedElement = null;
+
+        // --- Selectores de Elementos DOM ---
+        const projectList = document.getElementById('projectList');
+        const illustrationGrid = document.getElementById('illustrationGrid');
+        const emptyState = document.getElementById('emptyState');
+        const currentProjectTitle = document.getElementById('currentProjectTitle');
+        const newProjectBtn = document.getElementById('newProjectBtn');
+        const newIllustrationBtn = document.getElementById('newIllustrationBtn');
+
+        const projectModal = document.getElementById('projectModal');
+        const illustrationModal = document.getElementById('illustrationModal');
+        // ELIMINADO: const commentsModal = document.getElementById('commentsModal');
+        const deleteModal = document.getElementById('deleteModal');
+
+        const projectForm = document.getElementById('projectForm');
+        const illustrationForm = document.getElementById('illustrationForm');
+        // ELIMINADO: const commentForm = document.getElementById('commentForm');
+
+        const projectNameInput = document.getElementById('projectName');
+        const illustrationIdInput = document.getElementById('illustrationId');
+        const illustrationTitleInput = document.getElementById('illustrationTitle');
+        const illustrationImageUrlInput = document.getElementById('illustrationImageUrl');
+        const illustrationStatusSelect = document.getElementById('illustrationStatus');
+        const illustrationNotesTextarea = document.getElementById('illustrationNotes');
+        // ELIMINADO: const currentCommentIllustrationIdInput = document.getElementById('currentCommentIllustrationId');
+        // ELIMINADO: const newCommentTextarea = document.getElementById('newComment');
+        const deleteMessage = document.getElementById('deleteMessage');
+
+        // --- Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProjectList();
+            setupEventListeners();
+        });
+
+        // --- Funciones Auxiliares ---
+        function generateId() {
+            return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+        }
+
+        function saveData() {
+            localStorage.setItem('storybookProjects_es', JSON.stringify(projects));
+        }
+
+        function openModal(modalElement, openerElement) {
+            lastFocusedElement = openerElement || document.activeElement;
+            modalElement.classList.remove('hidden');
+            const focusableElements = modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusableElements.length > 0) {
+                setTimeout(() => focusableElements[0].focus(), 50);
+            }
+        }
+
+        function closeModal(modalElement) {
+            modalElement.classList.add('hidden');
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+                lastFocusedElement = null;
+            }
+        }
+
+        // --- Lógica de Renderizado ---
+        function renderProjectList() {
+             projectList.innerHTML = '';
+            if (projects.length === 0) {
+                projectList.innerHTML = '<li class="px-3 py-2 text-sm text-gray-500">No hay proyectos aún</li>';
+                return;
+            }
+
+            projects.forEach(project => {
+                const li = document.createElement('li');
+                const isActive = currentProjectId === project.id;
+                li.className = `px-3 py-2 rounded-md cursor-pointer flex justify-between items-center group hover:bg-gray-100 ${isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700'}`;
+                li.dataset.projectId = project.id;
+                li.innerHTML = `
+                    <span class="truncate flex-1 mr-2">${project.name}</span>
+                    <button class="delete-project-btn text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded-full transition-opacity" data-project-id="${project.id}" data-project-name="${project.name}" aria-label="Eliminar proyecto ${project.name}">
+                        <i class="fas fa-trash-alt text-xs" aria-hidden="true"></i>
+                    </button>
+                `;
+                li.addEventListener('click', (e) => {
+                    if (!e.target.closest('.delete-project-btn')) {
+                         selectProject(project.id);
+                    }
+                });
+                const deleteBtn = li.querySelector('.delete-project-btn');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showDeleteModal('project', project.id, `el proyecto "${project.name}"`, deleteBtn);
+                });
+                projectList.appendChild(li);
+            });
+        }
+
+        function renderIllustrations(projectId) {
+            illustrationGrid.innerHTML = '';
+            const project = projects.find(p => p.id === projectId);
+
+            if (!project || !project.illustrations || project.illustrations.length === 0) {
+                illustrationGrid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-12">
+                        <i class="fas fa-paint-brush text-5xl mb-4" aria-hidden="true"></i>
+                        <p class="text-lg">Aún no hay ilustraciones</p>
+                        <p class="text-sm mt-2">Añade tu primera ilustración para empezar</p>
+                    </div>
+                `;
+                illustrationGrid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                return;
+            }
+
+            project.illustrations.forEach(illustration => {
+                const illustrationCard = document.createElement('div');
+                illustrationCard.className = 'bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col';
+
+                // ELIMINADO: const commentCount = illustration.comments ? illustration.comments.length : 0;
+                const statusClass = getStatusClass(illustration.status);
+                const imageUrl = illustration.imageUrl || `https://via.placeholder.com/300x200/e0e7ff/4f46e5?text=${encodeURIComponent(illustration.title || 'Ilustración')}`;
+
+                illustrationCard.innerHTML = `
+                    <div class="p-4 flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-800 truncate pr-2">${illustration.title}</h3>
+                            <div class="flex space-x-1 flex-shrink-0">
+                                <button class="edit-illustration-btn text-gray-400 hover:text-indigo-600 p-1" data-illustration-id="${illustration.id}" aria-label="Editar ilustración ${illustration.title}">
+                                    <i class="fas fa-edit text-sm" aria-hidden="true"></i>
+                                </button>
+                                <button class="delete-illustration-btn text-gray-400 hover:text-red-500 p-1" data-illustration-id="${illustration.id}" data-illustration-title="${illustration.title}" aria-label="Eliminar ilustración ${illustration.title}">
+                                    <i class="fas fa-trash-alt text-sm" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 rounded-md mb-3 flex items-center justify-center aspect-video overflow-hidden">
+                            <img src="${imageUrl}" alt="Miniatura de ${illustration.title}" class="h-full w-full object-cover" loading="lazy">
+                        </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="${statusClass}">${illustration.status}</span>
+                            <!-- ELIMINADO: Sección de botón/texto de comentarios -->
+                        </div>
+                        <p class="text-sm text-gray-600 line-clamp-2 break-words">${illustration.notes || 'Sin notas'}</p>
+                    </div>
+                `;
+
+                const editBtn = illustrationCard.querySelector('.edit-illustration-btn');
+                editBtn.addEventListener('click', () => editIllustration(illustration.id, editBtn));
+
+                const deleteBtn = illustrationCard.querySelector('.delete-illustration-btn');
+                deleteBtn.addEventListener('click', () => {
+                    showDeleteModal('illustration', illustration.id, `la ilustración "${illustration.title}"`, deleteBtn);
+                });
+
+                // ELIMINADO: Listener para el botón de comentarios
+                // const commentsBtn = illustrationCard.querySelector('.view-comments-btn');
+                // if (commentsBtn) {
+                //     commentsBtn.addEventListener('click', () => showComments(illustration.id, commentsBtn));
+                // }
+
+                illustrationGrid.appendChild(illustrationCard);
+            });
+            illustrationGrid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Pendiente': return 'status-badge status-pendiente';
+                case 'En Proceso': return 'status-badge status-en-proceso';
+                case 'En Revisión': return 'status-badge status-en-revision';
+                case 'Aprobado': return 'status-badge status-aprobado';
+                default: return 'status-badge status-pendiente';
+            }
+        }
+
+        // --- Lógica de Manejo de Acciones ---
+        function selectProject(projectId) {
+             if (currentProjectId === projectId) return;
+            currentProjectId = projectId;
+            const project = projects.find(p => p.id === projectId);
+            if (!project) {
+                currentProjectId = null;
+                currentProjectTitle.textContent = 'Selecciona un proyecto para empezar';
+                newIllustrationBtn.classList.add('hidden');
+                illustrationGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                illustrationGrid.innerHTML = '';
+                renderProjectList();
+                return;
+            }
+            currentProjectTitle.textContent = project.name;
+            newIllustrationBtn.classList.remove('hidden');
+            renderIllustrations(projectId);
+            renderProjectList();
+        }
+
+        function handleProjectSubmit(e) {
+            e.preventDefault();
+            const name = projectNameInput.value.trim();
+            if (!name) return;
+            const newProject = { id: generateId(), name: name, illustrations: [] };
+            projects.push(newProject);
+            saveData();
+            closeModal(projectModal);
+            renderProjectList();
+            selectProject(newProject.id);
+        }
+
+        function handleIllustrationSubmit(e) {
+            e.preventDefault();
+            if (!currentProjectId) return;
+            const project = projects.find(p => p.id === currentProjectId);
+            if (!project) return;
+            const imageUrl = illustrationImageUrlInput.value.trim();
+            const illustrationData = {
+                id: illustrationIdInput.value || generateId(),
+                title: illustrationTitleInput.value.trim(),
+                imageUrl: imageUrl,
+                status: illustrationStatusSelect.value,
+                notes: illustrationNotesTextarea.value.trim(),
+                // ELIMINADO: comments: [] // Ya no inicializamos ni mantenemos comentarios
+            };
+
+            if (!illustrationData.title) return;
+            const existingIndex = project.illustrations ? project.illustrations.findIndex(i => i.id === illustrationData.id) : -1;
+
+            if (existingIndex >= 0) {
+                // Editar: Sobrescribir ilustración existente (sin campo comments)
+                project.illustrations[existingIndex] = illustrationData;
+            } else {
+                // Crear: Añadir nueva ilustración (sin campo comments)
+                if (!project.illustrations) project.illustrations = [];
+                project.illustrations.push(illustrationData);
+            }
+            saveData();
+            closeModal(illustrationModal);
+            renderIllustrations(currentProjectId);
+        }
+
+        function editIllustration(illustrationId, openerElement) {
+            const project = projects.find(p => p.id === currentProjectId);
+            const illustration = project?.illustrations?.find(i => i.id === illustrationId);
+            if (!illustration) return;
+            illustrationForm.reset();
+            illustrationIdInput.value = illustration.id;
+            illustrationTitleInput.value = illustration.title;
+            illustrationImageUrlInput.value = illustration.imageUrl || '';
+            illustrationStatusSelect.value = illustration.status;
+            illustrationNotesTextarea.value = illustration.notes || '';
+            document.getElementById('illustrationModalTitle').textContent = 'Editar Ilustración';
+            openModal(illustrationModal, openerElement);
+        }
+
+        // ELIMINADO: function showComments(illustrationId, openerElement) { ... }
+
+        // ELIMINADO: function handleCommentSubmit(e) { ... }
+
+        function showDeleteModal(type, id, name, openerElement) {
+            deleteType = type;
+            deleteId = id;
+            deleteMessage.textContent = `¿Estás seguro de que quieres eliminar ${name}? Esta acción no se puede deshacer.`;
+            openModal(deleteModal, openerElement);
+        }
+
+        function confirmDelete() {
+             if (!deleteType || !deleteId) return;
+            if (deleteType === 'project') {
+                projects = projects.filter(p => p.id !== deleteId);
+                if (currentProjectId === deleteId) {
+                    currentProjectId = null;
+                    currentProjectTitle.textContent = 'Selecciona un proyecto para empezar';
+                    newIllustrationBtn.classList.add('hidden');
+                    illustrationGrid.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    illustrationGrid.innerHTML = '';
+                }
+            } else if (deleteType === 'illustration' && currentProjectId) {
+                const project = projects.find(p => p.id === currentProjectId);
+                if (project?.illustrations) {
+                    project.illustrations = project.illustrations.filter(i => i.id !== deleteId);
+                }
+            }
+            saveData();
+            closeModal(deleteModal);
+            if (deleteType === 'project') {
+                renderProjectList();
+            } else if (currentProjectId) {
+                renderIllustrations(currentProjectId);
+            }
+            deleteType = null;
+            deleteId = null;
+        }
+
+        // --- Configuración Inicial de Listeners ---
+        function setupEventListeners() {
+            // Botón Nuevo Proyecto
+            newProjectBtn.addEventListener('click', () => {
+                projectForm.reset();
+                document.getElementById('projectModalTitle').textContent = 'Crear Nuevo Proyecto';
+                openModal(projectModal, newProjectBtn);
+            });
+            document.getElementById('closeProjectModal').addEventListener('click', () => closeModal(projectModal));
+            document.getElementById('cancelProjectBtn').addEventListener('click', () => closeModal(projectModal));
+            projectForm.addEventListener('submit', handleProjectSubmit);
+
+            // Botón Nueva Ilustración
+            newIllustrationBtn.addEventListener('click', () => {
+                illustrationForm.reset();
+                illustrationIdInput.value = '';
+                document.getElementById('illustrationModalTitle').textContent = 'Añadir Nueva Ilustración';
+                openModal(illustrationModal, newIllustrationBtn);
+            });
+            document.getElementById('closeIllustrationModal').addEventListener('click', () => closeModal(illustrationModal));
+            document.getElementById('cancelIllustrationBtn').addEventListener('click', () => closeModal(illustrationModal));
+            illustrationForm.addEventListener('submit', handleIllustrationSubmit);
+
+            // ELIMINADO: Listeners del Modal Comentarios
+            // document.getElementById('closeCommentsModal').addEventListener('click', () => closeModal(commentsModal));
+            // document.getElementById('cancelCommentBtn').addEventListener('click', () => closeModal(commentsModal));
+            // commentForm.addEventListener('submit', handleCommentSubmit);
+
+            // Modal Eliminación
+            document.getElementById('closeDeleteModal').addEventListener('click', () => closeModal(deleteModal));
+            document.getElementById('cancelDeleteBtn').addEventListener('click', () => closeModal(deleteModal));
+            document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+
+            // Cerrar modales con Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (!projectModal.classList.contains('hidden')) closeModal(projectModal);
+                    if (!illustrationModal.classList.contains('hidden')) closeModal(illustrationModal);
+                    // ELIMINADO: if (!commentsModal.classList.contains('hidden')) closeModal(commentsModal);
+                    if (!deleteModal.classList.contains('hidden')) closeModal(deleteModal);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
