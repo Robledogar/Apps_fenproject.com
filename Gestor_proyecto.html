@@ -90,11 +90,11 @@
                 <p class="text-lg">Selecciona un proyecto para ver sus ilustraciones</p>
                 <p class="text-sm mt-2">o crea un nuevo proyecto para empezar</p>
             </div>
-            <div id="illustrationGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="illustrationGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"></div>
         </main>
     </div>
 
-    <!-- Modal Nuevo Proyecto -->
+    <!-- Modales -->
     <div id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
             <div class="p-6">
@@ -118,7 +118,6 @@
         </div>
     </div>
 
-    <!-- Modal Nueva/Editar Ilustración -->
     <div id="illustrationModal" role="dialog" aria-modal="true" aria-labelledby="illustrationModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
             <div class="p-6">
@@ -160,7 +159,6 @@
         </div>
     </div>
 
-    <!-- Modal Confirmar Eliminación -->
     <div id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
             <div class="p-6">
@@ -197,12 +195,10 @@
 
         const projectModal = document.getElementById('projectModal');
         const illustrationModal = document.getElementById('illustrationModal');
-        // ELIMINADO: const commentsModal = document.getElementById('commentsModal');
         const deleteModal = document.getElementById('deleteModal');
 
         const projectForm = document.getElementById('projectForm');
         const illustrationForm = document.getElementById('illustrationForm');
-        // ELIMINADO: const commentForm = document.getElementById('commentForm');
 
         const projectNameInput = document.getElementById('projectName');
         const illustrationIdInput = document.getElementById('illustrationId');
@@ -210,14 +206,17 @@
         const illustrationImageUrlInput = document.getElementById('illustrationImageUrl');
         const illustrationStatusSelect = document.getElementById('illustrationStatus');
         const illustrationNotesTextarea = document.getElementById('illustrationNotes');
-        // ELIMINADO: const currentCommentIllustrationIdInput = document.getElementById('currentCommentIllustrationId');
-        // ELIMINADO: const newCommentTextarea = document.getElementById('newComment');
         const deleteMessage = document.getElementById('deleteMessage');
 
         // --- Inicialización ---
         document.addEventListener('DOMContentLoaded', () => {
             renderProjectList();
             setupEventListeners();
+            // Si hay un proyecto guardado, intenta cargarlo
+            const lastProjectId = localStorage.getItem('lastSelectedProjectId_es');
+            if (lastProjectId && projects.some(p => p.id === lastProjectId)) {
+                selectProject(lastProjectId);
+            }
         });
 
         // --- Funciones Auxiliares ---
@@ -227,6 +226,12 @@
 
         function saveData() {
             localStorage.setItem('storybookProjects_es', JSON.stringify(projects));
+            // Guarda el último proyecto seleccionado
+            if (currentProjectId) {
+                 localStorage.setItem('lastSelectedProjectId_es', currentProjectId);
+            } else {
+                 localStorage.removeItem('lastSelectedProjectId_es');
+            }
         }
 
         function openModal(modalElement, openerElement) {
@@ -298,14 +303,14 @@
 
             project.illustrations.forEach(illustration => {
                 const illustrationCard = document.createElement('div');
-                illustrationCard.className = 'bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col';
+                illustrationCard.className = 'bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full';
 
-                // ELIMINADO: const commentCount = illustration.comments ? illustration.comments.length : 0;
                 const statusClass = getStatusClass(illustration.status);
-                const imageUrl = illustration.imageUrl || `https://via.placeholder.com/300x200/e0e7ff/4f46e5?text=${encodeURIComponent(illustration.title || 'Ilustración')}`;
+                const placeholderText = encodeURIComponent(illustration.title || 'Ilustración');
+                const imageUrl = illustration.imageUrl || `https://via.placeholder.com/400x300/e0e7ff/4f46e5?text=${placeholderText}`;
 
                 illustrationCard.innerHTML = `
-                    <div class="p-4 flex-grow">
+                    <div class="p-4 flex-grow flex flex-col">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-semibold text-gray-800 truncate pr-2">${illustration.title}</h3>
                             <div class="flex space-x-1 flex-shrink-0">
@@ -317,14 +322,15 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="bg-gray-100 rounded-md mb-3 flex items-center justify-center aspect-video overflow-hidden">
-                            <img src="${imageUrl}" alt="Miniatura de ${illustration.title}" class="h-full w-full object-cover" loading="lazy">
+                        <div class="bg-gray-100 rounded-md mb-3 overflow-hidden">
+                            <img src="${imageUrl}" alt="Miniatura de ${illustration.title}" class="w-full h-auto block" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=Error+Carga'; this.classList.add('object-contain');">
                         </div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="${statusClass}">${illustration.status}</span>
-                            <!-- ELIMINADO: Sección de botón/texto de comentarios -->
+                        <div class="mt-auto pt-2">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="${statusClass}">${illustration.status}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-3 break-words">${illustration.notes || 'Sin notas'}</p>
                         </div>
-                        <p class="text-sm text-gray-600 line-clamp-2 break-words">${illustration.notes || 'Sin notas'}</p>
                     </div>
                 `;
 
@@ -335,12 +341,6 @@
                 deleteBtn.addEventListener('click', () => {
                     showDeleteModal('illustration', illustration.id, `la ilustración "${illustration.title}"`, deleteBtn);
                 });
-
-                // ELIMINADO: Listener para el botón de comentarios
-                // const commentsBtn = illustrationCard.querySelector('.view-comments-btn');
-                // if (commentsBtn) {
-                //     commentsBtn.addEventListener('click', () => showComments(illustration.id, commentsBtn));
-                // }
 
                 illustrationGrid.appendChild(illustrationCard);
             });
@@ -360,7 +360,6 @@
 
         // --- Lógica de Manejo de Acciones ---
         function selectProject(projectId) {
-             if (currentProjectId === projectId) return;
             currentProjectId = projectId;
             const project = projects.find(p => p.id === projectId);
             if (!project) {
@@ -370,12 +369,14 @@
                 illustrationGrid.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 illustrationGrid.innerHTML = '';
+                saveData();
                 renderProjectList();
                 return;
             }
             currentProjectTitle.textContent = project.name;
             newIllustrationBtn.classList.remove('hidden');
             renderIllustrations(projectId);
+            saveData();
             renderProjectList();
         }
 
@@ -385,7 +386,6 @@
             if (!name) return;
             const newProject = { id: generateId(), name: name, illustrations: [] };
             projects.push(newProject);
-            saveData();
             closeModal(projectModal);
             renderProjectList();
             selectProject(newProject.id);
@@ -403,18 +403,20 @@
                 imageUrl: imageUrl,
                 status: illustrationStatusSelect.value,
                 notes: illustrationNotesTextarea.value.trim(),
-                // ELIMINADO: comments: [] // Ya no inicializamos ni mantenemos comentarios
             };
 
-            if (!illustrationData.title) return;
-            const existingIndex = project.illustrations ? project.illustrations.findIndex(i => i.id === illustrationData.id) : -1;
+            if (!illustrationData.title) {
+                illustrationTitleInput.focus();
+                return;
+            }
+
+            if (!project.illustrations) project.illustrations = [];
+
+            const existingIndex = project.illustrations.findIndex(i => i.id === illustrationData.id);
 
             if (existingIndex >= 0) {
-                // Editar: Sobrescribir ilustración existente (sin campo comments)
                 project.illustrations[existingIndex] = illustrationData;
             } else {
-                // Crear: Añadir nueva ilustración (sin campo comments)
-                if (!project.illustrations) project.illustrations = [];
                 project.illustrations.push(illustrationData);
             }
             saveData();
@@ -436,10 +438,6 @@
             openModal(illustrationModal, openerElement);
         }
 
-        // ELIMINADO: function showComments(illustrationId, openerElement) { ... }
-
-        // ELIMINADO: function handleCommentSubmit(e) { ... }
-
         function showDeleteModal(type, id, name, openerElement) {
             deleteType = type;
             deleteId = id;
@@ -449,29 +447,43 @@
 
         function confirmDelete() {
              if (!deleteType || !deleteId) return;
+             let projectModified = false;
+
             if (deleteType === 'project') {
                 projects = projects.filter(p => p.id !== deleteId);
                 if (currentProjectId === deleteId) {
                     currentProjectId = null;
-                    currentProjectTitle.textContent = 'Selecciona un proyecto para empezar';
-                    newIllustrationBtn.classList.add('hidden');
-                    illustrationGrid.classList.add('hidden');
-                    emptyState.classList.remove('hidden');
-                    illustrationGrid.innerHTML = '';
                 }
+                 projectModified = true;
             } else if (deleteType === 'illustration' && currentProjectId) {
                 const project = projects.find(p => p.id === currentProjectId);
                 if (project?.illustrations) {
+                    const initialLength = project.illustrations.length;
                     project.illustrations = project.illustrations.filter(i => i.id !== deleteId);
+                    if (project.illustrations.length !== initialLength) {
+                        projectModified = true;
+                    }
                 }
             }
-            saveData();
+
             closeModal(deleteModal);
-            if (deleteType === 'project') {
-                renderProjectList();
-            } else if (currentProjectId) {
-                renderIllustrations(currentProjectId);
+
+            if (projectModified) {
+                 saveData();
+                if (deleteType === 'project') {
+                    renderProjectList();
+                    if (currentProjectId === null) {
+                        currentProjectTitle.textContent = 'Selecciona un proyecto para empezar';
+                        newIllustrationBtn.classList.add('hidden');
+                        illustrationGrid.classList.add('hidden');
+                        emptyState.classList.remove('hidden');
+                        illustrationGrid.innerHTML = '';
+                    }
+                } else if (currentProjectId) {
+                    renderIllustrations(currentProjectId);
+                }
             }
+
             deleteType = null;
             deleteId = null;
         }
@@ -492,17 +504,16 @@
             newIllustrationBtn.addEventListener('click', () => {
                 illustrationForm.reset();
                 illustrationIdInput.value = '';
+                illustrationTitleInput.value = '';
+                illustrationImageUrlInput.value = '';
+                illustrationStatusSelect.value = 'Pendiente';
+                illustrationNotesTextarea.value = '';
                 document.getElementById('illustrationModalTitle').textContent = 'Añadir Nueva Ilustración';
                 openModal(illustrationModal, newIllustrationBtn);
             });
             document.getElementById('closeIllustrationModal').addEventListener('click', () => closeModal(illustrationModal));
             document.getElementById('cancelIllustrationBtn').addEventListener('click', () => closeModal(illustrationModal));
             illustrationForm.addEventListener('submit', handleIllustrationSubmit);
-
-            // ELIMINADO: Listeners del Modal Comentarios
-            // document.getElementById('closeCommentsModal').addEventListener('click', () => closeModal(commentsModal));
-            // document.getElementById('cancelCommentBtn').addEventListener('click', () => closeModal(commentsModal));
-            // commentForm.addEventListener('submit', handleCommentSubmit);
 
             // Modal Eliminación
             document.getElementById('closeDeleteModal').addEventListener('click', () => closeModal(deleteModal));
@@ -514,7 +525,6 @@
                 if (e.key === 'Escape') {
                     if (!projectModal.classList.contains('hidden')) closeModal(projectModal);
                     if (!illustrationModal.classList.contains('hidden')) closeModal(illustrationModal);
-                    // ELIMINADO: if (!commentsModal.classList.contains('hidden')) closeModal(commentsModal);
                     if (!deleteModal.classList.contains('hidden')) closeModal(deleteModal);
                 }
             });
