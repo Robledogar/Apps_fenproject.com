@@ -7,55 +7,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS Personalizado para etiquetas de estado */
-        .status-badge {
-            padding: 0.25rem 0.5rem; /* px-2 py-1 */
-            border-radius: 9999px; /* rounded-full */
-            font-size: 0.75rem; /* text-xs */
-            font-weight: 600; /* font-semibold */
-            line-height: 1rem;
-        }
-        .status-pendiente {
-            background-color: #e5e7eb; /* bg-gray-200 */
-            color: #1f2937; /* text-gray-800 */
-        }
-        .status-en-proceso {
-            background-color: #dbeafe; /* bg-blue-100 */
-            color: #1e40af; /* text-blue-800 */
-        }
-        .status-en-revision {
-            background-color: #ffedd5; /* bg-orange-100 */
-            color: #9a3412; /* text-orange-800 */
-        }
-        .status-aprobado {
-            background-color: #d1fae5; /* bg-green-100 */
-            color: #065f46; /* text-green-800 */
-        }
-
-        /* Barra de desplazamiento personalizada (solo WebKit/Blink) */
+        /* ... (Estilos CSS existentes sin cambios) ... */
+        .status-badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; line-height: 1rem; }
+        .status-pendiente { background-color: #e5e7eb; color: #1f2937; }
+        .status-en-proceso { background-color: #dbeafe; color: #1e40af; }
+        .status-en-revision { background-color: #ffedd5; color: #9a3412; }
+        .status-aprobado { background-color: #d1fae5; color: #065f46; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background-color: #f3f4f6; /* bg-gray-100 */ }
-        ::-webkit-scrollbar-thumb { background-color: #bfdbfe; border-radius: 9999px; /* bg-blue-200 rounded-full */ }
-        ::-webkit-scrollbar-thumb:hover { background-color: #93c5fd; /* bg-blue-300 */ }
-
-        /* Animación para modales */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        ::-webkit-scrollbar-track { background-color: #f3f4f6; }
+        ::-webkit-scrollbar-thumb { background-color: #bfdbfe; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #93c5fd; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .modal-animation { animation: fadeIn 0.2s ease-out; }
-
-        /* Ocultar elementos */
         .hidden { display: none; }
+
+        /* Estilo para la previsualización de imagen */
+        #imagePreviewContainer {
+            max-height: 150px; /* Límite de altura para la previsualización */
+            overflow: hidden;
+            margin-top: 0.5rem; /* my-2 */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        #imagePreview {
+            display: block;
+            max-width: 100%;
+            max-height: 148px; /* Ligeramente menor que el contenedor */
+            object-fit: contain; /* Para ver toda la imagen */
+            margin: auto; /* Centrar */
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans flex h-screen overflow-hidden">
-    <!-- Barra Lateral -->
+    <!-- Barra Lateral (sin cambios) -->
     <div class="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
         <div class="p-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-indigo-700 flex items-center">
-                <i class="fas fa-book-open mr-2" aria-hidden="true"></i>
-                Illustrator Hub
+                <i class="fas fa-book-open mr-2" aria-hidden="true"></i> Illustrator Hub
             </h1>
         </div>
         <div class="p-4 border-b border-gray-200">
@@ -72,18 +60,16 @@
         </div>
     </div>
 
-    <!-- Contenido Principal -->
+    <!-- Contenido Principal (sin cambios estructurales, solo el id del grid) -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Cabecera -->
         <header class="bg-white border-b border-gray-200 p-4">
-            <div class="flex justify-between items-center">
+             <div class="flex justify-between items-center">
                 <h2 id="currentProjectTitle" class="text-lg font-semibold text-gray-800">Selecciona un proyecto para empezar</h2>
                 <button id="newIllustrationBtn" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center transition-colors">
                     <i class="fas fa-plus mr-2" aria-hidden="true"></i> Añadir Ilustración
                 </button>
             </div>
         </header>
-        <!-- Cuadrícula de Ilustraciones -->
         <main id="illustrationContent" class="flex-1 overflow-y-auto p-6 bg-gray-50">
             <div id="emptyState" class="h-full flex flex-col items-center justify-center text-gray-400">
                 <i class="fas fa-book-reader text-5xl mb-4" aria-hidden="true"></i>
@@ -94,8 +80,8 @@
         </main>
     </div>
 
-    <!-- Modales -->
-    <div id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <!-- Modal Nuevo Proyecto (sin cambios) -->
+     <div id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
@@ -118,6 +104,7 @@
         </div>
     </div>
 
+    <!-- Modal Nueva/Editar Ilustración (MODIFICADO) -->
     <div id="illustrationModal" role="dialog" aria-modal="true" aria-labelledby="illustrationModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
             <div class="p-6">
@@ -133,10 +120,24 @@
                         <label for="illustrationTitle" class="block text-sm font-medium text-gray-700 mb-1">Título/Descripción</label>
                         <input type="text" id="illustrationTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
+
+                   
                     <div>
                         <label for="illustrationImageUrl" class="block text-sm font-medium text-gray-700 mb-1">URL de la Imagen (Opcional)</label>
                         <input type="url" id="illustrationImageUrl" placeholder="https://ejemplo.com/imagen.jpg" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
+                     <div class="text-center text-sm text-gray-500 my-2">O</div>
+                    <div>
+                        <label for="illustrationImageFile" class="block text-sm font-medium text-gray-700 mb-1">Subir Archivo (Opcional)</label>
+                        <input type="file" id="illustrationImageFile" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <!-- <p class="mt-1 text-xs text-gray-500">Prioridad sobre la URL. Límite de tamaño por `localStorage`.</p> -->
+                     
+                        <div id="imagePreviewContainer" class="hidden">
+                             <img id="imagePreview" src="#" alt="Previsualización de imagen" />
+                        </div>
+                    </div>
+                   
+
                     <div>
                         <label for="illustrationStatus" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                         <select id="illustrationStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -159,9 +160,10 @@
         </div>
     </div>
 
+    <!-- Modal Confirmar Eliminación (sin cambios) -->
     <div id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md modal-animation">
-            <div class="p-6">
+             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 id="deleteModalTitle" class="text-lg font-semibold text-gray-800">Confirmar Eliminación</h3>
                     <button id="closeDeleteModal" aria-label="Cerrar modal" class="text-gray-400 hover:text-gray-500">
@@ -204,15 +206,17 @@
         const illustrationIdInput = document.getElementById('illustrationId');
         const illustrationTitleInput = document.getElementById('illustrationTitle');
         const illustrationImageUrlInput = document.getElementById('illustrationImageUrl');
+        const illustrationImageFileInput = document.getElementById('illustrationImageFile'); // Nuevo
         const illustrationStatusSelect = document.getElementById('illustrationStatus');
         const illustrationNotesTextarea = document.getElementById('illustrationNotes');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer'); // Nuevo
+        const imagePreview = document.getElementById('imagePreview'); // Nuevo
         const deleteMessage = document.getElementById('deleteMessage');
 
         // --- Inicialización ---
         document.addEventListener('DOMContentLoaded', () => {
             renderProjectList();
             setupEventListeners();
-            // Si hay un proyecto guardado, intenta cargarlo
             const lastProjectId = localStorage.getItem('lastSelectedProjectId_es');
             if (lastProjectId && projects.some(p => p.id === lastProjectId)) {
                 selectProject(lastProjectId);
@@ -225,12 +229,17 @@
         }
 
         function saveData() {
-            localStorage.setItem('storybookProjects_es', JSON.stringify(projects));
-            // Guarda el último proyecto seleccionado
-            if (currentProjectId) {
-                 localStorage.setItem('lastSelectedProjectId_es', currentProjectId);
-            } else {
-                 localStorage.removeItem('lastSelectedProjectId_es');
+            try {
+                localStorage.setItem('storybookProjects_es', JSON.stringify(projects));
+                if (currentProjectId) {
+                    localStorage.setItem('lastSelectedProjectId_es', currentProjectId);
+                } else {
+                    localStorage.removeItem('lastSelectedProjectId_es');
+                }
+            } catch (e) {
+                console.error("Error al guardar en localStorage:", e);
+                // Podríamos notificar al usuario aquí que el almacenamiento está lleno.
+                alert("Error: No se pudo guardar. Es posible que el almacenamiento local esté lleno.");
             }
         }
 
@@ -245,10 +254,32 @@
 
         function closeModal(modalElement) {
             modalElement.classList.add('hidden');
+             // Limpiar input de archivo y previsualización al cerrar CUALQUIER modal (más seguro)
+             // O específicamente el de ilustración si se quiere más control
+             if (modalElement.id === 'illustrationModal') {
+                 resetImagePreview();
+             }
             if (lastFocusedElement) {
                 lastFocusedElement.focus();
                 lastFocusedElement = null;
             }
+        }
+
+        // NUEVA: Función para leer archivo como Data URL (devuelve Promise)
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // NUEVA: Función para resetear previsualización y file input
+        function resetImagePreview() {
+            illustrationImageFileInput.value = null; // Limpiar selección de archivo
+            imagePreview.src = '#';
+            imagePreviewContainer.classList.add('hidden');
         }
 
         // --- Lógica de Renderizado ---
@@ -289,7 +320,7 @@
             const project = projects.find(p => p.id === projectId);
 
             if (!project || !project.illustrations || project.illustrations.length === 0) {
-                illustrationGrid.innerHTML = `
+                 illustrationGrid.innerHTML = `
                     <div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-12">
                         <i class="fas fa-paint-brush text-5xl mb-4" aria-hidden="true"></i>
                         <p class="text-lg">Aún no hay ilustraciones</p>
@@ -306,8 +337,12 @@
                 illustrationCard.className = 'bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full';
 
                 const statusClass = getStatusClass(illustration.status);
+                // La URL puede ser una URL normal o un Data URL
                 const placeholderText = encodeURIComponent(illustration.title || 'Ilustración');
+                 // Usar un placeholder si no hay imageUrl (sea URL o Data URL)
                 const imageUrl = illustration.imageUrl || `https://via.placeholder.com/400x300/e0e7ff/4f46e5?text=${placeholderText}`;
+                const defaultPlaceholderOnError = 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=Error+o+Sin+Imagen';
+
 
                 illustrationCard.innerHTML = `
                     <div class="p-4 flex-grow flex flex-col">
@@ -323,7 +358,7 @@
                             </div>
                         </div>
                         <div class="bg-gray-100 rounded-md mb-3 overflow-hidden">
-                            <img src="${imageUrl}" alt="Miniatura de ${illustration.title}" class="w-full h-auto block" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=Error+Carga'; this.classList.add('object-contain');">
+                            <img src="${imageUrl}" alt="Miniatura de ${illustration.title}" class="w-full h-auto block" loading="lazy" onerror="this.onerror=null; this.src='${defaultPlaceholderOnError}'; this.classList.add('object-contain');">
                         </div>
                         <div class="mt-auto pt-2">
                             <div class="flex items-center justify-between mb-3">
@@ -391,22 +426,39 @@
             selectProject(newProject.id);
         }
 
-        function handleIllustrationSubmit(e) {
+        // MODIFICADO: Hacer async y manejar archivo
+        async function handleIllustrationSubmit(e) {
             e.preventDefault();
             if (!currentProjectId) return;
             const project = projects.find(p => p.id === currentProjectId);
             if (!project) return;
-            const imageUrl = illustrationImageUrlInput.value.trim();
+
+            const file = illustrationImageFileInput.files[0];
+            let finalImageUrl = illustrationImageUrlInput.value.trim(); // Empezar con la URL
+
+            // Si se seleccionó un archivo, leerlo y usarlo (tiene prioridad)
+            if (file) {
+                try {
+                    finalImageUrl = await readFileAsDataURL(file); // Esperar a que se lea
+                } catch (error) {
+                    console.error("Error leyendo el archivo:", error);
+                    alert("Hubo un error al procesar el archivo de imagen.");
+                    return; // Detener si hay error de lectura
+                }
+            }
+
             const illustrationData = {
                 id: illustrationIdInput.value || generateId(),
                 title: illustrationTitleInput.value.trim(),
-                imageUrl: imageUrl,
+                // Usar finalImageUrl (Data URL si se subió archivo, si no, el valor del input URL)
+                imageUrl: finalImageUrl || null, // Guardar null si ambos están vacíos
                 status: illustrationStatusSelect.value,
                 notes: illustrationNotesTextarea.value.trim(),
             };
 
             if (!illustrationData.title) {
                 illustrationTitleInput.focus();
+                // Podríamos añadir una indicación visual de error aquí
                 return;
             }
 
@@ -419,21 +471,39 @@
             } else {
                 project.illustrations.push(illustrationData);
             }
-            saveData();
-            closeModal(illustrationModal);
-            renderIllustrations(currentProjectId);
+
+            saveData(); // Intentar guardar (puede fallar si es muy grande)
+            closeModal(illustrationModal); // Cierra el modal (esto también limpia el preview ahora)
+            renderIllustrations(currentProjectId); // Renderizar con la nueva imagen
         }
 
+        // MODIFICADO: Manejar previsualización al editar
         function editIllustration(illustrationId, openerElement) {
             const project = projects.find(p => p.id === currentProjectId);
             const illustration = project?.illustrations?.find(i => i.id === illustrationId);
             if (!illustration) return;
-            illustrationForm.reset();
+
+            illustrationForm.reset(); // Resetea campos normales
+            resetImagePreview(); // Resetea campo de archivo y preview
+
             illustrationIdInput.value = illustration.id;
             illustrationTitleInput.value = illustration.title;
-            illustrationImageUrlInput.value = illustration.imageUrl || '';
+            // Si la URL guardada NO es un Data URL, ponerla en el input de URL.
+            // Si es un Data URL, el input de URL queda vacío (porque no se puede revertir).
+             if (illustration.imageUrl && !illustration.imageUrl.startsWith('data:image')) {
+                 illustrationImageUrlInput.value = illustration.imageUrl;
+             } else {
+                 illustrationImageUrlInput.value = ''; // Limpiar si es Data URL o no hay URL
+             }
             illustrationStatusSelect.value = illustration.status;
             illustrationNotesTextarea.value = illustration.notes || '';
+
+            // Mostrar la imagen existente (URL o Data URL) en la previsualización
+            if (illustration.imageUrl) {
+                imagePreview.src = illustration.imageUrl;
+                imagePreviewContainer.classList.remove('hidden');
+            }
+
             document.getElementById('illustrationModalTitle').textContent = 'Editar Ilustración';
             openModal(illustrationModal, openerElement);
         }
@@ -447,28 +517,27 @@
 
         function confirmDelete() {
              if (!deleteType || !deleteId) return;
-             let projectModified = false;
+             let dataChanged = false;
 
             if (deleteType === 'project') {
+                const initialLength = projects.length;
                 projects = projects.filter(p => p.id !== deleteId);
+                if (projects.length !== initialLength) dataChanged = true;
                 if (currentProjectId === deleteId) {
                     currentProjectId = null;
                 }
-                 projectModified = true;
             } else if (deleteType === 'illustration' && currentProjectId) {
                 const project = projects.find(p => p.id === currentProjectId);
                 if (project?.illustrations) {
                     const initialLength = project.illustrations.length;
                     project.illustrations = project.illustrations.filter(i => i.id !== deleteId);
-                    if (project.illustrations.length !== initialLength) {
-                        projectModified = true;
-                    }
+                     if (project.illustrations.length !== initialLength) dataChanged = true;
                 }
             }
 
             closeModal(deleteModal);
 
-            if (projectModified) {
+            if (dataChanged) {
                  saveData();
                 if (deleteType === 'project') {
                     renderProjectList();
@@ -500,20 +569,42 @@
             document.getElementById('cancelProjectBtn').addEventListener('click', () => closeModal(projectModal));
             projectForm.addEventListener('submit', handleProjectSubmit);
 
-            // Botón Nueva Ilustración
+            // Botón Nueva Ilustración (MODIFICADO)
             newIllustrationBtn.addEventListener('click', () => {
                 illustrationForm.reset();
+                resetImagePreview(); // Asegurar que el input de archivo y preview estén limpios
                 illustrationIdInput.value = '';
-                illustrationTitleInput.value = '';
-                illustrationImageUrlInput.value = '';
-                illustrationStatusSelect.value = 'Pendiente';
-                illustrationNotesTextarea.value = '';
+                illustrationStatusSelect.value = 'Pendiente'; // Estado por defecto
                 document.getElementById('illustrationModalTitle').textContent = 'Añadir Nueva Ilustración';
                 openModal(illustrationModal, newIllustrationBtn);
             });
+
+            // Modal Ilustración (MODIFICADO)
             document.getElementById('closeIllustrationModal').addEventListener('click', () => closeModal(illustrationModal));
             document.getElementById('cancelIllustrationBtn').addEventListener('click', () => closeModal(illustrationModal));
-            illustrationForm.addEventListener('submit', handleIllustrationSubmit);
+            illustrationForm.addEventListener('submit', handleIllustrationSubmit); // Ya es async
+
+            // NUEVO: Listener para el input de archivo para actualizar preview
+            illustrationImageFileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    try {
+                        const dataUrl = await readFileAsDataURL(file);
+                        imagePreview.src = dataUrl;
+                        imagePreviewContainer.classList.remove('hidden');
+                         // Opcional: Limpiar el campo URL si se selecciona un archivo
+                         // illustrationImageUrlInput.value = '';
+                    } catch (error) {
+                        console.error("Error al previsualizar archivo:", error);
+                        resetImagePreview();
+                        alert("No se pudo previsualizar el archivo seleccionado.");
+                    }
+                } else {
+                    // Si se deselecciona el archivo (aunque raro en UI), ocultar preview
+                    resetImagePreview();
+                }
+            });
+
 
             // Modal Eliminación
             document.getElementById('closeDeleteModal').addEventListener('click', () => closeModal(deleteModal));
