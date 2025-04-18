@@ -8,176 +8,214 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            overscroll-behavior: none; /* Evita scroll "bounce" en algunos navegadores */
+            overscroll-behavior: none;
         }
         .canvas-container {
             width: 100%;
-            height: calc(100vh - 120px); /* Ajusta altura según header/footer */
+            height: calc(100vh - 120px);
             position: relative;
-            overflow: hidden; /* Importante para contener las tarjetas */
+            overflow: hidden;
             background-color: #f5f5f5;
             background-image: linear-gradient(#e5e5e5 1px, transparent 1px),
                               linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        /* Contenedor interno para aplicar zoom sin afectar scrollbars del outer container */
         .canvas-content {
             position: absolute;
             width: 100%;
             height: 100%;
-            transform-origin: top left; /* Punto de origen para el zoom */
+            transform-origin: top left;
             transition: transform 0.2s ease-out;
+            /* Asegura que el SVG esté debajo de las tarjetas */
+            z-index: 1;
         }
+        #connection-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permite clicks a través del SVG a las tarjetas */
+            z-index: 5; /* Encima del fondo, debajo de las tarjetas */
+        }
+        #connection-svg line {
+            stroke: #94a3b8; /* slate-400 */
+            stroke-width: 2;
+            cursor: pointer; /* Cursor para indicar que se puede hacer clic */
+            pointer-events: stroke; /* Permite hacer clic solo en la línea, no en el espacio vacío */
+            transition: stroke 0.2s, stroke-width 0.2s;
+        }
+         #connection-svg line:hover {
+             stroke: #ef4444; /* red-500 */
+             stroke-width: 4;
+         }
 
         .card {
             position: absolute;
-            min-width: 200px;
-            max-width: 300px; /* Añadir un max-width */
+            min-width: 150px; /* Reducido min-width para mejor redimensionamiento */
+            min-height: 100px; /* Reducido min-height */
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             cursor: move;
             transition: box-shadow 0.2s;
-            overflow: hidden;
+            overflow: visible; /* Cambiado a visible para que el handle no se corte */
             display: flex;
             flex-direction: column;
-            min-height: 100px; /* Asegurar altura mínima */
-            z-index: 10; /* Por defecto */
+            z-index: 10;
+            border: 1px solid #e5e5e5; /* Borde ligero */
+            /* Defaults si no hay tamaño guardado */
+            width: 250px;
+            height: 180px;
         }
 
         .card.dragging {
-            z-index: 1000; /* Asegura que la tarjeta arrastrada esté por encima */
+            z-index: 1000;
             cursor: grabbing;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
+         .card.resizing {
+             z-index: 1000; /* También al frente durante el redimensionamiento */
+             cursor: nwse-resize; /* Cursor de redimensionamiento */
+             user-select: none; /* Evitar selección de texto mientras se redimensiona */
+         }
 
         .card-header {
-            padding: 8px 12px;
+            padding: 6px 10px; /* Ligeramente reducido */
             border-bottom: 1px solid #eee;
             font-weight: 600;
-            background-color: rgba(240, 240, 240, 0.7); /* Ligero fondo para diferenciar */
+            background-color: rgba(240, 240, 240, 0.8); /* Más transparente */
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: grab; /* Cursor para indicar que esta área mueve */
         }
+        .card:active .card-header {
+            cursor: grabbing;
+        }
+
          .card-header-title {
              flex-grow: 1;
              margin-right: 8px;
+             font-size: 14px; /* Ligeramente reducido */
+             white-space: nowrap; /* Evitar salto de línea */
+             overflow: hidden;
+             text-overflow: ellipsis;
          }
-         .card-delete-btn {
+         .card-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px; /* Espacio entre iconos */
+         }
+
+         .card-control-btn {
              cursor: pointer;
              color: #999;
-             font-size: 14px;
-             padding: 2px 4px;
+             font-size: 12px; /* Iconos más pequeños */
+             padding: 2px;
+             line-height: 1;
+         }
+         .card-control-btn:hover {
+             color: #333;
          }
          .card-delete-btn:hover {
              color: #ef4444; /* red-500 */
          }
+         .card-connect-btn:hover {
+             color: #3b82f6; /* blue-500 */
+         }
+         .card-color-btn:hover {
+             opacity: 0.8;
+         }
 
         .card-body {
             padding: 8px 12px;
-            font-size: 14px;
-            flex-grow: 1; /* Para que ocupe el espacio disponible */
-            overflow-y: auto; /* Scroll si el contenido es largo */
-            max-height: 150px; /* Limitar altura del cuerpo */
+            font-size: 13px; /* Reducido */
+            flex-grow: 1;
+            overflow: hidden; /* Ocultar overflow por defecto */
+            display: flex; /* Usar flex para que el textarea crezca */
+            flex-direction: column;
         }
 
         .card textarea {
             width: 100%;
-            border: 1px solid #eee;
-            padding: 4px;
+            border: none; /* Sin borde por defecto */
+            padding: 0;
             font-size: 13px;
-            min-height: 60px;
-            resize: vertical; /* Permitir redimensionar verticalmente */
+            flex-grow: 1; /* Hacer que el textarea ocupe el espacio */
+            resize: none; /* Deshabilitar resize nativo */
+            background-color: transparent; /* Heredar color de fondo */
+            min-height: 40px; /* Altura mínima del textarea */
+            outline: none; /* Quitar outline al enfocar */
         }
 
         .card-footer {
             padding: 4px 8px;
-            font-size: 12px;
+            font-size: 11px; /* Más pequeño */
             color: #666;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             border-top: 1px solid #eee;
+            flex-shrink: 0; /* Evitar que el footer se encoja */
         }
 
-        .tag {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-right: 4px;
-            margin-bottom: 4px; /* Espacio entre tags */
-            background-color: #e0e0e0;
-        }
-
-        .timeline-view, .outline-view {
-            padding: 20px;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .thumbnail {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            background-color: #eee; /* Placeholder */
-        }
-
-        .color-preview {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            border: 1px solid #ddd;
-        }
-
-        .zoom-controls {
+        /* Handle para redimensionar */
+        .resize-handle {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 50;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
+            bottom: -1px; /* Ligeramente fuera para mejor agarre */
+            right: -1px;
+            width: 12px;
+            height: 12px;
+            background-color: rgba(100, 100, 100, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 0 0 8px 0; /* Solo esquina inferior derecha redondeada */
+            cursor: nwse-resize;
+            z-index: 11; /* Encima de la tarjeta base */
         }
-
-        .zoom-btn {
-            padding: 8px 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .zoom-btn:hover {
-            background-color: #f0f0f0;
-        }
-
-        .zoom-btn:first-child {
-            border-bottom: 1px solid #eee;
-            border-radius: 8px 8px 0 0;
-        }
-         .zoom-btn:last-child {
-             border-radius: 0 0 8px 8px;
+         .resize-handle:hover {
+             background-color: rgba(50, 50, 50, 0.7);
          }
 
-        .canvas-scale {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(255,255,255,0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 50;
+        .color-picker-wrapper {
+            position: relative;
+            display: inline-block;
         }
-        /* Clases helper para ocultar/mostrar */
+        .card-color-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .native-color-picker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Oculto pero funcional */
+            cursor: pointer;
+            z-index: 12; /* Encima del botón visual */
+        }
+
+        /* Estilo para modo conexión */
+        body.connecting-mode {
+            cursor: crosshair; /* Cursor para indicar modo conexión */
+        }
+        .card.connection-candidate:hover {
+            outline: 2px dashed #3b82f6; /* Resaltar posible destino */
+            outline-offset: 2px;
+        }
+
+        /* --- Resto de estilos (timeline, outline, zoom, etc.) --- */
+        .timeline-view, .outline-view { padding: 20px; height: 100%; overflow-y: auto; }
+        .color-preview { width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin-right: 8px; border: 1px solid #ddd; }
+        .zoom-controls { position: absolute; bottom: 20px; right: 20px; z-index: 50; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .zoom-btn { padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 16px; }
+        .zoom-btn:hover { background-color: #f0f0f0; }
+        .zoom-btn:first-child { border-bottom: 1px solid #eee; border-radius: 8px 8px 0 0; }
+        .zoom-btn:last-child { border-radius: 0 0 8px 8px; }
+        .canvas-scale { position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.8); padding: 4px 8px; border-radius: 4px; font-size: 12px; z-index: 50; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -194,7 +232,6 @@
                     <i class="fas fa-check mr-2"></i> Guardado
                 </button>
                 <div class="relative">
-                     {/* BOTÓN DESCOMENTADO PARA SOLUCIONAR EL ERROR */}
                     <button id="view-dropdown-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center">
                         <i class="fas fa-eye mr-2"></i> Vista
                         <i class="fas fa-chevron-down ml-2 text-xs"></i>
@@ -217,35 +254,34 @@
         <div class="flex mb-4">
             <!-- Sidebar -->
             <div class="w-64 bg-white rounded-lg shadow-md p-4 mr-4 flex-shrink-0 flex flex-col">
-                <div>
+                 <div>
                     <h2 class="text-lg font-semibold mb-4">Herramientas</h2>
-
                     <div class="mb-6">
-                        <h3 class="text-sm font-medium text-gray-500 mb-2 uppercase">Añadir Tarjeta</h3> {/* Cambiado a mayúsculas por consistencia */}
-                        <button id="add-scene-btn" data-type="scene" class="add-card-btn w-full p-2 bg-blue-50 hover:bg-blue-100 rounded-md text-sm text-blue-700 mb-2 flex items-center">
-                            <i class="fas fa-film mr-2"></i> Añadir Escena
-                        </button>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2 uppercase">Añadir Tarjeta</h3>
                         <button id="add-chapter-btn" data-type="chapter" class="add-card-btn w-full p-2 bg-purple-50 hover:bg-purple-100 rounded-md text-sm text-purple-700 mb-2 flex items-center">
                             <i class="fas fa-book-open mr-2"></i> Añadir Capítulo
+                        </button>
+                        <button id="add-scene-btn" data-type="scene" class="add-card-btn w-full p-2 bg-blue-50 hover:bg-blue-100 rounded-md text-sm text-blue-700 mb-2 flex items-center">
+                            <i class="fas fa-film mr-2"></i> Añadir Escena
                         </button>
                         <button id="add-idea-btn" data-type="idea" class="add-card-btn w-full p-2 bg-green-50 hover:bg-green-100 rounded-md text-sm text-green-700 mb-2 flex items-center">
                             <i class="fas fa-lightbulb mr-2"></i> Añadir Idea
                         </button>
                     </div>
-                </div>
-
-                <div class="mt-auto">
-                    <button id="clear-storage-btn" class="w-full p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-md text-sm flex items-center justify-center">
-                        <i class="fas fa-trash-alt mr-2"></i> Limpiar Todo
-                    </button>
+                 </div>
+                 <div class="mt-auto">
+                     <button id="clear-storage-btn" class="w-full p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-md text-sm flex items-center justify-center">
+                         <i class="fas fa-trash-alt mr-2"></i> Limpiar Todo
+                     </button>
                  </div>
             </div>
 
             <!-- Canvas Area -->
             <div class="flex-1 relative">
-                <!-- Vistas Contenedoras -->
                 <div id="free-view" class="canvas-container active-view">
                     <div id="canvas-content-free" class="canvas-content">
+                         <!-- Capa SVG para las líneas -->
+                        <svg id="connection-svg"></svg>
                         <!-- Las tarjetas se añadirán aquí dinámicamente -->
                     </div>
                     <div class="zoom-controls">
@@ -254,401 +290,799 @@
                     </div>
                     <div id="canvas-scale-label" class="canvas-scale">100%</div>
                 </div>
-
-                <div id="timeline-view" class="canvas-container hidden">
-                    <div class="timeline-view">
-                        <p class="p-4 text-gray-500">Vista de Línea de Tiempo (Próximamente)</p>
-                    </div>
-                </div>
-
-                <div id="outline-view" class="canvas-container hidden">
-                     <div class="outline-view">
-                         <p class="p-4 text-gray-500">Vista de Esquema (Próximamente)</p>
-                    </div>
-                </div>
+                <div id="timeline-view" class="canvas-container hidden">/* ... */</div>
+                <div id="outline-view" class="canvas-container hidden">/* ... */</div>
             </div>
         </div>
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const STORAGE_KEY = 'storyCanvasData_v1'; // Clave para localStorage
-
-    // Referencias a elementos del DOM
-    const freeView = document.getElementById('free-view');
-    const timelineView = document.getElementById('timeline-view');
-    const outlineView = document.getElementById('outline-view');
-    const canvasContent = document.getElementById('canvas-content-free');
-    // Asegurarse de que el botón existe antes de intentar usarlo
-    const viewDropdownBtn = document.getElementById('view-dropdown-btn');
-    const viewDropdown = document.getElementById('view-dropdown');
-    const viewSwitchLinks = document.querySelectorAll('.view-switch');
-    const addCardButtons = document.querySelectorAll('.add-card-btn');
-    const zoomInBtn = document.getElementById('zoom-in');
-    const zoomOutBtn = document.getElementById('zoom-out');
-    const scaleLabel = document.getElementById('canvas-scale-label');
-    const clearStorageBtn = document.getElementById('clear-storage-btn');
-    const exportBtn = document.getElementById('export-btn');
-    const saveIndicator = document.getElementById('save-indicator');
-
-    // Estado de la aplicación
-    let cards = []; // Array principal de datos de tarjetas
-    let activeCard = null; // Tarjeta que se está arrastrando
-    let offsetX, offsetY; // Offset del ratón dentro de la tarjeta
-    let currentScale = 1; // Nivel de zoom actual
-    let isDragging = false;
-    let saveTimeout = null; // Para debounce del guardado
-
-    // --- Nombres en español para tipos ---
-    const typeTranslations = {
-        scene: "Escena",
-        chapter: "Capítulo",
-        idea: "Idea"
-    };
-
-    function getSpanishTypeName(type) {
-        return typeTranslations[type] || type; // Devuelve traducción o el tipo original si no existe
-    }
-
-
-    // --- Funciones de Guardado y Carga ---
-
-    function showSaveIndicator(saving = false) {
-        if (saving) {
-            saveIndicator.innerHTML = '<i class="fas fa-save mr-2 animate-spin"></i> Guardando...';
-            saveIndicator.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-indigo-600');
-             saveIndicator.classList.add('bg-yellow-500');
-        } else {
-            saveIndicator.innerHTML = '<i class="fas fa-check mr-2"></i> Guardado';
-            saveIndicator.classList.add('opacity-50', 'cursor-not-allowed', 'bg-indigo-600');
-            saveIndicator.classList.remove('bg-yellow-500');
-        }
-    }
-
-    function saveData() {
-        clearTimeout(saveTimeout);
-        showSaveIndicator(true);
-        saveTimeout = setTimeout(() => {
-            try {
-                const dataToSave = {
-                    cards: cards,
-                    scale: currentScale,
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-                 console.log('Datos guardados en localStorage'); // Traducido
-                 showSaveIndicator(false);
-            } catch (error) {
-                console.error("Error al guardar en localStorage:", error); // Traducido
-                alert("Error al guardar los datos. Es posible que el almacenamiento local esté lleno."); // Traducido
-                showSaveIndicator(false);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'storyCanvasData_v2'; // Cambiar versión por nuevas propiedades
+        
+            // Referencias a elementos del DOM
+            const freeView = document.getElementById('free-view');
+            const timelineView = document.getElementById('timeline-view');
+            const outlineView = document.getElementById('outline-view');
+            const canvasContent = document.getElementById('canvas-content-free');
+            const connectionSvg = document.getElementById('connection-svg'); // SVG para líneas
+            const viewDropdownBtn = document.getElementById('view-dropdown-btn');
+            const viewDropdown = document.getElementById('view-dropdown');
+            const viewSwitchLinks = document.querySelectorAll('.view-switch');
+            const addCardButtons = document.querySelectorAll('.add-card-btn');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+            const scaleLabel = document.getElementById('canvas-scale-label');
+            const clearStorageBtn = document.getElementById('clear-storage-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const saveIndicator = document.getElementById('save-indicator');
+        
+            // Estado de la aplicación
+            let cards = [];
+            let connections = []; // Array para almacenar conexiones
+            let activeCard = null; // Tarjeta arrastrándose
+            let resizingCard = null; // Tarjeta redimensionándose
+            let connectingCardId = null; // ID de la tarjeta origen al conectar
+            let startX, startY, initialWidth, initialHeight; // Para redimensionar
+            let offsetX, offsetY; // Para arrastrar
+            let currentScale = 1;
+            let isDragging = false;
+            let isResizing = false;
+            let saveTimeout = null;
+        
+            const typeTranslations = { scene: "Escena", chapter: "Capítulo", idea: "Idea" };
+            const MIN_CARD_WIDTH = 150;
+            const MIN_CARD_HEIGHT = 100;
+        
+            function getSpanishTypeName(type) {
+                return typeTranslations[type] || type;
             }
-        }, 500);
-    }
-
-    function loadData() {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        if (savedData) {
-            try {
-                const parsedData = JSON.parse(savedData);
-                cards = parsedData.cards || [];
-                currentScale = parsedData.scale || 1;
-                console.log('Datos cargados desde localStorage'); // Traducido
-            } catch (error) {
-                console.error("Error al parsear datos de localStorage:", error); // Traducido
-                alert("Error al cargar los datos guardados. Empezando con un lienzo vacío."); // Traducido
-                cards = [];
-                currentScale = 1;
-            }
-        } else {
-            cards = [];
-            currentScale = 1;
-            console.log('No se encontraron datos guardados. Inicializando.'); // Traducido
-        }
-        renderAllCards();
-        applyZoom();
-    }
-
-    // --- Funciones de Renderizado ---
-
-    function renderCard(cardData) {
-        const cardElement = document.createElement('div');
-        cardElement.className = 'card';
-        cardElement.dataset.id = cardData.id;
-        cardElement.style.left = `${cardData.x}px`;
-        cardElement.style.top = `${cardData.y}px`;
-        if (cardData.color) {
-            cardElement.style.backgroundColor = cardData.color;
-        }
-
-        const cardHeader = document.createElement('div');
-        cardHeader.className = 'card-header';
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'card-header-title';
-        // Usar nombre en español para título por defecto
-        titleSpan.textContent = cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`;
-        titleSpan.contentEditable = true;
-        titleSpan.addEventListener('blur', (e) => {
-            updateCardData(cardData.id, { title: e.target.textContent });
-        });
-        titleSpan.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                e.target.blur();
-            }
-        });
-
-        const deleteBtn = document.createElement('i');
-        deleteBtn.className = 'fas fa-times card-delete-btn';
-        deleteBtn.title = 'Eliminar tarjeta'; // Traducido
-        deleteBtn.addEventListener('click', (e) => {
-             e.stopPropagation();
-             // Mensaje de confirmación en español
-             if (confirm(`¿Seguro que quieres eliminar la tarjeta "${cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`}"?`)) {
-                 deleteCard(cardData.id);
+        
+            // --- Funciones de Guardado y Carga ---
+            function showSaveIndicator(saving = false) {
+                 if (!saveIndicator) return; // Salir si el indicador no existe
+                 if (saving) {
+                     saveIndicator.innerHTML = '<i class="fas fa-save mr-2 animate-spin"></i> Guardando...';
+                     saveIndicator.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-indigo-600');
+                     saveIndicator.classList.add('bg-yellow-500');
+                 } else {
+                     saveIndicator.innerHTML = '<i class="fas fa-check mr-2"></i> Guardado';
+                     saveIndicator.classList.add('opacity-50', 'cursor-not-allowed', 'bg-indigo-600');
+                     saveIndicator.classList.remove('bg-yellow-500');
+                 }
              }
-        });
-
-        cardHeader.appendChild(titleSpan);
-        cardHeader.appendChild(deleteBtn);
-
-        const cardBody = document.createElement('div');
-        cardBody.className = 'card-body';
-        const contentTextarea = document.createElement('textarea');
-        contentTextarea.placeholder = 'Escribe aquí los detalles...'; // Traducido
-        contentTextarea.value = cardData.content || '';
-        contentTextarea.addEventListener('input', (e) => {
-            e.target.style.height = 'auto';
-            e.target.style.height = (e.target.scrollHeight) + 'px';
-        });
-         contentTextarea.addEventListener('change', (e) => {
-            updateCardData(cardData.id, { content: e.target.value });
-        });
-        contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation());
-        cardBody.appendChild(contentTextarea);
-
-        const cardFooter = document.createElement('div');
-        cardFooter.className = 'card-footer';
-        const typeSpan = document.createElement('span');
-         // Mostrar tipo en español en el footer
-        typeSpan.textContent = `Tipo: ${getSpanishTypeName(cardData.type)}`;
-        cardFooter.appendChild(typeSpan);
-
-        cardElement.appendChild(cardHeader);
-        cardElement.appendChild(cardBody);
-        cardElement.appendChild(cardFooter);
-
-        cardElement.addEventListener('mousedown', startDrag);
-        canvasContent.appendChild(cardElement);
-    }
-
-    function renderAllCards() {
-        canvasContent.innerHTML = '';
-        cards.forEach(card => renderCard(card));
-    }
-
-    // --- Funciones de Manipulación de Tarjetas ---
-
-    function addCard(type) {
-        const newCard = {
-            id: crypto.randomUUID(),
-            type: type,
-             // Título por defecto en español
-            title: `Nueva ${getSpanishTypeName(type)}`,
-            content: '',
-            x: 50 + Math.random() * 100,
-            y: 50 + Math.random() * 100,
-            color: getRandomColor(),
-            tags: []
-        };
-        cards.push(newCard);
-        renderCard(newCard);
-        saveData();
-    }
-
-     function deleteCard(cardId) {
-        cards = cards.filter(card => card.id !== cardId);
-        const cardElement = canvasContent.querySelector(`.card[data-id="${cardId}"]`);
-        if (cardElement) {
-            cardElement.remove();
-        }
-        saveData();
-    }
-
-    function updateCardData(cardId, updates) {
-        const cardIndex = cards.findIndex(card => card.id === cardId);
-        if (cardIndex > -1) {
-            cards[cardIndex] = { ...cards[cardIndex], ...updates };
-            saveData();
-        }
-    }
-
-    // --- Funcionalidad de Drag and Drop ---
-
-    function startDrag(e) {
-        if (e.button !== 0 || e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.classList.contains('card-delete-btn')) {
-            return;
-        }
-        activeCard = e.currentTarget;
-        activeCard.classList.add('dragging');
-        isDragging = true;
-        const rect = activeCard.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDrag);
-        document.body.style.userSelect = 'none';
-    }
-
-    function drag(e) {
-        if (!isDragging || !activeCard) return;
-        e.preventDefault();
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        const canvasRect = canvasContent.getBoundingClientRect();
-        let newX = (mouseX - canvasRect.left - offsetX) / currentScale;
-        let newY = (mouseY - canvasRect.top - offsetY) / currentScale;
-        activeCard.style.left = `${newX}px`;
-        activeCard.style.top = `${newY}px`;
-    }
-
-    function stopDrag() {
-        if (!isDragging || !activeCard) return;
-        isDragging = false;
-        activeCard.classList.remove('dragging');
-        const cardId = activeCard.dataset.id;
-        const finalX = parseFloat(activeCard.style.left);
-        const finalY = parseFloat(activeCard.style.top);
-        updateCardData(cardId, { x: finalX, y: finalY });
-        document.removeEventListener('mousemove', drag);
-        document.removeEventListener('mouseup', stopDrag);
-        document.body.style.userSelect = '';
-        activeCard = null;
-    }
-
-    // --- Funcionalidad de Vistas ---
-
-    function switchView(viewId) {
-        [freeView, timelineView, outlineView].forEach(view => view.classList.add('hidden'));
-        const selectedView = document.getElementById(viewId);
-        if (selectedView) {
-            selectedView.classList.remove('hidden');
-        } else {
-            freeView.classList.remove('hidden');
-        }
-        if (viewDropdown) { // Asegurarse de que el dropdown existe
-             viewDropdown.classList.add('hidden');
-        }
-
-         if (viewId === 'free-view') {
-             renderAllCards();
-             applyZoom();
-         } else if (viewId === 'timeline-view') {
-             console.log("Vista de Línea de Tiempo seleccionada - renderizado no implementado"); // Traducido
-         } else if (viewId === 'outline-view') {
-              console.log("Vista de Esquema seleccionada - renderizado no implementado"); // Traducido
-         }
-    }
-
-    // --- Funcionalidad de Zoom ---
-
-    function applyZoom() {
-        canvasContent.style.transform = `scale(${currentScale})`;
-        scaleLabel.textContent = `${Math.round(currentScale * 100)}%`;
-    }
-
-    function zoom(direction) {
-        const zoomStep = 0.1;
-        if (direction === 'in') {
-            currentScale += zoomStep;
-        } else if (direction === 'out') {
-            currentScale = Math.max(0.2, currentScale - zoomStep);
-        }
-        currentScale = Math.round(currentScale * 10) / 10;
-        applyZoom();
-        saveData();
-    }
-
-    // --- Exportación ---
-    function exportToJson() {
-        const dataStr = JSON.stringify({ cards: cards, scale: currentScale }, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        const exportFileDefaultName = 'storycanvas_export.json';
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-    }
-
-    // --- Limpiar Almacenamiento ---
-     function clearStorage() {
-         // Mensaje de confirmación en español
-        if (confirm("¿Estás segura de que quieres borrar TODO el progreso? Esta acción no se puede deshacer.")) {
-            localStorage.removeItem(STORAGE_KEY);
-            cards = [];
-            currentScale = 1;
-            renderAllCards();
-            applyZoom();
-            alert("Datos borrados."); // Traducido
-        }
-    }
-
-    // --- Utilidades ---
-    function getRandomColor() {
-      const colors = ['#ffebee', '#e8f5e9', '#e3f2fd', '#f3e5f5', '#fffde7', '#fbe9e7'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    // --- Inicialización y Event Listeners ---
-
-    loadData();
-
-    // Dropdown de vistas - Solo añadir listeners si los elementos existen
-    if (viewDropdownBtn && viewDropdown) {
-        viewDropdownBtn.addEventListener('click', () => {
-            viewDropdown.classList.toggle('hidden');
-        });
-        document.addEventListener('click', (event) => {
-            // Comprobar si el botón existe antes de acceder a contains
-            if (viewDropdownBtn && !viewDropdownBtn.contains(event.target) && !viewDropdown.contains(event.target)) {
-                viewDropdown.classList.add('hidden');
-            } else if (!viewDropdownBtn && !viewDropdown.contains(event.target)){
-                 // Si el botón no existe, cerrar si se clica fuera del dropdown
-                 viewDropdown.classList.add('hidden');
+        
+        
+            function saveData() {
+                clearTimeout(saveTimeout);
+                showSaveIndicator(true);
+                saveTimeout = setTimeout(() => {
+                    try {
+                        const dataToSave = {
+                            cards: cards,
+                            connections: connections, // Guardar conexiones
+                            scale: currentScale,
+                        };
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+                        console.log('Datos guardados en localStorage');
+                        showSaveIndicator(false);
+                    } catch (error) {
+                        console.error("Error al guardar en localStorage:", error);
+                        alert("Error al guardar los datos. Es posible que el almacenamiento local esté lleno.");
+                        showSaveIndicator(false); // Asegurarse de quitar el indicador incluso si hay error
+                    }
+                }, 500); // 500ms debounce
             }
-        });
-    }
-     if (viewSwitchLinks.length > 0) {
-        viewSwitchLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        
+            function loadData() {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    try {
+                        const parsedData = JSON.parse(savedData);
+                        cards = parsedData.cards || [];
+                        connections = parsedData.connections || []; // Cargar conexiones
+                        currentScale = parsedData.scale || 1;
+                        console.log('Datos cargados desde localStorage');
+                         // Asegurar que las tarjetas antiguas tengan valores por defecto si no los tienen
+                        cards.forEach(card => {
+                            card.width = card.width || 250; // Valor por defecto si no existe
+                            card.height = card.height || 180;// Valor por defecto si no existe
+                            card.color = card.color || getRandomColor(); // Valor por defecto si no existe
+                        });
+                    } catch (error) {
+                        console.error("Error al parsear datos de localStorage:", error);
+                        alert("Error al cargar los datos guardados. Empezando con un lienzo vacío.");
+                        cards = [];
+                        connections = [];
+                        currentScale = 1;
+                    }
+                } else {
+                    cards = [];
+                    connections = [];
+                    currentScale = 1;
+                    console.log('No se encontraron datos guardados. Inicializando.');
+                }
+                // Asegurarse de que los elementos existen antes de renderizar
+                if (canvasContent && connectionSvg) {
+                    renderAllCards();
+                    renderAllLines(); // Renderizar líneas después de las tarjetas
+                    applyZoom();
+                } else {
+                    console.error("Error: No se encontraron los elementos del canvas necesarios (canvas-content-free o connection-svg).");
+                }
+            }
+        
+            // --- Funciones de Renderizado ---
+            function renderCard(cardData) {
+                // Verifica si canvasContent existe antes de añadirle hijos
+                if (!canvasContent) return;
+        
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.id = cardData.id;
+                cardElement.style.left = `${cardData.x}px`;
+                cardElement.style.top = `${cardData.y}px`;
+                cardElement.style.width = `${cardData.width}px`;   // Aplicar tamaño
+                cardElement.style.height = `${cardData.height}px`; // Aplicar tamaño
+                cardElement.style.backgroundColor = cardData.color || '#ffffff'; // Aplicar color
+        
+                // --- Header ---
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'card-header';
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'card-header-title';
+                titleSpan.textContent = cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`;
+                titleSpan.contentEditable = true;
+                titleSpan.addEventListener('blur', (e) => {
+                    if (e.target) updateCardData(cardData.id, { title: e.target.textContent });
+                });
+                titleSpan.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); if (e.target instanceof HTMLElement) e.target.blur(); }
+                });
+                titleSpan.addEventListener('mousedown', (e) => e.stopPropagation()); // Evitar drag al editar
+        
+                // Controles del Header
+                const headerControls = document.createElement('div');
+                headerControls.className = 'card-header-controls';
+        
+                // Selector de Color
+                const colorPickerWrapper = document.createElement('div');
+                colorPickerWrapper.className = 'color-picker-wrapper';
+                const colorBtn = document.createElement('span');
+                colorBtn.className = 'card-color-btn card-control-btn';
+                colorBtn.style.backgroundColor = cardData.color || '#ffffff';
+                colorBtn.title = 'Cambiar color';
+                const nativeColorPicker = document.createElement('input');
+                nativeColorPicker.type = 'color';
+                nativeColorPicker.className = 'native-color-picker';
+                nativeColorPicker.value = cardData.color || '#ffffff';
+                nativeColorPicker.addEventListener('input', (e) => {
+                    if (!(e.target instanceof HTMLInputElement)) return;
+                    const newColor = e.target.value;
+                    cardElement.style.backgroundColor = newColor;
+                    colorBtn.style.backgroundColor = newColor;
+                });
+                 nativeColorPicker.addEventListener('change', (e) => {
+                     if (!(e.target instanceof HTMLInputElement)) return;
+                    updateCardData(cardData.id, { color: e.target.value });
+                });
+                 nativeColorPicker.addEventListener('mousedown', (e) => e.stopPropagation());
+        
+                colorPickerWrapper.appendChild(colorBtn);
+                colorPickerWrapper.appendChild(nativeColorPicker);
+                headerControls.appendChild(colorPickerWrapper);
+        
+                // Botón Conectar
+                const connectBtn = document.createElement('i');
+                connectBtn.className = 'fas fa-link card-connect-btn card-control-btn';
+                connectBtn.title = 'Crear conexión';
+                connectBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    startConnectionMode(cardData.id);
+                });
+                headerControls.appendChild(connectBtn);
+        
+                // Botón Eliminar
+                const deleteBtn = document.createElement('i');
+                deleteBtn.className = 'fas fa-times card-delete-btn card-control-btn';
+                deleteBtn.title = 'Eliminar tarjeta';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const title = cardData.title || `Nueva ${getSpanishTypeName(cardData.type)}`;
+                    if (confirm(`¿Seguro que quieres eliminar la tarjeta "${title}"? Se eliminarán también sus conexiones.`)) {
+                        deleteCard(cardData.id);
+                    }
+                });
+                headerControls.appendChild(deleteBtn);
+        
+                cardHeader.appendChild(titleSpan);
+                cardHeader.appendChild(headerControls);
+        
+                // --- Body ---
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                const contentTextarea = document.createElement('textarea');
+                contentTextarea.placeholder = 'Escribe aquí...';
+                contentTextarea.value = cardData.content || '';
+                contentTextarea.addEventListener('change', (e) => {
+                     if (!(e.target instanceof HTMLTextAreaElement)) return;
+                    updateCardData(cardData.id, { content: e.target.value });
+                });
+                contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation());
+                cardBody.appendChild(contentTextarea);
+        
+                // --- Footer ---
+                const cardFooter = document.createElement('div');
+                cardFooter.className = 'card-footer';
+                const typeSpan = document.createElement('span'); // Renombrado para evitar conflicto con typeSpan global
+                typeSpan.textContent = `Tipo: ${getSpanishTypeName(cardData.type)}`;
+                cardFooter.appendChild(typeSpan);
+        
+                // --- Handle de Redimensionamiento ---
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                resizeHandle.addEventListener('mousedown', startResize);
+        
+                // --- Ensamblaje y Eventos ---
+                cardElement.appendChild(cardHeader);
+                cardElement.appendChild(cardBody);
+                cardElement.appendChild(cardFooter);
+                cardElement.appendChild(resizeHandle); // Añadir handle
+        
+                // Evento de click para modo conexión
+                cardElement.addEventListener('click', handleCardClickForConnection);
+        
+                cardElement.addEventListener('mousedown', startDrag); // Mover tarjeta
+                canvasContent.appendChild(cardElement);
+            }
+        
+            function renderAllCards() {
+                if (!canvasContent || !connectionSvg) return; // Verificar elementos
+        
+                // Limpiar tarjetas existentes y SVG
+                canvasContent.querySelectorAll('.card').forEach(node => node.remove());
+                connectionSvg.innerHTML = ''; // Limpiar SVG aquí también
+        
+                // Renderizar todas las tarjetas desde cero
+                cards.forEach(card => renderCard(card));
+        
+                // Renderizar todas las líneas después de que todas las tarjetas estén en el DOM
+                renderAllLines();
+            }
+        
+            // --- Funciones de Líneas ---
+        
+            function renderLine(connection) {
+                if (!canvasContent || !connectionSvg) return; // Verificar elementos
+        
+                const fromCardEl = canvasContent.querySelector(`.card[data-id="${connection.fromId}"]`);
+                const toCardEl = canvasContent.querySelector(`.card[data-id="${connection.toId}"]`);
+        
+                if (!fromCardEl || !toCardEl) {
+                    // console.warn(`No se pudo renderizar línea ${connection.id}: Tarjeta origen o destino no encontrada.`);
+                    return; // No dibujar si falta una tarjeta
+                }
+        
+                // Calcular puntos centrales
+                const x1 = fromCardEl.offsetLeft + fromCardEl.offsetWidth / 2;
+                const y1 = fromCardEl.offsetTop + fromCardEl.offsetHeight / 2;
+                const x2 = toCardEl.offsetLeft + toCardEl.offsetWidth / 2;
+                const y2 = toCardEl.offsetTop + toCardEl.offsetHeight / 2;
+        
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.dataset.connectionId = connection.id;
+        
+                // Event listener para borrar la línea
+                 line.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     if (confirm('¿Eliminar esta conexión?')) {
+                         deleteConnection(connection.id);
+                     }
+                 });
+        
+                connectionSvg.appendChild(line);
+            }
+        
+            function renderAllLines() {
+                if (!connectionSvg) return; // Verificar SVG
+                connectionSvg.innerHTML = ''; // Limpiar SVG
+                connections.forEach(renderLine);
+            }
+        
+             function updateLinesForCard(cardId) {
+                if (!connectionSvg) return; // Verificar SVG
+        
+                // Actualizar (eliminar y volver a dibujar) todas las líneas conectadas a esta tarjeta
+                connections.forEach(conn => {
+                    if (conn.fromId === cardId || conn.toId === cardId) {
+                        const lineElement = connectionSvg.querySelector(`line[data-connection-id="${conn.id}"]`);
+                         if (lineElement) lineElement.remove(); // Quitar la vieja
+                         renderLine(conn); // Dibujar la nueva actualizada
+                    }
+                });
+            }
+        
+            // --- Funciones de Manipulación de Tarjetas ---
+        
+            function addCard(type) {
+                const newCard = {
+                    id: crypto.randomUUID(), type: type,
+                    title: `Nueva ${getSpanishTypeName(type)}`, content: '',
+                    x: 50 + Math.random() * 100, y: 50 + Math.random() * 100,
+                    width: 250, height: 180, color: getRandomColor(), tags: []
+                };
+                cards.push(newCard);
+                renderCard(newCard); // Renderizar solo la nueva
+                saveData();
+            }
+        
+            function deleteCard(cardId) {
+                // Eliminar conexiones asociadas
+                connections = connections.filter(conn => conn.fromId !== cardId && conn.toId !== cardId);
+        
+                // Eliminar la tarjeta del array
+                cards = cards.filter(card => card.id !== cardId);
+        
+                // Eliminar el elemento del DOM
+                const cardElement = canvasContent?.querySelector(`.card[data-id="${cardId}"]`);
+                if (cardElement) cardElement.remove();
+        
+                renderAllLines(); // Re-renderizar líneas restantes
+                saveData();
+            }
+        
+            function updateCardData(cardId, updates) {
+                const cardIndex = cards.findIndex(card => card.id === cardId);
+                if (cardIndex > -1) {
+                    Object.assign(cards[cardIndex], updates); // Fusionar cambios
+                    saveData();
+                    // Si la posición o tamaño cambió, actualizar líneas visualmente
+                     if (updates.x !== undefined || updates.y !== undefined || updates.width !== undefined || updates.height !== undefined) {
+                         updateLinesForCard(cardId);
+                     }
+                     // Si el color cambió, actualizar el elemento visualmente si existe
+                     if (updates.color !== undefined) {
+                          const cardElement = canvasContent?.querySelector(`.card[data-id="${cardId}"]`);
+                          if (cardElement) {
+                               cardElement.style.backgroundColor = updates.color;
+                               const colorBtn = cardElement.querySelector('.card-color-btn');
+                               if (colorBtn) colorBtn.style.backgroundColor = updates.color;
+                               const nativePicker = cardElement.querySelector('.native-color-picker');
+                               if (nativePicker instanceof HTMLInputElement) nativePicker.value = updates.color;
+                          }
+                     }
+                } else {
+                     console.warn(`Intento de actualizar tarjeta no encontrada: ${cardId}`);
+                }
+            }
+        
+            // --- Funcionalidad de Drag and Drop ---
+        
+            function startDrag(e) {
+                 // Verificar botón y elementos interactivos
+                if (e.button !== 0 || e.target.isContentEditable ||
+                    e.target.tagName === 'TEXTAREA' ||
+                    e.target.closest('.card-control-btn') ||
+                    e.target.closest('.resize-handle') ||
+                    e.target.closest('.native-color-picker'))
+                    {
+                    return;
+                }
+                if (connectingCardId || !canvasContent) return; // No drag en modo conexión o si falta canvas
+        
+                activeCard = e.currentTarget;
+                activeCard.classList.add('dragging');
+                isDragging = true;
+        
+                const rect = activeCard.getBoundingClientRect();
+                const canvasRect = canvasContent.getBoundingClientRect(); // Necesario para calcular offset correctamente con zoom
+        
+                // Offset relativo al *origen del canvas* NO al borde de la tarjeta
+                offsetX = (e.clientX - canvasRect.left) / currentScale - parseFloat(activeCard.style.left || '0');
+                offsetY = (e.clientY - canvasRect.top) / currentScale - parseFloat(activeCard.style.top || '0');
+        
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDrag, { once: true }); // 'once' para auto-limpieza
+                document.body.style.userSelect = 'none';
+            }
+        
+            function drag(e) {
+                if (!isDragging || !activeCard || !canvasContent) return;
                 e.preventDefault();
-                switchView(e.target.dataset.view);
-            });
+        
+                const canvasRect = canvasContent.getBoundingClientRect();
+                let newX = (e.clientX - canvasRect.left) / currentScale - offsetX;
+                let newY = (e.clientY - canvasRect.top) / currentScale - offsetY;
+        
+                // Mantener dentro de límites visibles (opcional, ajustar según necesidad)
+                // const minX = 0;
+                // const minY = 0;
+                // const maxX = (canvasContent.scrollWidth - activeCard.offsetWidth); // Considerar scrollWidth si el canvas es más grande que el viewport
+                // const maxY = (canvasContent.scrollHeight - activeCard.offsetHeight);
+                // newX = Math.max(minX, Math.min(newX, maxX));
+                // newY = Math.max(minY, Math.min(newY, maxY));
+        
+        
+                activeCard.style.left = `${newX}px`;
+                activeCard.style.top = `${newY}px`;
+        
+                updateLinesForCard(activeCard.dataset.id); // Actualizar líneas en tiempo real
+            }
+        
+            function stopDrag() {
+                if (!isDragging || !activeCard) return;
+                isDragging = false;
+                const cardId = activeCard.dataset.id;
+                const finalX = parseFloat(activeCard.style.left || '0');
+                const finalY = parseFloat(activeCard.style.top || '0');
+        
+                activeCard.classList.remove('dragging');
+        
+                updateCardData(cardId, { x: finalX, y: finalY });
+        
+                document.removeEventListener('mousemove', drag);
+                // document.removeEventListener('mouseup', stopDrag); // No es necesario con {once: true}
+                document.body.style.userSelect = '';
+                activeCard = null;
+            }
+        
+        
+            // --- Funcionalidad de Redimensionamiento ---
+            function startResize(e) {
+                if (e.button !== 0 || !canvasContent) return;
+                e.stopPropagation();
+        
+                isResizing = true;
+                resizingCard = e.target.closest('.card');
+                if (!resizingCard) return; // Salir si no se encuentra la tarjeta
+                resizingCard.classList.add('resizing');
+        
+                startX = e.clientX;
+                startY = e.clientY;
+                initialWidth = resizingCard.offsetWidth;
+                initialHeight = resizingCard.offsetHeight;
+        
+                document.addEventListener('mousemove', doResize);
+                document.addEventListener('mouseup', stopResize, { once: true });
+                document.body.style.cursor = 'nwse-resize';
+                document.body.style.userSelect = 'none';
+            }
+        
+            function doResize(e) {
+                if (!isResizing || !resizingCard) return;
+                e.preventDefault();
+        
+                const deltaX = (e.clientX - startX) / currentScale;
+                const deltaY = (e.clientY - startY) / currentScale;
+        
+                let newWidth = Math.max(MIN_CARD_WIDTH, initialWidth + deltaX);
+                let newHeight = Math.max(MIN_CARD_HEIGHT, initialHeight + deltaY);
+        
+                resizingCard.style.width = `${newWidth}px`;
+                resizingCard.style.height = `${newHeight}px`;
+        
+                updateLinesForCard(resizingCard.dataset.id); // Actualizar líneas en tiempo real
+            }
+        
+            function stopResize() {
+                if (!isResizing || !resizingCard) return;
+                isResizing = false;
+                const cardId = resizingCard.dataset.id;
+                const finalWidth = parseFloat(resizingCard.style.width);
+                const finalHeight = parseFloat(resizingCard.style.height);
+        
+                resizingCard.classList.remove('resizing');
+        
+                updateCardData(cardId, { width: finalWidth, height: finalHeight });
+        
+                document.removeEventListener('mousemove', doResize);
+                // document.removeEventListener('mouseup', stopResize); // No necesario con { once: true }
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                resizingCard = null;
+            }
+        
+            // --- Funcionalidad de Conexiones ---
+        
+            function startConnectionMode(fromCardId) {
+                if (!canvasContent) return;
+                connectingCardId = fromCardId;
+                document.body.classList.add('connecting-mode');
+        
+                canvasContent.querySelectorAll('.card').forEach(cardEl => {
+                    if (cardEl.dataset.id !== fromCardId) {
+                         cardEl.classList.add('connection-candidate');
+                    }
+                });
+                // Usar { once: true } para que los listeners se limpien solos al ejecutarse
+                document.addEventListener('keydown', cancelConnectionOnEscape, { once: true });
+                document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true });
+        
+                console.log(`Modo conexión iniciado desde: ${fromCardId}`);
+            }
+        
+             function handleCardClickForConnection(e) {
+                if (!connectingCardId) return;
+        
+                const clickedCardElement = e.currentTarget;
+                const toCardId = clickedCardElement.dataset.id;
+        
+                // Limpiar listeners de cancelación inmediatamente
+                document.removeEventListener('keydown', cancelConnectionOnEscape);
+                document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
+        
+        
+                if (connectingCardId === toCardId) {
+                    console.log("No se puede conectar una tarjeta consigo misma.");
+                    cancelConnectionMode(); // Llama a limpiar estado y clases
+                    return;
+                }
+        
+                const existingConnection = connections.find(conn =>
+                    (conn.fromId === connectingCardId && conn.toId === toCardId) ||
+                    (conn.fromId === toCardId && conn.toId === connectingCardId)
+                );
+        
+                if (existingConnection) {
+                     console.log("La conexión ya existe.");
+                } else {
+                     const newConnection = { id: crypto.randomUUID(), fromId: connectingCardId, toId: toCardId };
+                     connections.push(newConnection);
+                     renderLine(newConnection); // Dibujar solo la nueva
+                     console.log(`Conexión creada: ${connectingCardId} -> ${toCardId}`);
+                     saveData();
+                }
+        
+                cancelConnectionMode(); // Llama a limpiar estado y clases
+            }
+        
+            function cancelConnectionMode() {
+                if (!connectingCardId && !document.body.classList.contains('connecting-mode')) return; // Ya cancelado o no iniciado
+        
+                console.log("Modo conexión cancelado.");
+                connectingCardId = null;
+                document.body.classList.remove('connecting-mode');
+                canvasContent?.querySelectorAll('.card.connection-candidate').forEach(cardEl => {
+                    cardEl.classList.remove('connection-candidate');
+                });
+                // Asegurarse de que los listeners de cancelación se quiten si no se dispararon
+                document.removeEventListener('keydown', cancelConnectionOnEscape);
+                document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
+            }
+        
+            function cancelConnectionOnEscape(e) {
+                if (e.key === 'Escape') {
+                     // El listener mousedown también debe ser eliminado
+                     document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
+                     cancelConnectionMode();
+                } else {
+                     // Si no fue Escape, volver a añadir listener para el próximo keydown
+                     document.addEventListener('keydown', cancelConnectionOnEscape, { once: true });
+                }
+            }
+        
+            function cancelConnectionOnClickOutside(e) {
+                 // El listener keydown también debe ser eliminado si se hace click fuera
+                 document.removeEventListener('keydown', cancelConnectionOnEscape);
+        
+                // Si el click fue fuera de una tarjeta candidata Y no fue en el botón que inició el modo
+                const clickedOnCandidate = e.target.closest('.card.connection-candidate');
+                const clickedOnOriginConnectButton = e.target.closest(`.card[data-id="${connectingCardId}"] .card-connect-btn`);
+        
+                if (!clickedOnCandidate && !clickedOnOriginConnectButton) {
+                     cancelConnectionMode();
+                } else if (clickedOnCandidate) {
+                    // Si se hizo click en una candidata, handleCardClickForConnection se encargará
+                    // No necesitamos volver a añadir este listener porque handleCardClickForConnection llama a cancelConnectionMode()
+                } else {
+                    // Si se hizo click en otro sitio (ej. otro botón conectar), cancelar y
+                    // volver a añadir el listener por si acaso no se completa la acción
+                     cancelConnectionMode(); // Cancelar estado actual
+                    // Ya no es necesario volver a añadir el listener aquí porque usamos { once: true }
+                }
+            }
+        
+            function deleteConnection(connectionId) {
+                connections = connections.filter(conn => conn.id !== connectionId);
+                const lineElement = connectionSvg?.querySelector(`line[data-connection-id="${connectionId}"]`);
+                if (lineElement) lineElement.remove();
+                saveData();
+                console.log(`Conexión eliminada: ${connectionId}`);
+            }
+        
+        
+            // --- Funcionalidad de Vistas ---
+            function switchView(viewId) {
+                 // Ocultar todas las vistas
+                [freeView, timelineView, outlineView].forEach(view => view?.classList.add('hidden'));
+        
+                // Mostrar la vista seleccionada
+                const selectedView = document.getElementById(viewId);
+                if (selectedView) {
+                    selectedView.classList.remove('hidden');
+                     // Si es la vista libre, asegurar renderizado y zoom
+                     if (viewId === 'free-view') {
+                         renderAllCards(); // Re-renderizar por si acaso
+                         applyZoom();
+                     }
+                } else {
+                    freeView?.classList.remove('hidden'); // Mostrar vista libre por defecto si hay error
+                     renderAllCards();
+                     applyZoom();
+                }
+        
+                 // Ocultar dropdown si existe
+                 if (viewDropdown) {
+                     viewDropdown.classList.add('hidden');
+                 }
+        
+                 console.log(`Cambiando a vista: ${viewId}`);
+             }
+        
+            // --- Funcionalidad de Zoom ---
+            function applyZoom() {
+                if (canvasContent) {
+                    canvasContent.style.transform = `scale(${currentScale})`;
+                }
+                if (scaleLabel) {
+                    scaleLabel.textContent = `${Math.round(currentScale * 100)}%`;
+                }
+                if (connectionSvg) { // Asegurarse que SVG existe
+                    renderAllLines(); // Redibujar líneas con la nueva escala
+                }
+            }
+        
+            function zoom(direction) {
+                const zoomStep = 0.1;
+                let previousScale = currentScale; // Guardar escala previa por si acaso
+        
+                if (direction === 'in') {
+                    currentScale += zoomStep;
+                } else if (direction === 'out') {
+                    currentScale = Math.max(0.2, currentScale - zoomStep); // Mínimo 20%
+                }
+        
+                // Redondear a un decimal para evitar imprecisiones
+                currentScale = Math.round(currentScale * 10) / 10;
+        
+                // Solo aplicar y guardar si la escala realmente cambió
+                if (currentScale !== previousScale) {
+                    applyZoom();
+                    saveData(); // <-- GUARDAR LA ESCALA ACTUALIZADA
+                    console.log(`Zoom aplicado: ${currentScale}`);
+                }
+            }
+        
+            // --- Exportación ---
+            function exportToJson() {
+                try {
+                    const dataStr = JSON.stringify({
+                        cards: cards,
+                        connections: connections,
+                        scale: currentScale
+                    }, null, 2); // null, 2 para formato legible
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    const exportFileDefaultName = 'storycanvas_export.json';
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click(); // Simula click para iniciar descarga
+                    linkElement.remove(); // Limpiar elemento
+                } catch (error) {
+                    console.error("Error al exportar a JSON:", error);
+                    alert("Hubo un error al intentar exportar los datos.");
+                }
+            }
+        
+            // --- Limpiar Almacenamiento ---
+             function clearStorage() {
+                if (confirm("¿Estás segura de que quieres borrar TODO el progreso? Esta acción no se puede deshacer.")) {
+                    try {
+                        localStorage.removeItem(STORAGE_KEY);
+                        cards = [];
+                        connections = [];
+                        currentScale = 1;
+                        if (canvasContent) renderAllCards(); // Limpiará visualmente y llamará a renderAllLines
+                        applyZoom();
+                        alert("Datos borrados.");
+                        console.log("LocalStorage limpiado.");
+                    } catch (error) {
+                         console.error("Error al limpiar localStorage:", error);
+                         alert("Hubo un error al intentar borrar los datos.");
+                    }
+                }
+            }
+        
+            // --- Utilidades ---
+            function getRandomColor() {
+              // Paleta más suave y consistente
+              const colors = ['#FFFFFF', '#FFF1F0', '#F0FFF4', '#F0F9FF', '#FAF5FF', '#FFFBEB', '#FFF8F4'];
+              return colors[Math.floor(Math.random() * colors.length)];
+            }
+        
+            // --- Inicialización y Event Listeners ---
+        
+            // Cargar datos primero
+            loadData();
+        
+            // Dropdown de vistas
+            if (viewDropdownBtn && viewDropdown) {
+                viewDropdownBtn.addEventListener('click', (e) => {
+                     e.stopPropagation(); // Evitar que el listener global lo cierre inmediatamente
+                    viewDropdown.classList.toggle('hidden');
+                });
+                // Cerrar dropdown si se clica fuera
+                document.addEventListener('click', (event) => {
+                    if (viewDropdown && !viewDropdown.classList.contains('hidden') &&
+                        !viewDropdown.contains(event.target) &&
+                        !viewDropdownBtn.contains(event.target)) {
+                        viewDropdown.classList.add('hidden');
+                    }
+                });
+            } else {
+                console.warn("Elementos del dropdown de vistas no encontrados.");
+            }
+        
+            if (viewSwitchLinks.length > 0) {
+                viewSwitchLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (e.target instanceof HTMLElement && e.target.dataset.view) {
+                            switchView(e.target.dataset.view);
+                        }
+                    });
+                });
+            } else {
+                console.warn("Links para cambiar de vista no encontrados.");
+            }
+        
+            // Botones de añadir tarjeta
+            if (addCardButtons.length > 0) {
+                addCardButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        if (button.dataset.type) {
+                            addCard(button.dataset.type);
+                        } else {
+                            console.warn("Botón de añadir tarjeta sin data-type.");
+                        }
+                    });
+                });
+            } else {
+                console.warn("Botones para añadir tarjetas no encontrados.");
+            }
+        
+        
+            // Controles de zoom
+            if (zoomInBtn && zoomOutBtn) {
+                zoomInBtn.addEventListener('click', () => zoom('in'));
+                zoomOutBtn.addEventListener('click', () => zoom('out'));
+            } else {
+                 console.warn("Botones de zoom no encontrados.");
+            }
+        
+            // Botón de exportar
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportToJson);
+            } else {
+                console.warn("Botón de exportar no encontrado.");
+            }
+        
+            // Botón de limpiar
+            if (clearStorageBtn) {
+                clearStorageBtn.addEventListener('click', clearStorage);
+            } else {
+                 console.warn("Botón de limpiar almacenamiento no encontrado.");
+            }
+        
+            // Establecer la vista inicial (asegurándose que todo esté cargado)
+            switchView('free-view');
+        
         });
-    }
-
-
-    // Botones de añadir tarjeta
-    addCardButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            addCard(button.dataset.type);
-        });
-    });
-
-    // Controles de zoom
-    zoomInBtn.addEventListener('click', () => zoom('in'));
-    zoomOutBtn.addEventListener('click', () => zoom('out'));
-
-    // Botón de exportar
-    exportBtn.addEventListener('click', exportToJson);
-
-    // Botón de limpiar
-    clearStorageBtn.addEventListener('click', clearStorage);
-
-    // Establecer la vista inicial
-    switchView('free-view');
-
-});
-</script>
+        </script>
 
 </body>
 </html>
