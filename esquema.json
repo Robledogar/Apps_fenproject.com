@@ -1,0 +1,97 @@
+{
+  "version": "storyCanvasData_v3",
+  "timestamp": "2025-04-19T15:00:00.000Z",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "chapter",
+      "title": "Capítulo 1: El secreto de la casa del acantilado",
+      "content": "Daniel recibe una carta de su abuelo fallecido que lo lleva a una casa abandonada, donde descubre un diario oculto sobre un pasado familiar perturbador.",
+      "x": 100,
+      "y": 50,
+      "width": 450,
+      "height": 180,
+      "color": "#FAF5FF",
+      "tags": ["misterio", "presentación"]
+    },
+    {
+      "id": "c2",
+      "type": "chapter",
+      "title": "Capítulo 2: Los que no proyectan sombra",
+      "content": "Daniel investiga las figuras en la niebla y la conexión de su abuela con rituales antiguos. Un lugareño le habla de 'los Devoradores de Memorias'.",
+      "x": 100,
+      "y": 280,
+      "width": 450,
+      "height": 180,
+      "color": "#FAF5FF",
+      "tags": ["sobrenatural"]
+    },
+    {
+      "id": "c3",
+      "type": "chapter",
+      "title": "Capítulo 3: El faro de las almas perdidas",
+      "content": "El diario lleva a Daniel al faro, donde encuentra grabados en piedra que coinciden con sus pesadillas infantiles. Alguien lo sigue.",
+      "x": 100,
+      "y": 510,
+      "width": 450,
+      "height": 180,
+      "color": "#FAF5FF",
+      "tags": ["suspense"]
+    },
+    {
+      "id": "c4",
+      "type": "chapter",
+      "title": "Capítulo 4: La noche del equinoccio (1982)",
+      "content": "Flashback. La historia de Elena, la abuela de Daniel, y su pacto para salvar a su hijo de una entidad ancestral.",
+      "x": 100,
+      "y": 740,
+      "width": 450,
+      "height": 180,
+      "color": "#E6FFFA",
+      "tags": ["drama"]
+    },
+    {
+      "id": "s1-1",
+      "type": "scene",
+      "title": "La carta del muerto",
+      "content": "Daniel recibe la carta con letra de su abuelo, pero la fecha del matasellos es de la semana anterior. La fotografía muestra la casa con una figura en la ventana.",
+      "x": 950,
+      "y": 20,
+      "width": 320,
+      "height": 150,
+      "color": "#F0F9FF",
+      "tags": ["misterio"]
+    },
+    {
+      "id": "s3-2",
+      "type": "scene",
+      "title": "Gritos bajo la tierra",
+      "content": "En el faro, Daniel oye lamentos que provienen de un pozo sellado. Una mano grasienta golpea la tapa desde abajo.",
+      "x": 950,
+      "y": 400,
+      "width": 320,
+      "height": 150,
+      "color": "#FFF5F5",
+      "tags": ["terror"]
+    },
+    {
+      "id": "g1",
+      "type": "idea",
+      "title": "El padre está vivo",
+      "content": "Revelación: El padre de Daniel no murió en un accidente. Fue convertido en guardián de la entidad tras un ritual fallido en 1982.",
+      "x": 1400,
+      "y": 100,
+      "width": 250,
+      "height": 120,
+      "color": "#FECACA",
+      "tags": ["giro"]
+    }
+  ],
+  "connections": [
+    {"id": "conn1", "fromId": "c1", "toId": "s1-1"},
+    {"id": "conn2", "fromId": "c3", "toId": "s3-2"},
+    {"id": "conn3", "fromId": "c1", "toId": "c2"},
+    {"id": "conn4", "fromId": "s3-2", "toId": "g1"}
+  ],
+  "scale": 0.6
+}
