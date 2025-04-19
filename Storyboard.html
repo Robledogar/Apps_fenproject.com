@@ -13,10 +13,10 @@
         }
         .canvas-container {
             width: 100%;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 70px); /* Altura ajustada al header */
             position: relative;
-            overflow: hidden;
-            background-color: #f8fafc;
+            overflow: hidden; /* Clave para el zoom/scroll interno */
+            background-color: #f8fafc; /* gris muy claro */
             background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
                               linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 20px 20px;
@@ -26,31 +26,31 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            transform-origin: top left;
+            width: 100%; /* Tamaño inicial, puede crecer */
+            height: 100%;/* Tamaño inicial, puede crecer */
+            transform-origin: top left; /* Origen del zoom */
             transition: transform 0.2s ease-out;
-            z-index: 1;
+            z-index: 1; /* Detrás de tarjetas */
         }
         #connection-svg {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 100%; /* Coincide con canvas-content */
             height: 100%;
-            pointer-events: none;
-            z-index: 5;
-            overflow: visible;
+            pointer-events: none; /* Permite clicks a través */
+            z-index: 5; /* Encima del fondo, debajo de tarjetas */
+            overflow: visible; /* Permite líneas fuera del viewport inicial */
         }
         #connection-svg line {
-            stroke: #94a3b8;
+            stroke: #94a3b8; /* slate-400 */
             stroke-width: 2;
             cursor: pointer;
-            pointer-events: stroke;
+            pointer-events: stroke; /* Clickeable solo la línea */
             transition: stroke 0.2s, stroke-width 0.2s;
         }
          #connection-svg line:hover {
-             stroke: #ef4444;
+             stroke: #ef4444; /* red-500 */
              stroke-width: 4;
          }
 
@@ -58,19 +58,19 @@
         .card {
             position: absolute;
             min-width: 150px;
-            min-height: 150px; /* Aumentada altura mínima para acomodar textarea en imagen */
+            min-height: 150px;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             cursor: move;
             transition: box-shadow 0.2s, transform 0.1s;
-            overflow: visible;
+            overflow: visible; /* Para el handle */
             display: flex;
             flex-direction: column;
             z-index: 10;
-            border: 1px solid #e5e7eb;
-            width: 250px;
-            height: 280px; /* Aumentada altura por defecto para imagen + texto */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            width: 250px; /* Default */
+            height: 280px; /* Default (imagen + texto) */
         }
         .card.dragging { z-index: 1000; cursor: grabbing; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
         .card.resizing { z-index: 1000; cursor: nwse-resize; user-select: none; }
@@ -86,90 +86,34 @@
         .card-color-btn:hover { opacity: 0.8; }
 
         .card-body {
-            padding: 10px 12px; /* Restaurar padding por defecto */
+            padding: 10px 12px; /* Padding por defecto para texto */
             font-size: 13px;
             line-height: 1.4;
-            flex-grow: 1;
-            overflow: hidden;
+            flex-grow: 1; /* Ocupa espacio disponible */
+            overflow: hidden; /* Oculta scroll del div body */
             display: flex;
             flex-direction: column;
         }
-        /* Layout específico para el body de la tarjeta de imagen */
         .card[data-card-type="image"] .card-body {
-             padding: 0; /* Quitar padding general del body para imagen */
-             /* El padding se manejará en los elementos internos */
+             padding: 0; /* Sin padding general para imagen */
         }
 
-        /* Textarea general (para tipos texto) */
+        /* Textarea para tarjetas NO imagen */
         .card:not([data-card-type="image"]) .card-body textarea {
-            width: 100%;
-            border: none;
-            padding: 0;
-            font-size: 13px;
-            line-height: inherit;
-            flex-grow: 1;
-            resize: none;
-            background-color: transparent;
-            min-height: 40px;
-            outline: none;
-            overflow-y: auto;
+            width: 100%; border: none; padding: 0; font-size: 13px; line-height: inherit; flex-grow: 1; resize: none; background-color: transparent; min-height: 40px; outline: none; overflow-y: auto;
         }
 
-        /* --- Estilos específicos para Tarjeta de Imagen --- */
-        .image-url-input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px solid #e5e7eb; /* Borde inferior */
-            padding: 8px 12px; /* Padding interno */
-            font-size: 12px;
-            outline: none;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            background-color: #f9fafc;
-        }
-        .image-url-input:focus {
-            border-bottom: 1px solid #3b82f6;
-        }
-        .image-display-container {
-            flex-grow: 1; /* Ocupar espacio vertical restante */
-            position: relative;
-            background-color: #e5e7eb;
-            background-size: contain;
-            background-position: center center;
-            background-repeat: no-repeat;
-            overflow: hidden;
-            /* Sin border-radius aquí si hay textarea debajo */
-            min-height: 100px; /* Altura mínima para el display */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-         .image-display-container::before { /* Icono placeholder */
-            content: '\f03e';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900; font-size: 30px;
-            color: #9ca3af; opacity: 0.5;
-         }
-         .image-display-container[style*="background-image: url"]::before { display: none; }
+        /* Elementos específicos tarjeta Imagen */
+        .image-url-input { width: 100%; border: none; border-bottom: 1px solid #e5e7eb; padding: 8px 12px; font-size: 12px; outline: none; box-sizing: border-box; flex-shrink: 0; background-color: #f9fafc; }
+        .image-url-input:focus { border-bottom: 1px solid #3b82f6; }
+        .image-display-container { flex-grow: 1; position: relative; background-color: #e5e7eb; background-size: contain; background-position: center center; background-repeat: no-repeat; overflow: hidden; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .image-display-container::before { content: '\f03e'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 30px; color: #9ca3af; opacity: 0.5; }
+        .image-display-container[style*="background-image: url"]::before { display: none; }
 
-         /* Textarea específico para tarjeta de imagen */
+        /* Textarea para tarjeta Imagen */
          .card[data-card-type="image"] .card-body textarea {
-             width: 100%;
-             border: none;
-             border-top: 1px solid #e5e7eb; /* Separador superior */
-             padding: 8px 12px; /* Padding interno */
-             font-size: 13px;
-             line-height: 1.4;
-             flex-shrink: 0; /* No encoger */
-             resize: none;
-             background-color: #ffffff; /* Fondo blanco para distinguir */
-             min-height: 60px; /* Altura mínima */
-             max-height: 120px; /* Altura máxima antes de scroll */
-             outline: none;
-             overflow-y: auto; /* Scroll si excede max-height */
-             box-sizing: border-box;
+             width: 100%; border: none; border-top: 1px solid #e5e7eb; padding: 8px 12px; font-size: 13px; line-height: 1.4; flex-shrink: 0; resize: none; background-color: #ffffff; min-height: 60px; max-height: 120px; outline: none; overflow-y: auto; box-sizing: border-box;
          }
-
 
         .card-footer { padding: 5px 10px; font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; flex-shrink: 0; border-radius: 0 0 8px 8px; background-color: #f9fafc; }
         .resize-handle { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background-color: rgba(150, 150, 150, 0.6); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 0 0 8px 0; cursor: nwse-resize; z-index: 11; transition: background-color 0.2s; }
@@ -190,9 +134,29 @@
         .hidden-file-input { display: none; }
         #save-indicator { transition: background-color 0.3s, opacity 0.3s; }
         .hidden { display: none !important; }
+
+        /* --- Estilos Aviso Escritorio --- */
+        #desktop-warning {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.85); color: white; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        #desktop-warning.visible { opacity: 1; visibility: visible; }
+        #desktop-warning i { font-size: 3rem; margin-bottom: 1rem; color: #fde047; }
+        #desktop-warning p { font-size: 1.1rem; line-height: 1.6; max-width: 500px; }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col h-screen">
+
+    <!-- Aviso solo Escritorio -->
+    <div id="desktop-warning">
+        <div>
+            <i class="fas fa-desktop"></i>
+            <p>
+                StoryCanvas está optimizado para pantallas más grandes.
+                Para una mejor experiencia, por favor, utiliza un ordenador de escritorio o una tablet en modo horizontal.
+            </p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-indigo-700 text-white shadow-md flex-shrink-0 sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -220,9 +184,9 @@
         <!-- Sidebar -->
         <aside class="w-60 bg-white rounded-lg shadow p-4 mr-4 flex-shrink-0 flex flex-col self-start sticky top-[60px]">
              <div>
-                <!-- <h2 class="text-base font-semibold mb-4 text-gray-700">Herramientas</h2> -->
+                <h2 class="text-base font-semibold mb-4 text-gray-700">Herramientas</h2>
                 <div class="mb-5">
-                    <h3 class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">Añadir Tarjeta al proyecto</h3>
+                    <h3 class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">Añadir Tarjeta</h3>
                     <button id="add-chapter-btn" data-type="chapter" class="add-card-btn w-full p-2 text-sm bg-purple-50 hover:bg-purple-100 rounded-md text-purple-700 mb-2 flex items-center transition-colors">
                         <i class="fas fa-book-open mr-2 w-4 text-center"></i> Capítulo
                     </button>
@@ -261,7 +225,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const STORAGE_KEY = 'storyCanvasData_v5'; // Incrementar versión
+    const STORAGE_KEY = 'storyCanvasData_v5'; // Clave para localStorage
 
     // --- Referencias a elementos del DOM ---
     const canvasContainer = document.getElementById('free-view');
@@ -276,25 +240,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const importBtn = document.getElementById('import-btn');
     const importFileInput = document.getElementById('import-file-input');
     const saveIndicator = document.getElementById('save-indicator');
+    const desktopWarning = document.getElementById('desktop-warning');
 
     // --- Estado de la aplicación ---
-    let cards = [];
-    let connections = [];
-    let activeCard = null;
-    let resizingCard = null;
-    let connectingCardId = null;
-    let startX, startY, initialWidth, initialHeight;
-    let dragOffsetX, dragOffsetY;
-    let currentScale = 1.0;
-    let isDragging = false;
-    let isResizing = false;
-    let saveTimeout = null;
+    let cards = []; let connections = []; let activeCard = null; let resizingCard = null; let connectingCardId = null;
+    let startX, startY, initialWidth, initialHeight; let dragOffsetX, dragOffsetY;
+    let currentScale = 1.0; let isDragging = false; let isResizing = false; let saveTimeout = null;
 
+    // --- Constantes y Configuraciones ---
     const typeTranslations = { scene: "Escena", chapter: "Capítulo", idea: "Idea", image: "Imagen" };
-    const MIN_CARD_WIDTH = 150;
-    const MIN_CARD_HEIGHT = 150; // Aumentado
-    const MAX_ZOOM = 3.0;
-    const MIN_ZOOM = 0.2;
+    const MIN_CARD_WIDTH = 150; const MIN_CARD_HEIGHT = 150; const MAX_ZOOM = 3.0; const MIN_ZOOM = 0.2;
+    const MIN_DESKTOP_WIDTH = 1024; // Umbral para aviso de escritorio
+    const SAVE_DEBOUNCE_MS = 700; // Tiempo de espera para guardar
+    const RESIZE_DEBOUNCE_MS = 250; // Tiempo de espera para checkear resize
 
     function getSpanishTypeName(type) { return typeTranslations[type] || type; }
 
@@ -317,20 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
         showSaveIndicator(true);
         saveTimeout = setTimeout(() => {
             try {
-                const dataToSave = {
-                    cards: cards,
-                    connections: connections,
-                    scale: currentScale,
-                };
+                const dataToSave = { cards: cards, connections: connections, scale: currentScale };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
                 console.log('Datos guardados:', new Date().toLocaleTimeString());
                 showSaveIndicator(false);
             } catch (error) {
-                console.error("Error al guardar en localStorage:", error);
-                alert("Error al guardar los datos. Es posible que el almacenamiento local esté lleno.");
-                showSaveIndicator(false);
+                console.error("Error al guardar:", error); alert("Error al guardar. Almacenamiento lleno?"); showSaveIndicator(false);
             }
-        }, 700);
+        }, SAVE_DEBOUNCE_MS);
     }
 
     function loadData() {
@@ -345,419 +297,195 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Validar y aplicar valores por defecto
                 cards.forEach(card => {
                     card.width = card.width >= MIN_CARD_WIDTH ? card.width : (card.type === 'image' ? 250 : MIN_CARD_WIDTH);
-                    card.height = card.height >= MIN_CARD_HEIGHT ? card.height : (card.type === 'image' ? 280 : MIN_CARD_HEIGHT); // Usar nuevo default
+                    card.height = card.height >= MIN_CARD_HEIGHT ? card.height : (card.type === 'image' ? 280 : MIN_CARD_HEIGHT);
                     card.color = card.color || getRandomColor();
                     card.title = card.title || `Sin título`;
                     card.type = card.type || 'idea';
                     card.x = typeof card.x === 'number' ? card.x : 50;
                     card.y = typeof card.y === 'number' ? card.y : 50;
-                    // Ahora AMBOS pueden existir (inicializar si faltan)
-                    card.content = card.content || '';
-                    card.imageUrl = card.imageUrl || '';
-                    // Asegurarse de que imageUrl sea undefined si no es tipo imagen (limpieza de datos antiguos)
-                    if (card.type !== 'image' && card.imageUrl !== undefined) {
-                        delete card.imageUrl;
+                    card.content = card.content || ''; // Asegurar que content exista
+                    if (card.type === 'image') {
+                        card.imageUrl = card.imageUrl || ''; // Asegurar que imageUrl exista si es imagen
+                    } else if (card.imageUrl !== undefined) {
+                        delete card.imageUrl; // Limpiar imageUrl si no es tipo imagen
                     }
                 });
                 connections = connections.filter(conn => conn.id && conn.fromId && conn.toId);
-                console.log('Datos cargados desde localStorage.');
+                console.log('Datos cargados.');
             } catch (error) {
-                console.error("Error al parsear datos de localStorage:", error);
-                alert("Error al cargar los datos guardados. Empezando con un lienzo vacío.");
-                resetState();
+                console.error("Error al parsear datos:", error); alert("Error al cargar datos. Empezando lienzo vacío."); resetState();
             }
         } else {
-            console.log('No se encontraron datos guardados. Inicializando lienzo vacío.');
-            resetState();
+            console.log('No hay datos guardados. Empezando lienzo vacío.'); resetState();
         }
         renderAllCards();
         applyZoom();
     }
 
-    function resetState() {
-        cards = [];
-        connections = [];
-        currentScale = 1.0;
-     }
+    function resetState() { cards = []; connections = []; currentScale = 1.0; }
 
     // --- Funciones de Renderizado ---
-
     function renderCard(cardData) {
         if (!canvasContent) return;
-
         const cardElement = document.createElement('div');
-        cardElement.className = 'card';
-        cardElement.dataset.id = cardData.id;
-        cardElement.dataset.cardType = cardData.type;
-        cardElement.style.left = `${cardData.x}px`;
-        cardElement.style.top = `${cardData.y}px`;
-        cardElement.style.width = `${cardData.width}px`;
-        cardElement.style.height = `${cardData.height}px`;
-        cardElement.style.backgroundColor = cardData.color;
+        cardElement.className = 'card'; cardElement.dataset.id = cardData.id; cardElement.dataset.cardType = cardData.type;
+        cardElement.style.left = `${cardData.x}px`; cardElement.style.top = `${cardData.y}px`; cardElement.style.width = `${cardData.width}px`; cardElement.style.height = `${cardData.height}px`; cardElement.style.backgroundColor = cardData.color;
 
-        // --- Header (Común) ---
-        const cardHeader = document.createElement('div');
-        cardHeader.className = 'card-header';
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'card-header-title';
-        titleSpan.textContent = cardData.title;
-        titleSpan.contentEditable = true;
-        titleSpan.spellcheck = false;
+        // Header
+        const cardHeader = document.createElement('div'); cardHeader.className = 'card-header';
+        const titleSpan = document.createElement('span'); titleSpan.className = 'card-header-title'; titleSpan.textContent = cardData.title; titleSpan.contentEditable = true; titleSpan.spellcheck = false;
         titleSpan.addEventListener('blur', (e) => { if (e.target instanceof HTMLElement) updateCardData(cardData.id, { title: e.target.textContent || 'Sin título' }); });
         titleSpan.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); if (e.target instanceof HTMLElement) e.target.blur(); } });
         titleSpan.addEventListener('mousedown', (e) => e.stopPropagation());
-
-        const headerControls = document.createElement('div');
-        headerControls.className = 'card-header-controls';
-        // --- Controles del Header ---
+        const headerControls = document.createElement('div'); headerControls.className = 'card-header-controls';
         // Color Picker
-        const colorPickerWrapper = document.createElement('div');
-        colorPickerWrapper.className = 'color-picker-wrapper';
-        const colorBtn = document.createElement('span');
-        colorBtn.className = 'card-color-btn card-control-btn';
-        colorBtn.style.backgroundColor = cardData.color;
-        colorBtn.title = 'Cambiar color';
-        const nativeColorPicker = document.createElement('input');
-        nativeColorPicker.type = 'color';
-        nativeColorPicker.className = 'native-color-picker';
-        nativeColorPicker.value = cardData.color;
-        nativeColorPicker.addEventListener('input', (e) => { if (e.target instanceof HTMLInputElement) { cardElement.style.backgroundColor = e.target.value; colorBtn.style.backgroundColor = e.target.value; } });
-        nativeColorPicker.addEventListener('change', (e) => { if (e.target instanceof HTMLInputElement) updateCardData(cardData.id, { color: e.target.value }); });
-        nativeColorPicker.addEventListener('mousedown', (e) => e.stopPropagation());
-        colorPickerWrapper.appendChild(colorBtn); colorPickerWrapper.appendChild(nativeColorPicker); headerControls.appendChild(colorPickerWrapper);
-        // Botón Conectar
-        const connectBtn = document.createElement('i');
-        connectBtn.className = 'fas fa-link card-connect-btn card-control-btn';
-        connectBtn.title = 'Crear conexión';
-        connectBtn.addEventListener('click', (e) => { e.stopPropagation(); startConnectionMode(cardData.id); });
-        headerControls.appendChild(connectBtn);
-        // Botón Eliminar
-        const deleteBtn = document.createElement('i');
-        deleteBtn.className = 'fas fa-trash-alt card-delete-btn card-control-btn';
-        deleteBtn.title = 'Eliminar tarjeta';
-        deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm(`¿Eliminar tarjeta "${cardData.title}"?`)) deleteCard(cardData.id); });
-        headerControls.appendChild(deleteBtn);
+        const cpWrap = document.createElement('div'); cpWrap.className = 'color-picker-wrapper'; const cBtn = document.createElement('span'); cBtn.className = 'card-color-btn card-control-btn'; cBtn.style.backgroundColor = cardData.color; cBtn.title = 'Color'; const nativeCp = document.createElement('input'); nativeCp.type = 'color'; nativeCp.className = 'native-color-picker'; nativeCp.value = cardData.color; nativeCp.addEventListener('input', (e) => { if (e.target instanceof HTMLInputElement) { cardElement.style.backgroundColor = e.target.value; cBtn.style.backgroundColor = e.target.value; } }); nativeCp.addEventListener('change', (e) => { if (e.target instanceof HTMLInputElement) updateCardData(cardData.id, { color: e.target.value }); }); nativeCp.addEventListener('mousedown', (e) => e.stopPropagation()); cpWrap.appendChild(cBtn); cpWrap.appendChild(nativeCp); headerControls.appendChild(cpWrap);
+        // Connect Button
+        const connectBtn = document.createElement('i'); connectBtn.className = 'fas fa-link card-connect-btn card-control-btn'; connectBtn.title = 'Conectar'; connectBtn.addEventListener('click', (e) => { e.stopPropagation(); startConnectionMode(cardData.id); }); headerControls.appendChild(connectBtn);
+        // Delete Button
+        const deleteBtn = document.createElement('i'); deleteBtn.className = 'fas fa-trash-alt card-delete-btn card-control-btn'; deleteBtn.title = 'Eliminar'; deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm(`¿Eliminar "${cardData.title}"?`)) deleteCard(cardData.id); }); headerControls.appendChild(deleteBtn);
+        cardHeader.appendChild(titleSpan); cardHeader.appendChild(headerControls);
 
-        cardHeader.appendChild(titleSpan);
-        cardHeader.appendChild(headerControls);
-
-        // --- Body (Depende del tipo) ---
-        const cardBody = document.createElement('div');
-        cardBody.className = 'card-body';
-
-        // Crear Textarea (común a todos ahora)
-        const contentTextarea = document.createElement('textarea');
-        contentTextarea.placeholder = 'Escribe notas aquí...';
-        contentTextarea.value = cardData.content || ''; // Usar valor de content
+        // Body
+        const cardBody = document.createElement('div'); cardBody.className = 'card-body';
+        // Textarea (siempre presente)
+        const contentTextarea = document.createElement('textarea'); contentTextarea.placeholder = 'Notas...'; contentTextarea.value = cardData.content || '';
         contentTextarea.addEventListener('change', (e) => { if (e.target instanceof HTMLTextAreaElement) updateCardData(cardData.id, { content: e.target.value }); });
         contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation());
 
         if (cardData.type === 'image') {
-            // --- Contenido específico para Tarjeta de Imagen (URL y Display) ---
-            const urlInput = document.createElement('input');
-            urlInput.type = 'url';
-            urlInput.className = 'image-url-input';
-            urlInput.placeholder = 'Pega la URL de la imagen aquí...';
-            urlInput.value = cardData.imageUrl || '';
-            urlInput.spellcheck = false;
+            // Image specific elements
+            const urlInput = document.createElement('input'); urlInput.type = 'url'; urlInput.className = 'image-url-input'; urlInput.placeholder = 'URL Imagen...'; urlInput.value = cardData.imageUrl || ''; urlInput.spellcheck = false;
             urlInput.addEventListener('mousedown', (e) => e.stopPropagation());
-
-            const imageDisplay = document.createElement('div');
-            imageDisplay.className = 'image-display-container';
+            const imageDisplay = document.createElement('div'); imageDisplay.className = 'image-display-container';
             if (cardData.imageUrl) setImageBackground(imageDisplay, cardData.imageUrl);
-
-            urlInput.addEventListener('change', (e) => {
-                 if (!(e.target instanceof HTMLInputElement)) return;
-                 const newUrl = e.target.value.trim();
-                 updateCardData(cardData.id, { imageUrl: newUrl }); // Actualizar imageUrl
-                 setImageBackground(imageDisplay, newUrl);
-            });
-
-            // Añadir en orden: Input URL, Imagen, Textarea
-            cardBody.appendChild(urlInput);
-            cardBody.appendChild(imageDisplay);
-            cardBody.appendChild(contentTextarea); // Añadir el textarea al final
-
+            urlInput.addEventListener('change', (e) => { if (e.target instanceof HTMLInputElement) { const url = e.target.value.trim(); updateCardData(cardData.id, { imageUrl: url }); setImageBackground(imageDisplay, url); } });
+            // Add image elements first, then textarea
+            cardBody.appendChild(urlInput); cardBody.appendChild(imageDisplay); cardBody.appendChild(contentTextarea);
         } else {
-            // --- Contenido para Tarjetas de Texto (Solo el Textarea) ---
-             cardBody.appendChild(contentTextarea);
+            // For non-image types, just add the textarea
+            cardBody.appendChild(contentTextarea);
         }
 
-        // --- Footer (Común) ---
-        const cardFooter = document.createElement('div');
-        cardFooter.className = 'card-footer';
-        const typeSpan = document.createElement('span');
-        typeSpan.textContent = getSpanishTypeName(cardData.type);
-        cardFooter.appendChild(typeSpan);
+        // Footer
+        const cardFooter = document.createElement('div'); cardFooter.className = 'card-footer'; const typeSpan = document.createElement('span'); typeSpan.textContent = getSpanishTypeName(cardData.type); cardFooter.appendChild(typeSpan);
+        // Resize Handle
+        const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; resizeHandle.addEventListener('mousedown', startResize);
 
-        // --- Handle de Redimensionamiento (Común) ---
-        const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'resize-handle';
-        resizeHandle.addEventListener('mousedown', startResize);
-
-        // --- Ensamblaje y Eventos Globales ---
-        cardElement.appendChild(cardHeader);
-        cardElement.appendChild(cardBody);
-        cardElement.appendChild(cardFooter);
-        cardElement.appendChild(resizeHandle);
-        cardElement.addEventListener('click', handleCardClickForConnection);
-        cardElement.addEventListener('mousedown', startDrag);
-        canvasContent.appendChild(cardElement);
+        // Assemble Card
+        cardElement.appendChild(cardHeader); cardElement.appendChild(cardBody); cardElement.appendChild(cardFooter); cardElement.appendChild(resizeHandle);
+        // Global Card Events
+        cardElement.addEventListener('click', handleCardClickForConnection); cardElement.addEventListener('mousedown', startDrag);
+        canvasContent.appendChild(cardElement); // Add to DOM
     }
 
-    // Función auxiliar para establecer la imagen de fondo y manejar errores
     function setImageBackground(element, url) {
-        if (!url) {
-            element.style.backgroundImage = '';
-            return;
-        }
-        const imgTest = new Image();
-        imgTest.onload = () => {
-            element.style.backgroundImage = `url('${url}')`;
-            console.log(`Imagen cargada: ${url}`);
-        };
-        imgTest.onerror = () => {
-            element.style.backgroundImage = '';
-            console.warn(`Error al cargar imagen: ${url}`);
-        };
-        imgTest.src = url;
+        if (!url) { element.style.backgroundImage = ''; return; }
+        const img = new Image(); img.onload = () => { element.style.backgroundImage = `url('${url}')`; console.log(`Img OK: ${url.substring(0, 50)}...`); }; img.onerror = () => { element.style.backgroundImage = ''; console.warn(`Img Error: ${url.substring(0, 50)}...`); }; img.src = url;
     }
+    function renderAllCards() { if (!canvasContent || !connectionSvg) return; canvasContent.querySelectorAll('.card').forEach(n => n.remove()); connectionSvg.innerHTML = ''; cards.forEach(renderCard); renderAllLines(); }
 
-
-    // Limpia y renderiza todas las tarjetas y líneas
-    function renderAllCards() {
-        if (!canvasContent || !connectionSvg) return;
-        canvasContent.querySelectorAll('.card').forEach(node => node.remove());
-        connectionSvg.innerHTML = '';
-        cards.forEach(card => renderCard(card));
-        renderAllLines();
-    }
-
-    // --- Funciones de Líneas de Conexión ---
-    function renderLine(connection) {
-        if (!canvasContent || !connectionSvg) return;
-        const fromCardEl = canvasContent.querySelector(`.card[data-id="${connection.fromId}"]`);
-        const toCardEl = canvasContent.querySelector(`.card[data-id="${connection.toId}"]`);
-        if (!fromCardEl || !toCardEl) return;
-        const x1 = fromCardEl.offsetLeft + fromCardEl.offsetWidth / 2;
-        const y1 = fromCardEl.offsetTop + fromCardEl.offsetHeight / 2;
-        const x2 = toCardEl.offsetLeft + toCardEl.offsetWidth / 2;
-        const y2 = toCardEl.offsetTop + toCardEl.offsetHeight / 2;
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-        line.dataset.connectionId = connection.id;
-        line.addEventListener('click', (e) => { e.stopPropagation(); if (confirm('¿Eliminar conexión?')) deleteConnection(connection.id); });
-        connectionSvg.appendChild(line);
+    // --- Líneas de Conexión ---
+    function renderLine(conn) {
+        if (!canvasContent || !connectionSvg) return; const from = canvasContent.querySelector(`.card[data-id="${conn.fromId}"]`); const to = canvasContent.querySelector(`.card[data-id="${conn.toId}"]`); if (!from || !to) return;
+        const x1=from.offsetLeft+from.offsetWidth/2, y1=from.offsetTop+from.offsetHeight/2, x2=to.offsetLeft+to.offsetWidth/2, y2=to.offsetTop+to.offsetHeight/2;
+        const line = document.createElementNS('http://www.w3.org/2000/svg','line'); line.setAttribute('x1',x1); line.setAttribute('y1',y1); line.setAttribute('x2',x2); line.setAttribute('y2',y2); line.dataset.connectionId = conn.id;
+        line.addEventListener('click', (e) => { e.stopPropagation(); if (confirm('¿Eliminar conexión?')) deleteConnection(conn.id); }); connectionSvg.appendChild(line);
     }
     function renderAllLines() { if (!connectionSvg) return; connectionSvg.innerHTML = ''; connections.forEach(renderLine); }
-    function updateLinesForCard(cardId) {
-        if (!connectionSvg) return;
-        connections.forEach(conn => {
-            if (conn.fromId === cardId || conn.toId === cardId) {
-                const lineElement = connectionSvg.querySelector(`line[data-connection-id="${conn.id}"]`);
-                if (lineElement) lineElement.remove();
-                renderLine(conn);
-            }
-        });
-    }
+    function updateLinesForCard(cardId) { if (!connectionSvg) return; connections.forEach(conn => { if (conn.fromId === cardId || conn.toId === cardId) { const line = connectionSvg.querySelector(`line[data-connection-id="${conn.id}"]`); if (line) line.remove(); renderLine(conn); } }); }
 
-    // --- Funciones de Manipulación de Tarjetas ---
+    // --- Manipulación de Tarjetas ---
     function addCard(type) {
-        const containerRect = canvasContainer?.getBoundingClientRect();
-        let initialX = 50, initialY = 50;
-        let initialWidth = 250, initialHeight = (type === 'image' ? 280 : 180);
-        if(containerRect){
-             initialX = (canvasContainer.scrollLeft + containerRect.width / 2) / currentScale;
-             initialY = (canvasContainer.scrollTop + containerRect.height / 2) / currentScale;
-        }
-        initialX = Math.max(20, initialX - initialWidth / 2 + (Math.random() - 0.5) * 50);
-        initialY = Math.max(20, initialY - initialHeight / 2 + (Math.random() - 0.5) * 50);
-        const newCard = {
-            id: crypto.randomUUID(), type: type,
-            title: `Nueva ${getSpanishTypeName(type)}`,
-            x: initialX, y: initialY,
-            width: initialWidth, height: initialHeight,
-            color: getRandomColor(), tags: [],
-            content: '',
-            imageUrl: (type === 'image' ? '' : undefined)
-        };
-        if (type !== 'image') delete newCard.imageUrl;
-        cards.push(newCard);
-        renderCard(newCard);
-        saveData();
+        const cRect = canvasContainer?.getBoundingClientRect(); let x=50, y=50; let w=250, h=(type==='image'?280:180);
+        if(cRect){ x = (canvasContainer.scrollLeft+cRect.width/2)/currentScale; y = (canvasContainer.scrollTop+cRect.height/2)/currentScale; }
+        x = Math.max(20,x-w/2+(Math.random()-0.5)*50); y = Math.max(20,y-h/2+(Math.random()-0.5)*50);
+        const card = { id: crypto.randomUUID(), type: type, title: `Nueva ${getSpanishTypeName(type)}`, x: x, y: y, width: w, height: h, color: getRandomColor(), tags: [], content: '', imageUrl: (type === 'image' ? '' : undefined) };
+        if (type !== 'image') delete card.imageUrl;
+        cards.push(card); renderCard(card); saveData();
     }
-
     function deleteCard(cardId) {
-        connections = connections.filter(conn => {
-            const shouldRemove = conn.fromId === cardId || conn.toId === cardId;
-            if (shouldRemove) { const lineElement = connectionSvg?.querySelector(`line[data-connection-id="${conn.id}"]`); if (lineElement) lineElement.remove(); }
-            return !shouldRemove;
-        });
-        cards = cards.filter(card => card.id !== cardId);
-        const cardElement = canvasContent?.querySelector(`.card[data-id="${cardId}"]`);
-        if (cardElement) cardElement.remove();
-        saveData();
+        connections = connections.filter(c => { const rm = c.fromId===cardId || c.toId===cardId; if(rm){const l=connectionSvg?.querySelector(`line[data-connection-id="${c.id}"]`); if(l) l.remove();} return !rm; });
+        cards = cards.filter(c => c.id !== cardId); const el = canvasContent?.querySelector(`.card[data-id="${cardId}"]`); if (el) el.remove(); saveData();
     }
+    function updateCardData(cardId, updates) { const i = cards.findIndex(c => c.id === cardId); if (i > -1) { Object.assign(cards[i], updates); saveData(); if (updates.x!==undefined||updates.y!==undefined||updates.width!==undefined||updates.height!==undefined) updateLinesForCard(cardId); } else console.warn(`Update fail: Card ${cardId} not found`); }
 
-    function updateCardData(cardId, updates) {
-        const cardIndex = cards.findIndex(card => card.id === cardId);
-        if (cardIndex > -1) {
-            Object.assign(cards[cardIndex], updates);
-            saveData();
-            if (updates.x !== undefined || updates.y !== undefined || updates.width !== undefined || updates.height !== undefined) { updateLinesForCard(cardId); }
-        } else { console.warn(`Tarjeta no encontrada para actualizar: ${cardId}`); }
-    }
-
-    // --- Funcionalidad de Drag and Drop ---
+    // --- Drag and Drop ---
     function startDrag(e) {
-        if (e.target.classList.contains('image-url-input')) return;
-        if (e.button !== 0 || e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.closest('.card-control-btn') || e.target.closest('.resize-handle')) { return; }
-        if (connectingCardId || !canvasContent) return;
-        activeCard = e.currentTarget; activeCard.classList.add('dragging'); isDragging = true;
-        const rect = activeCard.getBoundingClientRect();
-        dragOffsetX = (e.clientX - rect.left) / currentScale; dragOffsetY = (e.clientY - rect.top) / currentScale;
-        document.addEventListener('mousemove', drag); document.addEventListener('mouseup', stopDrag, { once: true });
-        document.body.style.userSelect = 'none';
+        if (e.target.classList.contains('image-url-input')) return; if (e.button !== 0 || e.target.isContentEditable || e.target.tagName==='TEXTAREA' || e.target.closest('.card-control-btn') || e.target.closest('.resize-handle')) return;
+        if (connectingCardId || !canvasContent) return; activeCard = e.currentTarget; activeCard.classList.add('dragging'); isDragging = true;
+        const rect = activeCard.getBoundingClientRect(); dragOffsetX = (e.clientX - rect.left) / currentScale; dragOffsetY = (e.clientY - rect.top) / currentScale;
+        document.addEventListener('mousemove', drag); document.addEventListener('mouseup', stopDrag, { once: true }); document.body.style.userSelect = 'none';
     }
     function drag(e) {
-        if (!isDragging || !activeCard || !canvasContent) return; e.preventDefault();
-        const canvasRect = canvasContent.getBoundingClientRect();
-        let newX = (e.clientX - canvasRect.left) / currentScale - dragOffsetX; let newY = (e.clientY - canvasRect.top) / currentScale - dragOffsetY;
-        activeCard.style.left = `${newX}px`; activeCard.style.top = `${newY}px`;
-        updateLinesForCard(activeCard.dataset.id);
+        if (!isDragging || !activeCard || !canvasContent) return; e.preventDefault(); const cRect = canvasContent.getBoundingClientRect();
+        let x = (e.clientX - cRect.left)/currentScale - dragOffsetX; let y = (e.clientY - cRect.top)/currentScale - dragOffsetY;
+        activeCard.style.left = `${x}px`; activeCard.style.top = `${y}px`; updateLinesForCard(activeCard.dataset.id);
     }
     function stopDrag() {
-        if (!isDragging || !activeCard) return; isDragging = false;
-        const cardId = activeCard.dataset.id; const finalX = parseFloat(activeCard.style.left || '0'); const finalY = parseFloat(activeCard.style.top || '0');
-        activeCard.classList.remove('dragging'); updateCardData(cardId, { x: finalX, y: finalY });
+        if (!isDragging || !activeCard) return; isDragging = false; const id = activeCard.dataset.id; const x = parseFloat(activeCard.style.left||'0'); const y = parseFloat(activeCard.style.top||'0');
+        activeCard.classList.remove('dragging'); updateCardData(id, { x: x, y: y });
         document.removeEventListener('mousemove', drag); document.body.style.userSelect = ''; activeCard = null;
     }
 
-    // --- Funcionalidad de Redimensionamiento ---
-    function startResize(e) {
-        if (e.button !== 0 || !canvasContent) return; e.stopPropagation();
-        isResizing = true; resizingCard = e.target.closest('.card'); if (!resizingCard) return; resizingCard.classList.add('resizing');
-        startX = e.clientX; startY = e.clientY; initialWidth = resizingCard.offsetWidth; initialHeight = resizingCard.offsetHeight;
-        document.addEventListener('mousemove', doResize); document.addEventListener('mouseup', stopResize, { once: true });
-        document.body.style.cursor = 'nwse-resize'; document.body.style.userSelect = 'none';
-    }
-    function doResize(e) {
-        if (!isResizing || !resizingCard) return; e.preventDefault();
-        const deltaX = (e.clientX - startX) / currentScale; const deltaY = (e.clientY - startY) / currentScale;
-        let newWidth = Math.max(MIN_CARD_WIDTH, initialWidth + deltaX); let newHeight = Math.max(MIN_CARD_HEIGHT, initialHeight + deltaY);
-        resizingCard.style.width = `${newWidth}px`; resizingCard.style.height = `${newHeight}px`;
-        updateLinesForCard(resizingCard.dataset.id);
-    }
-    function stopResize() {
-        if (!isResizing || !resizingCard) return; isResizing = false;
-        const cardId = resizingCard.dataset.id; const finalWidth = parseFloat(resizingCard.style.width); const finalHeight = parseFloat(resizingCard.style.height);
-        resizingCard.classList.remove('resizing'); updateCardData(cardId, { width: finalWidth, height: finalHeight });
-        document.removeEventListener('mousemove', doResize); document.body.style.cursor = ''; document.body.style.userSelect = ''; resizingCard = null;
-    }
+    // --- Redimensionamiento ---
+    function startResize(e) { if (e.button !== 0 || !canvasContent) return; e.stopPropagation(); isResizing = true; resizingCard = e.target.closest('.card'); if (!resizingCard) return; resizingCard.classList.add('resizing'); startX = e.clientX; startY = e.clientY; initialWidth = resizingCard.offsetWidth; initialHeight = resizingCard.offsetHeight; document.addEventListener('mousemove', doResize); document.addEventListener('mouseup', stopResize, { once: true }); document.body.style.cursor = 'nwse-resize'; document.body.style.userSelect = 'none'; }
+    function doResize(e) { if (!isResizing || !resizingCard) return; e.preventDefault(); const dX = (e.clientX - startX) / currentScale; const dY = (e.clientY - startY) / currentScale; let w = Math.max(MIN_CARD_WIDTH, initialWidth + dX); let h = Math.max(MIN_CARD_HEIGHT, initialHeight + dY); resizingCard.style.width = `${w}px`; resizingCard.style.height = `${h}px`; updateLinesForCard(resizingCard.dataset.id); }
+    function stopResize() { if (!isResizing || !resizingCard) return; isResizing = false; const id = resizingCard.dataset.id; const w = parseFloat(resizingCard.style.width); const h = parseFloat(resizingCard.style.height); resizingCard.classList.remove('resizing'); updateCardData(id, { width: w, height: h }); document.removeEventListener('mousemove', doResize); document.body.style.cursor = ''; document.body.style.userSelect = ''; resizingCard = null; }
 
-    // --- Funcionalidad de Conexiones ---
-    function startConnectionMode(fromCardId) {
-        if (!canvasContent) return; if (connectingCardId) cancelConnectionMode();
-        connectingCardId = fromCardId; document.body.classList.add('connecting-mode');
-        canvasContent.querySelectorAll('.card').forEach(cardEl => { if (cardEl.dataset.id === fromCardId) cardEl.classList.add('is-connection-source'); else cardEl.classList.add('connection-candidate'); });
-        document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true });
-        console.log(`Modo conexión iniciado: ${fromCardId}`);
-    }
-    function handleCardClickForConnection(e) {
-        if (!connectingCardId) return; const clickedCardElement = e.currentTarget; const toCardId = clickedCardElement.dataset.id;
-        document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
-        if (connectingCardId === toCardId) { console.log("Conexión cancelada: misma tarjeta."); } else {
-            const existing = connections.find(c => (c.fromId === connectingCardId && c.toId === toCardId) || (c.fromId === toCardId && c.toId === connectingCardId));
-            if (existing) { console.log("Conexión cancelada: ya existe."); } else {
-                const newConnection = { id: crypto.randomUUID(), fromId: connectingCardId, toId: toCardId };
-                connections.push(newConnection); renderLine(newConnection); console.log(`Conexión creada: ${connectingCardId} -> ${toCardId}`); saveData();
-            }
-        }
-        cancelConnectionMode();
-    }
-    function cancelConnectionMode() {
-        if (!connectingCardId && !document.body.classList.contains('connecting-mode')) return;
-        console.log("Modo conexión finalizado/cancelado."); connectingCardId = null; document.body.classList.remove('connecting-mode');
-        canvasContent?.querySelectorAll('.card.connection-candidate, .card.is-connection-source').forEach(el => el.classList.remove('connection-candidate', 'is-connection-source'));
-        document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
-    }
-    function cancelConnectionOnEscape(e) { if (e.key === 'Escape') { console.log("Cancelado por Escape."); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true }); cancelConnectionMode(); } else { document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); } }
-    function cancelConnectionOnClickOutside(e) {
-        document.removeEventListener('keydown', cancelConnectionOnEscape);
-        if (!e.target.closest('.card')) { console.log("Cancelado por click fuera."); cancelConnectionMode(); } else {
-            const clickedOriginBtn = e.target.closest(`.card[data-id="${connectingCardId}"] .card-connect-btn`);
-            if(clickedOriginBtn) { document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true }); document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); }
-        }
-    }
-    function deleteConnection(connectionId) {
-        connections = connections.filter(conn => conn.id !== connectionId); const line = connectionSvg?.querySelector(`line[data-connection-id="${connectionId}"]`); if (line) line.remove(); saveData(); console.log(`Conexión eliminada: ${connectionId}`);
-    }
+    // --- Conexiones ---
+    function startConnectionMode(fromId) { if (!canvasContent) return; if (connectingCardId) cancelConnectionMode(); connectingCardId = fromId; document.body.classList.add('connecting-mode'); canvasContent.querySelectorAll('.card').forEach(el => { if (el.dataset.id === fromId) el.classList.add('is-connection-source'); else el.classList.add('connection-candidate'); }); document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true }); console.log(`Conn Mode ON: ${fromId}`); }
+    function handleCardClickForConnection(e) { if (!connectingCardId) return; const toEl = e.currentTarget; const toId = toEl.dataset.id; document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true }); if (connectingCardId === toId) console.log("Conn Cancel: Self"); else { const exists = connections.find(c=>(c.fromId===connectingCardId&&c.toId===toId)||(c.fromId===toId&&c.toId===connectingCardId)); if(exists) console.log("Conn Cancel: Exists"); else { const conn={id:crypto.randomUUID(),fromId:connectingCardId,toId:toId}; connections.push(conn); renderLine(conn); console.log(`Conn OK: ${connectingCardId}->${toId}`); saveData(); } } cancelConnectionMode(); }
+    function cancelConnectionMode() { if (!connectingCardId && !document.body.classList.contains('connecting-mode')) return; console.log("Conn Mode OFF"); connectingCardId = null; document.body.classList.remove('connecting-mode'); canvasContent?.querySelectorAll('.card.connection-candidate,.card.is-connection-source').forEach(el => el.classList.remove('connection-candidate','is-connection-source')); document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true }); }
+    function cancelConnectionOnEscape(e) { if(e.key==='Escape'){console.log("Conn Cancel: Esc"); document.removeEventListener('mousedown',cancelConnectionOnClickOutside,{capture:true}); cancelConnectionMode();} else {document.addEventListener('keydown',cancelConnectionOnEscape,{once:true});} }
+    function cancelConnectionOnClickOutside(e) { document.removeEventListener('keydown', cancelConnectionOnEscape); if (!e.target.closest('.card')) { console.log("Conn Cancel: Click Out"); cancelConnectionMode(); } else { const originBtn = e.target.closest(`.card[data-id="${connectingCardId}"] .card-connect-btn`); if(originBtn) { document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true }); document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); } } }
+    function deleteConnection(connId) { connections = connections.filter(c => c.id !== connId); const line = connectionSvg?.querySelector(`line[data-connection-id="${connId}"]`); if (line) line.remove(); saveData(); console.log(`Conn Deleted: ${connId}`); }
 
-    // --- Funcionalidad de Zoom ---
+    // --- Zoom ---
     function applyZoom() { if (canvasContent) canvasContent.style.transform = `scale(${currentScale})`; if (scaleLabel) scaleLabel.textContent = `${Math.round(currentScale * 100)}%`; if (connectionSvg) renderAllLines(); }
-    function zoom(direction) {
-        const step = 0.1; let prev = currentScale;
-        if (direction === 'in') currentScale = Math.min(MAX_ZOOM, currentScale + step); else if (direction === 'out') currentScale = Math.max(MIN_ZOOM, currentScale - step);
-        currentScale = Math.round(currentScale * 100) / 100;
-        if (currentScale !== prev) { applyZoom(); saveData(); console.log(`Zoom: ${scaleLabel.textContent}`); }
-    }
+    function zoom(dir) { const step = 0.1; let prev = currentScale; if (dir === 'in') currentScale = Math.min(MAX_ZOOM, currentScale + step); else if (dir === 'out') currentScale = Math.max(MIN_ZOOM, currentScale - step); currentScale = Math.round(currentScale*100)/100; if (currentScale !== prev) { applyZoom(); saveData(); console.log(`Zoom: ${scaleLabel.textContent}`); } }
 
-    // --- Funcionalidad de Importación/Exportación ---
-    function exportToJson() {
-        try {
-            const data = { version: STORAGE_KEY, timestamp: new Date().toISOString(), cards: cards, connections: connections, scale: currentScale };
-            const str = JSON.stringify(data, null, 2); const uri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(str);
-            const name = `storycanvas_export_${new Date().toISOString().slice(0,10)}.json`;
-            const link = document.createElement('a'); link.setAttribute('href', uri); link.setAttribute('download', name);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link); console.log("Exportación iniciada.");
-        } catch (e) { console.error("Error exportación:", e); alert("Error al exportar."); }
-    }
+    // --- Import/Export ---
+    function exportToJson() { try { const d={version:STORAGE_KEY,timestamp:new Date().toISOString(),cards:cards,connections:connections,scale:currentScale}; const s=JSON.stringify(d,null,2); const u='data:application/json;charset=utf-8,'+encodeURIComponent(s); const n=`storycanvas_${new Date().toISOString().slice(0,10)}.json`; const l=document.createElement('a'); l.setAttribute('href',u); l.setAttribute('download',n); document.body.appendChild(l); l.click(); document.body.removeChild(l); console.log("Export OK"); } catch(e){ console.error("Export Error:",e); alert("Error exportando."); } }
     function handleFileImport(event) {
-        const file = event.target.files ? event.target.files[0] : null; if (!file) return;
-        if (!confirm("Importar reemplazará el lienzo actual. ¿Continuar?")) { if (importFileInput) importFileInput.value = null; return; }
+        const file = event.target.files?.[0]; if (!file) return;
+        if (!confirm("Importar reemplazará el lienzo. ¿Continuar?")) { if (importFileInput) importFileInput.value = null; return; }
         const reader = new FileReader();
         reader.onload = (e) => {
-            const content = e.target?.result; if (typeof content !== 'string') { alert("Error lectura archivo."); if (importFileInput) importFileInput.value = null; return; }
+            const content = e.target?.result; if (typeof content !== 'string') { alert("Error lectura."); if (importFileInput) importFileInput.value = null; return; }
             try {
                 const data = JSON.parse(content);
-                if (typeof data !== 'object' || data === null || !Array.isArray(data.cards) || !Array.isArray(data.connections) || typeof data.scale !== 'number' || data.scale < MIN_ZOOM || data.scale > MAX_ZOOM) { throw new Error("Formato inválido."); }
-                data.cards.forEach((card, i) => {
-                    if (!card.id || typeof card.x!=='number' || typeof card.y!=='number' || typeof card.width!=='number' || typeof card.height!=='number' || typeof card.type!=='string' || typeof card.title!=='string') { throw new Error(`Datos inválidos tarjeta ${i+1}.`); }
-                    card.color = card.color || getRandomColor(); card.width = Math.max(MIN_CARD_WIDTH, card.width); card.height = Math.max(MIN_CARD_HEIGHT, card.height);
-                    card.content = card.content || ''; // Asegurar content
-                    if (card.type === 'image') card.imageUrl = card.imageUrl || ''; else card.imageUrl = undefined;
-                });
-                data.connections.forEach((conn, i) => { if (!conn.id || !conn.fromId || !conn.toId) { throw new Error(`Datos inválidos conexión ${i+1}.`); } if (!data.cards.some(c=>c.id===conn.fromId) || !data.cards.some(c=>c.id===conn.toId)) { console.warn(`Conexión ${conn.id} inválida.`); } });
+                if (typeof data !== 'object' || data === null || !Array.isArray(data.cards) || !Array.isArray(data.connections) || typeof data.scale !== 'number' || data.scale < MIN_ZOOM || data.scale > MAX_ZOOM) throw new Error("Formato inválido.");
+                data.cards.forEach((c,i) => { if (!c.id||typeof c.x!=='number'||typeof c.y!=='number'||typeof c.width!=='number'||typeof c.height!=='number'||typeof c.type!=='string'||typeof c.title!=='string') throw new Error(`Card ${i+1} inválida.`); c.color=c.color||getRandomColor(); c.width=Math.max(MIN_CARD_WIDTH,c.width); c.height=Math.max(MIN_CARD_HEIGHT,c.height); c.content=c.content||''; if(c.type==='image') c.imageUrl=c.imageUrl||''; else c.imageUrl=undefined; });
+                data.connections.forEach((c,i) => { if (!c.id||!c.fromId||!c.toId) throw new Error(`Conn ${i+1} inválida.`); if (!data.cards.some(card=>card.id===c.fromId)||!data.cards.some(card=>card.id===c.toId)) console.warn(`Conn ${c.id} inválida (tarjeta no encontrada).`); });
                 data.connections = data.connections.filter(conn => data.cards.some(c=>c.id===conn.fromId) && data.cards.some(c=>c.id===conn.toId));
                 cards = data.cards; connections = data.connections; currentScale = data.scale;
-                console.log("Importado."); alert("Importado con éxito.");
-                renderAllCards(); applyZoom(); saveData();
-            } catch (err) { console.error("Error importación:", err); alert(`Error: ${err.message || 'Formato inválido.'}`);
+                console.log("Import OK."); alert("Importado con éxito."); renderAllCards(); applyZoom(); saveData();
+            } catch (err) { console.error("Import Error:", err); alert(`Error: ${err.message||'Formato inválido.'}`);
             } finally { if (importFileInput) importFileInput.value = null; }
         };
-        reader.onerror = (e) => { console.error("Error lectura:", e); alert("Error al leer archivo."); if (importFileInput) importFileInput.value = null; };
-        reader.readAsText(file);
+        reader.onerror = (e) => { console.error("Read Error:", e); alert("Error al leer archivo."); if (importFileInput) importFileInput.value = null; }; reader.readAsText(file);
     }
 
     // --- Limpiar Almacenamiento ---
-    function clearStorage() {
-        if (confirm("⚠️ ¿Borrar TODO el progreso? ¡No se puede deshacer!")) {
-            try { localStorage.removeItem(STORAGE_KEY); resetState(); renderAllCards(); applyZoom(); alert("Lienzo limpiado."); console.log("LocalStorage limpiado."); showSaveIndicator(false); }
-            catch (e) { console.error("Error limpiar:", e); alert("Error al borrar datos."); }
-        }
-    }
+    function clearStorage() { if (confirm("⚠️ ¿Borrar TODO? ¡No se puede deshacer!")) { try { localStorage.removeItem(STORAGE_KEY); resetState(); renderAllCards(); applyZoom(); alert("Lienzo limpiado."); console.log("Storage Cleared."); showSaveIndicator(false); } catch (e) { console.error("Clear Error:", e); alert("Error al borrar."); } } }
     // --- Utilidades ---
-    function getRandomColor() { const c = ['#FFFFFF', '#FFF1F0', '#F0FFF4', '#F0F9FF', '#FAF5FF', '#FFFBEB', '#FFF8F4']; if (Math.random() < 0.5) return '#FFFFFF'; return c[Math.floor(Math.random() * c.length)]; }
+    function getRandomColor() { const c=['#FFFFFF','#FFF1F0','#F0FFF4','#F0F9FF','#FAF5FF','#FFFBEB','#FFF8F4']; if(Math.random()<0.5) return '#FFFFFF'; return c[Math.floor(Math.random()*c.length)]; }
+
+    // --- Aviso Escritorio ---
+    let resizeTimeout;
+    function checkResolution() { if (!desktopWarning) return; const w = window.innerWidth; if (w < MIN_DESKTOP_WIDTH) desktopWarning.classList.add('visible'); else desktopWarning.classList.remove('visible'); }
+    function debounce(func, wait) { let timeout; return function(...args){ const later=()=>{clearTimeout(timeout);func(...args);}; clearTimeout(timeout); timeout=setTimeout(later,wait); }; }
 
     // --- Inicialización y Event Listeners ---
-    console.log("Inicializando..."); loadData();
-    if (addCardButtons.length > 0) { addCardButtons.forEach(b => { b.addEventListener('click', () => { if (b.dataset.type) addCard(b.dataset.type); }); }); } else { console.warn("Botones añadir no encontrados."); }
-    if (zoomInBtn && zoomOutBtn) { zoomInBtn.addEventListener('click', () => zoom('in')); zoomOutBtn.addEventListener('click', () => zoom('out')); canvasContainer?.addEventListener('wheel', (e) => { e.preventDefault(); if (e.deltaY < 0) zoom('in'); else zoom('out'); }, { passive: false }); } else { console.warn("Botones zoom no encontrados."); }
-    if (exportBtn) exportBtn.addEventListener('click', exportToJson); else { console.warn("Botón exportar no encontrado."); }
-    if (importBtn && importFileInput) { importBtn.addEventListener('click', () => importFileInput.click()); importFileInput.addEventListener('change', handleFileImport); } else { console.warn("Elementos importación no encontrados."); }
-    if (clearStorageBtn) clearStorageBtn.addEventListener('click', clearStorage); else { console.warn("Botón limpiar no encontrado."); }
-    window.addEventListener('beforeunload', () => { if(saveTimeout) { clearTimeout(saveTimeout); try { const d = { cards: cards, connections: connections, scale: currentScale }; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); console.log("Guardado forzado."); } catch (e) { console.error("Error guardado forzado:", e); } } });
+    console.log("Inicializando..."); loadData(); checkResolution();
+    if(addCardButtons.length>0) addCardButtons.forEach(b=>{b.addEventListener('click',()=>{if(b.dataset.type)addCard(b.dataset.type);});}); else console.warn("Add btns not found.");
+    if(zoomInBtn&&zoomOutBtn){zoomInBtn.addEventListener('click',()=>zoom('in')); zoomOutBtn.addEventListener('click',()=>zoom('out')); canvasContainer?.addEventListener('wheel',(e)=>{e.preventDefault(); if(e.deltaY<0)zoom('in');else zoom('out');},{passive:false});} else console.warn("Zoom btns not found.");
+    if(exportBtn) exportBtn.addEventListener('click',exportToJson); else console.warn("Export btn not found.");
+    if(importBtn&&importFileInput){importBtn.addEventListener('click',()=>importFileInput.click()); importFileInput.addEventListener('change',handleFileImport);} else console.warn("Import elements not found.");
+    if(clearStorageBtn) clearStorageBtn.addEventListener('click',clearStorage); else console.warn("Clear btn not found.");
+    window.addEventListener('resize', debounce(checkResolution, RESIZE_DEBOUNCE_MS));
+    window.addEventListener('beforeunload', () => { if(saveTimeout) { clearTimeout(saveTimeout); try { const d = { cards: cards, connections: connections, scale: currentScale }; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); console.log("Forced save OK."); } catch (e) { console.error("Forced save Error:", e); } } });
     console.log("Listo.");
 });
 </script>
