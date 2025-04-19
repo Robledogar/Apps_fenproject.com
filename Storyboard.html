@@ -58,7 +58,7 @@
         .card {
             position: absolute;
             min-width: 150px;
-            min-height: 100px;
+            min-height: 150px; /* Aumentada altura mínima para acomodar textarea en imagen */
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -70,64 +70,23 @@
             z-index: 10;
             border: 1px solid #e5e7eb;
             width: 250px;
-            height: 180px;
+            height: 280px; /* Aumentada altura por defecto para imagen + texto */
         }
-        .card.dragging {
-            z-index: 1000;
-            cursor: grabbing;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .card.resizing {
-            z-index: 1000;
-            cursor: nwse-resize;
-            user-select: none;
-        }
-        .card-header {
-            padding: 6px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            background-color: rgba(249, 250, 251, 0.8);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: grab;
-            border-radius: 8px 8px 0 0;
-        }
+        .card.dragging { z-index: 1000; cursor: grabbing; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .card.resizing { z-index: 1000; cursor: nwse-resize; user-select: none; }
+        .card-header { padding: 6px 10px; border-bottom: 1px solid #e5e7eb; font-weight: 600; background-color: rgba(249, 250, 251, 0.8); display: flex; justify-content: space-between; align-items: center; cursor: grab; border-radius: 8px 8px 0 0; }
         .card:active .card-header { cursor: grabbing; }
-        .card-header-title {
-            flex-grow: 1;
-            margin-right: 8px;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            outline: none;
-        }
-        .card-header-title:focus {
-            white-space: normal;
-            text-overflow: clip;
-        }
-        .card-header-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .card-control-btn {
-            cursor: pointer;
-            color: #6b7280;
-            font-size: 13px;
-            padding: 3px;
-            line-height: 1;
-            transition: color 0.2s;
-        }
+        .card-header-title { flex-grow: 1; margin-right: 8px; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; outline: none; }
+        .card-header-title:focus { white-space: normal; text-overflow: clip; }
+        .card-header-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .card-control-btn { cursor: pointer; color: #6b7280; font-size: 13px; padding: 3px; line-height: 1; transition: color 0.2s; }
         .card-control-btn:hover { color: #1f2937; }
         .card-delete-btn:hover { color: #ef4444; }
         .card-connect-btn:hover { color: #3b82f6; }
         .card-color-btn:hover { opacity: 0.8; }
 
         .card-body {
-            padding: 10px 12px;
+            padding: 10px 12px; /* Restaurar padding por defecto */
             font-size: 13px;
             line-height: 1.4;
             flex-grow: 1;
@@ -135,7 +94,14 @@
             display: flex;
             flex-direction: column;
         }
-        .card textarea {
+        /* Layout específico para el body de la tarjeta de imagen */
+        .card[data-card-type="image"] .card-body {
+             padding: 0; /* Quitar padding general del body para imagen */
+             /* El padding se manejará en los elementos internos */
+        }
+
+        /* Textarea general (para tipos texto) */
+        .card:not([data-card-type="image"]) .card-body textarea {
             width: 100%;
             border: none;
             padding: 0;
@@ -148,118 +114,81 @@
             outline: none;
             overflow-y: auto;
         }
-        .card-footer {
-            padding: 5px 10px;
-            font-size: 11px;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
+
+        /* --- Estilos específicos para Tarjeta de Imagen --- */
+        .image-url-input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #e5e7eb; /* Borde inferior */
+            padding: 8px 12px; /* Padding interno */
+            font-size: 12px;
+            outline: none;
+            box-sizing: border-box;
             flex-shrink: 0;
-            border-radius: 0 0 8px 8px;
             background-color: #f9fafc;
         }
-
-        /* --- Handle de Redimensionamiento --- */
-        .resize-handle {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 14px;
-            height: 14px;
-            background-color: rgba(150, 150, 150, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 0 0 8px 0;
-            cursor: nwse-resize;
-            z-index: 11;
-            transition: background-color 0.2s;
+        .image-url-input:focus {
+            border-bottom: 1px solid #3b82f6;
         }
-        .resize-handle:hover { background-color: rgba(100, 100, 100, 0.8); }
-
-        /* --- Selector de Color --- */
-        .color-picker-wrapper { position: relative; display: inline-block; }
-        .card-color-btn {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 1px solid #d1d5db;
-            cursor: pointer;
-            display: inline-block;
-            vertical-align: middle;
-            transition: transform 0.1s;
-        }
-        .card-color-btn:hover { transform: scale(1.1); }
-        .native-color-picker {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 12;
-        }
-
-        /* --- Modo Conexión --- */
-        body.connecting-mode { cursor: crosshair; }
-        .card.connection-candidate {
-             outline: 2px dashed #60a5fa;
-             outline-offset: 3px;
-             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-        }
-        .card.is-connection-source {
-            outline: 2px solid #3b82f6;
-            outline-offset: 3px;
-        }
-
-
-        /* --- Controles de Zoom y Escala --- */
-        .zoom-controls {
-            position: absolute;
-            bottom: 16px;
-            right: 16px;
-            z-index: 50;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            display: flex;
-            flex-direction: column;
+        .image-display-container {
+            flex-grow: 1; /* Ocupar espacio vertical restante */
+            position: relative;
+            background-color: #e5e7eb;
+            background-size: contain;
+            background-position: center center;
+            background-repeat: no-repeat;
             overflow: hidden;
+            /* Sin border-radius aquí si hay textarea debajo */
+            min-height: 100px; /* Altura mínima para el display */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .zoom-btn {
-            padding: 10px 14px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #374151;
-            transition: background-color 0.2s;
-        }
+         .image-display-container::before { /* Icono placeholder */
+            content: '\f03e';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900; font-size: 30px;
+            color: #9ca3af; opacity: 0.5;
+         }
+         .image-display-container[style*="background-image: url"]::before { display: none; }
+
+         /* Textarea específico para tarjeta de imagen */
+         .card[data-card-type="image"] .card-body textarea {
+             width: 100%;
+             border: none;
+             border-top: 1px solid #e5e7eb; /* Separador superior */
+             padding: 8px 12px; /* Padding interno */
+             font-size: 13px;
+             line-height: 1.4;
+             flex-shrink: 0; /* No encoger */
+             resize: none;
+             background-color: #ffffff; /* Fondo blanco para distinguir */
+             min-height: 60px; /* Altura mínima */
+             max-height: 120px; /* Altura máxima antes de scroll */
+             outline: none;
+             overflow-y: auto; /* Scroll si excede max-height */
+             box-sizing: border-box;
+         }
+
+
+        .card-footer { padding: 5px 10px; font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; flex-shrink: 0; border-radius: 0 0 8px 8px; background-color: #f9fafc; }
+        .resize-handle { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background-color: rgba(150, 150, 150, 0.6); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 0 0 8px 0; cursor: nwse-resize; z-index: 11; transition: background-color 0.2s; }
+        .resize-handle:hover { background-color: rgba(100, 100, 100, 0.8); }
+        .color-picker-wrapper { position: relative; display: inline-block; }
+        .card-color-btn { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #d1d5db; cursor: pointer; display: inline-block; vertical-align: middle; transition: transform 0.1s; }
+        .card-color-btn:hover { transform: scale(1.1); }
+        .native-color-picker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 12; }
+        body.connecting-mode { cursor: crosshair; }
+        .card.connection-candidate { outline: 2px dashed #60a5fa; outline-offset: 3px; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
+        .card.is-connection-source { outline: 2px solid #3b82f6; outline-offset: 3px; }
+        .zoom-controls { position: absolute; bottom: 16px; right: 16px; z-index: 50; background: white; border-radius: 8px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); display: flex; flex-direction: column; overflow: hidden; }
+        .zoom-btn { padding: 10px 14px; border: none; background: none; cursor: pointer; font-size: 16px; color: #374151; transition: background-color 0.2s; }
         .zoom-btn:hover { background-color: #f3f4f6; }
         .zoom-btn:first-child { border-bottom: 1px solid #e5e7eb; }
         .zoom-btn:active { background-color: #e5e7eb; }
-
-        .canvas-scale {
-            position: absolute;
-            bottom: 16px;
-            left: 16px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #374151;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            z-index: 50;
-        }
-
-        /* Input de archivo oculto */
-        .hidden-file-input {
-            display: none;
-        }
-
-        /* Indicador de guardado */
+        .canvas-scale { position: absolute; bottom: 16px; left: 16px; background: rgba(255, 255, 255, 0.9); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; color: #374151; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); z-index: 50; }
+        .hidden-file-input { display: none; }
         #save-indicator { transition: background-color 0.3s, opacity 0.3s; }
-
-        /* Clases helper */
         .hidden { display: none !important; }
     </style>
 </head>
@@ -272,7 +201,7 @@
                 <h1 class="text-xl font-semibold">StoryCanvas</h1>
             </div>
             <div class="flex items-center space-x-3">
-                <button id="save-indicator" class="px-3 py-1.5 text-sm bg-indigo-600 rounded-md flex items-center opacity-50 cursor-not-allowed">
+                 <button id="save-indicator" class="px-3 py-1.5 text-sm bg-indigo-600 rounded-md flex items-center opacity-50 cursor-not-allowed">
                     <i class="fas fa-check mr-1.5 text-xs"></i> Guardado
                 </button>
                  <button id="import-btn" title="Importar desde archivo JSON" class="px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 rounded-md flex items-center transition-colors">
@@ -293,7 +222,7 @@
              <div>
                 <!-- <h2 class="text-base font-semibold mb-4 text-gray-700">Herramientas</h2> -->
                 <div class="mb-5">
-                    <h3 class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">Añadir Tarjeta al lienzo</h3>
+                    <h3 class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">Añadir Tarjeta al proyecto</h3>
                     <button id="add-chapter-btn" data-type="chapter" class="add-card-btn w-full p-2 text-sm bg-purple-50 hover:bg-purple-100 rounded-md text-purple-700 mb-2 flex items-center transition-colors">
                         <i class="fas fa-book-open mr-2 w-4 text-center"></i> Capítulo
                     </button>
@@ -302,6 +231,9 @@
                     </button>
                     <button id="add-idea-btn" data-type="idea" class="add-card-btn w-full p-2 text-sm bg-green-50 hover:bg-green-100 rounded-md text-green-700 mb-2 flex items-center transition-colors">
                         <i class="fas fa-lightbulb mr-2 w-4 text-center"></i> Idea
+                    </button>
+                    <button id="add-image-btn" data-type="image" class="add-card-btn w-full p-2 text-sm bg-orange-50 hover:bg-orange-100 rounded-md text-orange-700 mb-2 flex items-center transition-colors">
+                        <i class="fas fa-image mr-2 w-4 text-center"></i> Imagen
                     </button>
                 </div>
              </div>
@@ -329,13 +261,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Clave única para guardar en localStorage
-    const STORAGE_KEY = 'storyCanvasData_v3';
+    const STORAGE_KEY = 'storyCanvasData_v5'; // Incrementar versión
 
     // --- Referencias a elementos del DOM ---
-    const canvasContainer = document.getElementById('free-view'); // Contenedor del canvas
-    const canvasContent = document.getElementById('canvas-content-free'); // Div interno que escala/mueve
-    const connectionSvg = document.getElementById('connection-svg'); // SVG para líneas
+    const canvasContainer = document.getElementById('free-view');
+    const canvasContent = document.getElementById('canvas-content-free');
+    const connectionSvg = document.getElementById('connection-svg');
     const addCardButtons = document.querySelectorAll('.add-card-btn');
     const zoomInBtn = document.getElementById('zoom-in');
     const zoomOutBtn = document.getElementById('zoom-out');
@@ -347,32 +278,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveIndicator = document.getElementById('save-indicator');
 
     // --- Estado de la aplicación ---
-    let cards = []; // Array con los datos de todas las tarjetas
-    let connections = []; // Array con los datos de las conexiones
-    let activeCard = null; // Referencia al elemento DOM de la tarjeta arrastrándose
-    let resizingCard = null; // Referencia al elemento DOM de la tarjeta redimensionándose
-    let connectingCardId = null; // ID de la tarjeta origen al crear una conexión
-    let startX, startY, initialWidth, initialHeight; // Coordenadas para redimensionar
-    let dragOffsetX, dragOffsetY; // Offset del ratón dentro de la tarjeta al arrastrar
-    let currentScale = 1.0; // Nivel de zoom actual
-    let isDragging = false; // Flag para indicar si se está arrastrando una tarjeta
-    let isResizing = false; // Flag para indicar si se está redimensionando
-    let saveTimeout = null; // Timer para el debounce del guardado
+    let cards = [];
+    let connections = [];
+    let activeCard = null;
+    let resizingCard = null;
+    let connectingCardId = null;
+    let startX, startY, initialWidth, initialHeight;
+    let dragOffsetX, dragOffsetY;
+    let currentScale = 1.0;
+    let isDragging = false;
+    let isResizing = false;
+    let saveTimeout = null;
 
-    // Mapeo de tipos a nombres en español
-    const typeTranslations = { scene: "Escena", chapter: "Capítulo", idea: "Idea" };
-    // Constantes para límites
+    const typeTranslations = { scene: "Escena", chapter: "Capítulo", idea: "Idea", image: "Imagen" };
     const MIN_CARD_WIDTH = 150;
-    const MIN_CARD_HEIGHT = 100;
-    const MAX_ZOOM = 3.0; // Zoom máximo 300%
-    const MIN_ZOOM = 0.2; // Zoom mínimo 20%
+    const MIN_CARD_HEIGHT = 150; // Aumentado
+    const MAX_ZOOM = 3.0;
+    const MIN_ZOOM = 0.2;
 
-    // Función auxiliar para obtener nombre en español
     function getSpanishTypeName(type) { return typeTranslations[type] || type; }
 
     // --- Funciones de Guardado y Carga ---
-
-    // Muestra el estado de guardado en el botón
     function showSaveIndicator(saving = false) {
         if (!saveIndicator) return;
         if (saving) {
@@ -386,10 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Guarda el estado actual (tarjetas, conexiones, escala) en localStorage
     function saveData() {
-        clearTimeout(saveTimeout); // Cancela guardado anterior si hay uno pendiente
-        showSaveIndicator(true); // Muestra "Guardando..."
+        clearTimeout(saveTimeout);
+        showSaveIndicator(true);
         saveTimeout = setTimeout(() => {
             try {
                 const dataToSave = {
@@ -399,16 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
                 console.log('Datos guardados:', new Date().toLocaleTimeString());
-                showSaveIndicator(false); // Muestra "Guardado"
+                showSaveIndicator(false);
             } catch (error) {
                 console.error("Error al guardar en localStorage:", error);
                 alert("Error al guardar los datos. Es posible que el almacenamiento local esté lleno.");
-                showSaveIndicator(false); // Quitar indicador aunque falle
+                showSaveIndicator(false);
             }
-        }, 700); // Espera 700ms después de la última modificación para guardar
+        }, 700);
     }
 
-    // Carga los datos desde localStorage al iniciar
     function loadData() {
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (savedData) {
@@ -418,80 +342,74 @@ document.addEventListener('DOMContentLoaded', () => {
                 connections = parsedData.connections || [];
                 currentScale = parsedData.scale || 1.0;
 
-                // Validar y aplicar valores por defecto a datos cargados
+                // Validar y aplicar valores por defecto
                 cards.forEach(card => {
-                    card.width = card.width >= MIN_CARD_WIDTH ? card.width : MIN_CARD_WIDTH;
-                    card.height = card.height >= MIN_CARD_HEIGHT ? card.height : MIN_CARD_HEIGHT;
+                    card.width = card.width >= MIN_CARD_WIDTH ? card.width : (card.type === 'image' ? 250 : MIN_CARD_WIDTH);
+                    card.height = card.height >= MIN_CARD_HEIGHT ? card.height : (card.type === 'image' ? 280 : MIN_CARD_HEIGHT); // Usar nuevo default
                     card.color = card.color || getRandomColor();
-                    card.content = card.content || '';
                     card.title = card.title || `Sin título`;
-                    card.type = card.type || 'idea'; // Tipo por defecto si falta
-                    card.x = typeof card.x === 'number' ? card.x : 50; // Posición por defecto
+                    card.type = card.type || 'idea';
+                    card.x = typeof card.x === 'number' ? card.x : 50;
                     card.y = typeof card.y === 'number' ? card.y : 50;
+                    // Ahora AMBOS pueden existir (inicializar si faltan)
+                    card.content = card.content || '';
+                    card.imageUrl = card.imageUrl || '';
+                    // Asegurarse de que imageUrl sea undefined si no es tipo imagen (limpieza de datos antiguos)
+                    if (card.type !== 'image' && card.imageUrl !== undefined) {
+                        delete card.imageUrl;
+                    }
                 });
-                connections = connections.filter(conn => conn.id && conn.fromId && conn.toId); // Filtrar conexiones inválidas
-
+                connections = connections.filter(conn => conn.id && conn.fromId && conn.toId);
                 console.log('Datos cargados desde localStorage.');
             } catch (error) {
                 console.error("Error al parsear datos de localStorage:", error);
                 alert("Error al cargar los datos guardados. Empezando con un lienzo vacío.");
-                resetState(); // Reiniciar si los datos son corruptos
+                resetState();
             }
         } else {
             console.log('No se encontraron datos guardados. Inicializando lienzo vacío.');
-            resetState(); // Empezar vacío si no hay datos
+            resetState();
         }
-        // Renderizar el estado cargado o inicial
         renderAllCards();
-        applyZoom(); // Aplica escala y renderiza líneas iniciales
+        applyZoom();
     }
 
-    // Función para reiniciar el estado (usada en carga fallida o limpiar todo)
     function resetState() {
         cards = [];
         connections = [];
         currentScale = 1.0;
-    }
+     }
 
     // --- Funciones de Renderizado ---
 
-    // Crea y añade el elemento DOM para una tarjeta
     function renderCard(cardData) {
         if (!canvasContent) return;
 
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
         cardElement.dataset.id = cardData.id;
+        cardElement.dataset.cardType = cardData.type;
         cardElement.style.left = `${cardData.x}px`;
         cardElement.style.top = `${cardData.y}px`;
         cardElement.style.width = `${cardData.width}px`;
         cardElement.style.height = `${cardData.height}px`;
         cardElement.style.backgroundColor = cardData.color;
 
-        // --- Header ---
+        // --- Header (Común) ---
         const cardHeader = document.createElement('div');
         cardHeader.className = 'card-header';
         const titleSpan = document.createElement('span');
         titleSpan.className = 'card-header-title';
         titleSpan.textContent = cardData.title;
         titleSpan.contentEditable = true;
-        titleSpan.spellcheck = false; // Desactivar corrector ortográfico en título
-        // Eventos para guardar cambios en el título
-        titleSpan.addEventListener('blur', (e) => {
-            if (e.target instanceof HTMLElement) updateCardData(cardData.id, { title: e.target.textContent || 'Sin título' });
-        });
-        titleSpan.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { // Guardar con Enter y quitar foco
-                e.preventDefault();
-                if (e.target instanceof HTMLElement) e.target.blur();
-            }
-        });
-        titleSpan.addEventListener('mousedown', (e) => e.stopPropagation()); // Evitar drag al editar
+        titleSpan.spellcheck = false;
+        titleSpan.addEventListener('blur', (e) => { if (e.target instanceof HTMLElement) updateCardData(cardData.id, { title: e.target.textContent || 'Sin título' }); });
+        titleSpan.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); if (e.target instanceof HTMLElement) e.target.blur(); } });
+        titleSpan.addEventListener('mousedown', (e) => e.stopPropagation());
 
-        // --- Controles del Header ---
         const headerControls = document.createElement('div');
         headerControls.className = 'card-header-controls';
-
+        // --- Controles del Header ---
         // Color Picker
         const colorPickerWrapper = document.createElement('div');
         colorPickerWrapper.className = 'color-picker-wrapper';
@@ -503,754 +421,344 @@ document.addEventListener('DOMContentLoaded', () => {
         nativeColorPicker.type = 'color';
         nativeColorPicker.className = 'native-color-picker';
         nativeColorPicker.value = cardData.color;
-        // Actualizar color en tiempo real y guardar al finalizar
-        nativeColorPicker.addEventListener('input', (e) => {
-            if (!(e.target instanceof HTMLInputElement)) return;
-            const newColor = e.target.value;
-            cardElement.style.backgroundColor = newColor;
-            colorBtn.style.backgroundColor = newColor;
-        });
-        nativeColorPicker.addEventListener('change', (e) => {
-            if (!(e.target instanceof HTMLInputElement)) return;
-            updateCardData(cardData.id, { color: e.target.value });
-        });
-        nativeColorPicker.addEventListener('mousedown', (e) => e.stopPropagation()); // Evitar drag
-        colorPickerWrapper.appendChild(colorBtn);
-        colorPickerWrapper.appendChild(nativeColorPicker);
-        headerControls.appendChild(colorPickerWrapper);
-
+        nativeColorPicker.addEventListener('input', (e) => { if (e.target instanceof HTMLInputElement) { cardElement.style.backgroundColor = e.target.value; colorBtn.style.backgroundColor = e.target.value; } });
+        nativeColorPicker.addEventListener('change', (e) => { if (e.target instanceof HTMLInputElement) updateCardData(cardData.id, { color: e.target.value }); });
+        nativeColorPicker.addEventListener('mousedown', (e) => e.stopPropagation());
+        colorPickerWrapper.appendChild(colorBtn); colorPickerWrapper.appendChild(nativeColorPicker); headerControls.appendChild(colorPickerWrapper);
         // Botón Conectar
         const connectBtn = document.createElement('i');
         connectBtn.className = 'fas fa-link card-connect-btn card-control-btn';
         connectBtn.title = 'Crear conexión';
-        connectBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evitar drag
-            startConnectionMode(cardData.id);
-        });
+        connectBtn.addEventListener('click', (e) => { e.stopPropagation(); startConnectionMode(cardData.id); });
         headerControls.appendChild(connectBtn);
-
         // Botón Eliminar
         const deleteBtn = document.createElement('i');
         deleteBtn.className = 'fas fa-trash-alt card-delete-btn card-control-btn';
         deleteBtn.title = 'Eliminar tarjeta';
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evitar drag
-            if (confirm(`¿Eliminar tarjeta "${cardData.title}"? Se eliminarán también sus conexiones.`)) {
-                deleteCard(cardData.id);
-            }
-        });
+        deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm(`¿Eliminar tarjeta "${cardData.title}"?`)) deleteCard(cardData.id); });
         headerControls.appendChild(deleteBtn);
 
         cardHeader.appendChild(titleSpan);
         cardHeader.appendChild(headerControls);
 
-        // --- Body (Textarea) ---
+        // --- Body (Depende del tipo) ---
         const cardBody = document.createElement('div');
         cardBody.className = 'card-body';
-        const contentTextarea = document.createElement('textarea');
-        contentTextarea.placeholder = 'Escribe aquí...';
-        contentTextarea.value = cardData.content;
-        // Guardar cambios en el contenido al perder foco
-        contentTextarea.addEventListener('change', (e) => {
-            if (!(e.target instanceof HTMLTextAreaElement)) return;
-            updateCardData(cardData.id, { content: e.target.value });
-        });
-        contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation()); // Evitar drag
-        cardBody.appendChild(contentTextarea);
 
-        // --- Footer ---
+        // Crear Textarea (común a todos ahora)
+        const contentTextarea = document.createElement('textarea');
+        contentTextarea.placeholder = 'Escribe notas aquí...';
+        contentTextarea.value = cardData.content || ''; // Usar valor de content
+        contentTextarea.addEventListener('change', (e) => { if (e.target instanceof HTMLTextAreaElement) updateCardData(cardData.id, { content: e.target.value }); });
+        contentTextarea.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        if (cardData.type === 'image') {
+            // --- Contenido específico para Tarjeta de Imagen (URL y Display) ---
+            const urlInput = document.createElement('input');
+            urlInput.type = 'url';
+            urlInput.className = 'image-url-input';
+            urlInput.placeholder = 'Pega la URL de la imagen aquí...';
+            urlInput.value = cardData.imageUrl || '';
+            urlInput.spellcheck = false;
+            urlInput.addEventListener('mousedown', (e) => e.stopPropagation());
+
+            const imageDisplay = document.createElement('div');
+            imageDisplay.className = 'image-display-container';
+            if (cardData.imageUrl) setImageBackground(imageDisplay, cardData.imageUrl);
+
+            urlInput.addEventListener('change', (e) => {
+                 if (!(e.target instanceof HTMLInputElement)) return;
+                 const newUrl = e.target.value.trim();
+                 updateCardData(cardData.id, { imageUrl: newUrl }); // Actualizar imageUrl
+                 setImageBackground(imageDisplay, newUrl);
+            });
+
+            // Añadir en orden: Input URL, Imagen, Textarea
+            cardBody.appendChild(urlInput);
+            cardBody.appendChild(imageDisplay);
+            cardBody.appendChild(contentTextarea); // Añadir el textarea al final
+
+        } else {
+            // --- Contenido para Tarjetas de Texto (Solo el Textarea) ---
+             cardBody.appendChild(contentTextarea);
+        }
+
+        // --- Footer (Común) ---
         const cardFooter = document.createElement('div');
         cardFooter.className = 'card-footer';
         const typeSpan = document.createElement('span');
         typeSpan.textContent = getSpanishTypeName(cardData.type);
         cardFooter.appendChild(typeSpan);
 
-        // --- Handle de Redimensionamiento ---
+        // --- Handle de Redimensionamiento (Común) ---
         const resizeHandle = document.createElement('div');
         resizeHandle.className = 'resize-handle';
         resizeHandle.addEventListener('mousedown', startResize);
 
-        // --- Ensamblaje y Eventos Globales de Tarjeta ---
+        // --- Ensamblaje y Eventos Globales ---
         cardElement.appendChild(cardHeader);
         cardElement.appendChild(cardBody);
         cardElement.appendChild(cardFooter);
         cardElement.appendChild(resizeHandle);
-
-        cardElement.addEventListener('click', handleCardClickForConnection); // Para finalizar conexión
-        cardElement.addEventListener('mousedown', startDrag); // Para iniciar drag
-
-        canvasContent.appendChild(cardElement); // Añadir al DOM
+        cardElement.addEventListener('click', handleCardClickForConnection);
+        cardElement.addEventListener('mousedown', startDrag);
+        canvasContent.appendChild(cardElement);
     }
 
-    // Limpia y renderiza todas las tarjetas y líneas (usado en carga inicial y cambios masivos)
+    // Función auxiliar para establecer la imagen de fondo y manejar errores
+    function setImageBackground(element, url) {
+        if (!url) {
+            element.style.backgroundImage = '';
+            return;
+        }
+        const imgTest = new Image();
+        imgTest.onload = () => {
+            element.style.backgroundImage = `url('${url}')`;
+            console.log(`Imagen cargada: ${url}`);
+        };
+        imgTest.onerror = () => {
+            element.style.backgroundImage = '';
+            console.warn(`Error al cargar imagen: ${url}`);
+        };
+        imgTest.src = url;
+    }
+
+
+    // Limpia y renderiza todas las tarjetas y líneas
     function renderAllCards() {
         if (!canvasContent || !connectionSvg) return;
-        // Limpiar contenido previo
         canvasContent.querySelectorAll('.card').forEach(node => node.remove());
         connectionSvg.innerHTML = '';
-        // Renderizar cada tarjeta
         cards.forEach(card => renderCard(card));
-        // Renderizar todas las líneas después de que las tarjetas estén en el DOM
         renderAllLines();
     }
 
     // --- Funciones de Líneas de Conexión ---
-
-    // Dibuja una línea SVG entre dos tarjetas
     function renderLine(connection) {
         if (!canvasContent || !connectionSvg) return;
-
         const fromCardEl = canvasContent.querySelector(`.card[data-id="${connection.fromId}"]`);
         const toCardEl = canvasContent.querySelector(`.card[data-id="${connection.toId}"]`);
-
-        // No dibujar si alguna de las tarjetas no existe en el DOM
         if (!fromCardEl || !toCardEl) return;
-
-        // Calcular puntos centrales de las tarjetas
         const x1 = fromCardEl.offsetLeft + fromCardEl.offsetWidth / 2;
         const y1 = fromCardEl.offsetTop + fromCardEl.offsetHeight / 2;
         const x2 = toCardEl.offsetLeft + toCardEl.offsetWidth / 2;
         const y2 = toCardEl.offsetTop + toCardEl.offsetHeight / 2;
-
-        // Crear elemento línea SVG
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-        line.dataset.connectionId = connection.id; // ID para poder seleccionarla/borrarla
-
-        // Event listener para borrar la línea al hacerle clic
-        line.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evitar que el click llegue al canvas
-            if (confirm('¿Eliminar esta conexión?')) {
-                deleteConnection(connection.id);
-            }
-        });
-
+        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+        line.dataset.connectionId = connection.id;
+        line.addEventListener('click', (e) => { e.stopPropagation(); if (confirm('¿Eliminar conexión?')) deleteConnection(connection.id); });
         connectionSvg.appendChild(line);
     }
-
-    // Limpia y redibuja todas las líneas (necesario tras zoom, drag, resize)
-    function renderAllLines() {
-        if (!connectionSvg) return;
-        connectionSvg.innerHTML = ''; // Limpiar SVG
-        connections.forEach(renderLine); // Redibujar cada conexión
-    }
-
-    // Actualiza (elimina y redibuja) solo las líneas conectadas a una tarjeta específica
+    function renderAllLines() { if (!connectionSvg) return; connectionSvg.innerHTML = ''; connections.forEach(renderLine); }
     function updateLinesForCard(cardId) {
         if (!connectionSvg) return;
         connections.forEach(conn => {
             if (conn.fromId === cardId || conn.toId === cardId) {
                 const lineElement = connectionSvg.querySelector(`line[data-connection-id="${conn.id}"]`);
-                if (lineElement) lineElement.remove(); // Quitar la vieja
-                renderLine(conn); // Dibujar la nueva en la posición actualizada
+                if (lineElement) lineElement.remove();
+                renderLine(conn);
             }
         });
     }
 
     // --- Funciones de Manipulación de Tarjetas ---
-
-    // Añade una nueva tarjeta al estado y la renderiza
     function addCard(type) {
-        // Calcular posición inicial (cerca del centro visible)
         const containerRect = canvasContainer?.getBoundingClientRect();
-        let initialX = 50;
-        let initialY = 50;
+        let initialX = 50, initialY = 50;
+        let initialWidth = 250, initialHeight = (type === 'image' ? 280 : 180);
         if(containerRect){
-            initialX = (canvasContainer.scrollLeft + containerRect.width / 2) / currentScale - 125; // 125 = mitad ancho tarjeta
-            initialY = (canvasContainer.scrollTop + containerRect.height / 2) / currentScale - 90; // 90 = mitad alto tarjeta
-            initialX = Math.max(20, initialX + (Math.random() - 0.5) * 50); // Añadir aleatoriedad y asegurar no muy pegado al borde
-            initialY = Math.max(20, initialY + (Math.random() - 0.5) * 50);
+             initialX = (canvasContainer.scrollLeft + containerRect.width / 2) / currentScale;
+             initialY = (canvasContainer.scrollTop + containerRect.height / 2) / currentScale;
         }
-
+        initialX = Math.max(20, initialX - initialWidth / 2 + (Math.random() - 0.5) * 50);
+        initialY = Math.max(20, initialY - initialHeight / 2 + (Math.random() - 0.5) * 50);
         const newCard = {
-            id: crypto.randomUUID(), // ID único universal
-            type: type,
+            id: crypto.randomUUID(), type: type,
             title: `Nueva ${getSpanishTypeName(type)}`,
+            x: initialX, y: initialY,
+            width: initialWidth, height: initialHeight,
+            color: getRandomColor(), tags: [],
             content: '',
-            x: initialX,
-            y: initialY,
-            width: 250, // Tamaño inicial
-            height: 180,
-            color: getRandomColor(),
-            tags: [] // Futura funcionalidad
+            imageUrl: (type === 'image' ? '' : undefined)
         };
-        cards.push(newCard); // Añadir al array de estado
-        renderCard(newCard); // Renderizar solo la nueva tarjeta
-        saveData(); // Guardar el nuevo estado
+        if (type !== 'image') delete newCard.imageUrl;
+        cards.push(newCard);
+        renderCard(newCard);
+        saveData();
     }
 
-    // Elimina una tarjeta del estado, del DOM y sus conexiones
     function deleteCard(cardId) {
-        // Eliminar conexiones asociadas a esta tarjeta
         connections = connections.filter(conn => {
             const shouldRemove = conn.fromId === cardId || conn.toId === cardId;
-            if (shouldRemove) {
-                // Eliminar la línea del SVG
-                const lineElement = connectionSvg?.querySelector(`line[data-connection-id="${conn.id}"]`);
-                if (lineElement) lineElement.remove();
-            }
-            return !shouldRemove; // Mantener solo las que no están conectadas a la tarjeta
+            if (shouldRemove) { const lineElement = connectionSvg?.querySelector(`line[data-connection-id="${conn.id}"]`); if (lineElement) lineElement.remove(); }
+            return !shouldRemove;
         });
-
-        // Eliminar la tarjeta del array de estado
         cards = cards.filter(card => card.id !== cardId);
-
-        // Eliminar el elemento del DOM
         const cardElement = canvasContent?.querySelector(`.card[data-id="${cardId}"]`);
         if (cardElement) cardElement.remove();
-
-        // No es necesario renderAllLines aquí porque ya se quitaron individualmente
-
-        saveData(); // Guardar estado sin la tarjeta ni sus conexiones
+        saveData();
     }
 
-    // Actualiza una o más propiedades de una tarjeta en el estado
     function updateCardData(cardId, updates) {
         const cardIndex = cards.findIndex(card => card.id === cardId);
         if (cardIndex > -1) {
-            // Fusionar los cambios con el objeto existente
             Object.assign(cards[cardIndex], updates);
-            saveData(); // Guardar el estado actualizado
-
-            // Si la posición o tamaño cambió, actualizar visualmente las líneas conectadas
-            if (updates.x !== undefined || updates.y !== undefined || updates.width !== undefined || updates.height !== undefined) {
-                updateLinesForCard(cardId);
-            }
-        } else {
-            console.warn(`Intento de actualizar tarjeta no encontrada: ${cardId}`);
-        }
+            saveData();
+            if (updates.x !== undefined || updates.y !== undefined || updates.width !== undefined || updates.height !== undefined) { updateLinesForCard(cardId); }
+        } else { console.warn(`Tarjeta no encontrada para actualizar: ${cardId}`); }
     }
 
     // --- Funcionalidad de Drag and Drop ---
-
-    // Inicia el arrastre de una tarjeta
     function startDrag(e) {
-        // Solo botón izquierdo y no sobre elementos interactivos internos
-        if (e.button !== 0 || e.target.isContentEditable ||
-            e.target.tagName === 'TEXTAREA' ||
-            e.target.closest('.card-control-btn') || // Incluye color, conectar, borrar
-            e.target.closest('.resize-handle')) {
-            return;
-        }
-        // No arrastrar si estamos en modo conexión
+        if (e.target.classList.contains('image-url-input')) return;
+        if (e.button !== 0 || e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.closest('.card-control-btn') || e.target.closest('.resize-handle')) { return; }
         if (connectingCardId || !canvasContent) return;
-
-        activeCard = e.currentTarget; // La tarjeta (<div class="card">)
-        activeCard.classList.add('dragging');
-        isDragging = true;
-
-        // Calcular el offset del ratón respecto a la esquina superior izquierda de la tarjeta
-        // Necesitamos ajustar por la escala actual
+        activeCard = e.currentTarget; activeCard.classList.add('dragging'); isDragging = true;
         const rect = activeCard.getBoundingClientRect();
-        dragOffsetX = (e.clientX - rect.left) / currentScale;
-        dragOffsetY = (e.clientY - rect.top) / currentScale;
-
-        // Añadir listeners globales para mover y soltar
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDrag, { once: true }); // Se auto-elimina al soltar
-        document.body.style.userSelect = 'none'; // Evitar seleccionar texto mientras se arrastra
+        dragOffsetX = (e.clientX - rect.left) / currentScale; dragOffsetY = (e.clientY - rect.top) / currentScale;
+        document.addEventListener('mousemove', drag); document.addEventListener('mouseup', stopDrag, { once: true });
+        document.body.style.userSelect = 'none';
     }
-
-    // Mueve la tarjeta mientras se arrastra el ratón
     function drag(e) {
-        if (!isDragging || !activeCard || !canvasContent) return;
-        e.preventDefault(); // Prevenir comportamiento por defecto (ej: seleccionar texto)
-
-        // Posición del canvas en la ventana
+        if (!isDragging || !activeCard || !canvasContent) return; e.preventDefault();
         const canvasRect = canvasContent.getBoundingClientRect();
-
-        // Calcular nueva posición top-left de la tarjeta en el espacio del canvas (sin escalar)
-        // Restamos el offset inicial para que el ratón mantenga su posición relativa dentro de la tarjeta
-        let newX = (e.clientX - canvasRect.left) / currentScale - dragOffsetX;
-        let newY = (e.clientY - canvasRect.top) / currentScale - dragOffsetY;
-
-        // Aplicar la nueva posición al estilo del elemento
-        activeCard.style.left = `${newX}px`;
-        activeCard.style.top = `${newY}px`;
-
-        // Actualizar las líneas conectadas a esta tarjeta en tiempo real
+        let newX = (e.clientX - canvasRect.left) / currentScale - dragOffsetX; let newY = (e.clientY - canvasRect.top) / currentScale - dragOffsetY;
+        activeCard.style.left = `${newX}px`; activeCard.style.top = `${newY}px`;
         updateLinesForCard(activeCard.dataset.id);
     }
-
-    // Finaliza el arrastre de la tarjeta
     function stopDrag() {
-        if (!isDragging || !activeCard) return;
-        isDragging = false;
-        const cardId = activeCard.dataset.id;
-        // Guardar la posición final (parseando desde el estilo)
-        const finalX = parseFloat(activeCard.style.left || '0');
-        const finalY = parseFloat(activeCard.style.top || '0');
-
-        activeCard.classList.remove('dragging'); // Quitar clase de arrastre
-
-        updateCardData(cardId, { x: finalX, y: finalY }); // Actualizar estado y guardar
-
-        // Limpiar listeners y estilos globales (el mouseup se limpia solo con 'once')
-        document.removeEventListener('mousemove', drag);
-        document.body.style.userSelect = '';
-        activeCard = null; // Limpiar referencia
+        if (!isDragging || !activeCard) return; isDragging = false;
+        const cardId = activeCard.dataset.id; const finalX = parseFloat(activeCard.style.left || '0'); const finalY = parseFloat(activeCard.style.top || '0');
+        activeCard.classList.remove('dragging'); updateCardData(cardId, { x: finalX, y: finalY });
+        document.removeEventListener('mousemove', drag); document.body.style.userSelect = ''; activeCard = null;
     }
 
     // --- Funcionalidad de Redimensionamiento ---
-
-    // Inicia el redimensionamiento desde el handle
     function startResize(e) {
-        if (e.button !== 0 || !canvasContent) return; // Solo botón izquierdo
-        e.stopPropagation(); // Evitar que inicie el drag de la tarjeta entera
-
-        isResizing = true;
-        resizingCard = e.target.closest('.card'); // Encuentra la tarjeta padre del handle
-        if (!resizingCard) return;
-        resizingCard.classList.add('resizing');
-
-        // Guardar estado inicial para calcular el cambio
-        startX = e.clientX;
-        startY = e.clientY;
-        initialWidth = resizingCard.offsetWidth;
-        initialHeight = resizingCard.offsetHeight;
-
-        // Añadir listeners globales
-        document.addEventListener('mousemove', doResize);
-        document.addEventListener('mouseup', stopResize, { once: true });
-        document.body.style.cursor = 'nwse-resize'; // Cambiar cursor globalmente
-        document.body.style.userSelect = 'none';
+        if (e.button !== 0 || !canvasContent) return; e.stopPropagation();
+        isResizing = true; resizingCard = e.target.closest('.card'); if (!resizingCard) return; resizingCard.classList.add('resizing');
+        startX = e.clientX; startY = e.clientY; initialWidth = resizingCard.offsetWidth; initialHeight = resizingCard.offsetHeight;
+        document.addEventListener('mousemove', doResize); document.addEventListener('mouseup', stopResize, { once: true });
+        document.body.style.cursor = 'nwse-resize'; document.body.style.userSelect = 'none';
     }
-
-    // Aplica el nuevo tamaño mientras se mueve el ratón
     function doResize(e) {
-        if (!isResizing || !resizingCard) return;
-        e.preventDefault();
-
-        // Calcular el cambio en píxeles, ajustado por la escala del canvas
-        const deltaX = (e.clientX - startX) / currentScale;
-        const deltaY = (e.clientY - startY) / currentScale;
-
-        // Calcular nuevo tamaño y aplicar restricciones mínimas
-        let newWidth = Math.max(MIN_CARD_WIDTH, initialWidth + deltaX);
-        let newHeight = Math.max(MIN_CARD_HEIGHT, initialHeight + deltaY);
-
-        // Aplicar al estilo del elemento
-        resizingCard.style.width = `${newWidth}px`;
-        resizingCard.style.height = `${newHeight}px`;
-
-        // Actualizar líneas conectadas en tiempo real
+        if (!isResizing || !resizingCard) return; e.preventDefault();
+        const deltaX = (e.clientX - startX) / currentScale; const deltaY = (e.clientY - startY) / currentScale;
+        let newWidth = Math.max(MIN_CARD_WIDTH, initialWidth + deltaX); let newHeight = Math.max(MIN_CARD_HEIGHT, initialHeight + deltaY);
+        resizingCard.style.width = `${newWidth}px`; resizingCard.style.height = `${newHeight}px`;
         updateLinesForCard(resizingCard.dataset.id);
     }
-
-    // Finaliza el redimensionamiento
     function stopResize() {
-        if (!isResizing || !resizingCard) return;
-        isResizing = false;
-        const cardId = resizingCard.dataset.id;
-        // Guardar tamaño final
-        const finalWidth = parseFloat(resizingCard.style.width);
-        const finalHeight = parseFloat(resizingCard.style.height);
-
-        resizingCard.classList.remove('resizing'); // Quitar clase
-
-        updateCardData(cardId, { width: finalWidth, height: finalHeight }); // Actualizar estado
-
-        // Limpiar listeners y estilos globales
-        document.removeEventListener('mousemove', doResize);
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-        resizingCard = null; // Limpiar referencia
+        if (!isResizing || !resizingCard) return; isResizing = false;
+        const cardId = resizingCard.dataset.id; const finalWidth = parseFloat(resizingCard.style.width); const finalHeight = parseFloat(resizingCard.style.height);
+        resizingCard.classList.remove('resizing'); updateCardData(cardId, { width: finalWidth, height: finalHeight });
+        document.removeEventListener('mousemove', doResize); document.body.style.cursor = ''; document.body.style.userSelect = ''; resizingCard = null;
     }
 
     // --- Funcionalidad de Conexiones ---
-
-    // Activa el modo para crear una conexión desde una tarjeta
     function startConnectionMode(fromCardId) {
-        if (!canvasContent) return;
-        // Si ya estamos conectando, cancelar el modo anterior
-        if (connectingCardId) {
-             cancelConnectionMode();
-        }
-
-        connectingCardId = fromCardId; // Guardar ID origen
-        document.body.classList.add('connecting-mode'); // Cambiar cursor del body
-
-        // Resaltar tarjetas candidatas y la origen
-        canvasContent.querySelectorAll('.card').forEach(cardEl => {
-            if (cardEl.dataset.id === fromCardId) {
-                 cardEl.classList.add('is-connection-source'); // Clase especial para origen
-            } else {
-                 cardEl.classList.add('connection-candidate'); // Clase para destinos posibles
-            }
-        });
-
-        // Listeners para cancelar el modo (Escape o click fuera)
-        document.addEventListener('keydown', cancelConnectionOnEscape, { once: true });
-        document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true });
-
-        console.log(`Modo conexión iniciado desde: ${fromCardId}`);
+        if (!canvasContent) return; if (connectingCardId) cancelConnectionMode();
+        connectingCardId = fromCardId; document.body.classList.add('connecting-mode');
+        canvasContent.querySelectorAll('.card').forEach(cardEl => { if (cardEl.dataset.id === fromCardId) cardEl.classList.add('is-connection-source'); else cardEl.classList.add('connection-candidate'); });
+        document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true });
+        console.log(`Modo conexión iniciado: ${fromCardId}`);
     }
-
-    // Maneja el click en una tarjeta cuando estamos en modo conexión
     function handleCardClickForConnection(e) {
-        if (!connectingCardId) return; // No hacer nada si no estamos conectando
-
-        const clickedCardElement = e.currentTarget; // La tarjeta clickeada
-        const toCardId = clickedCardElement.dataset.id;
-
-        // Limpiar listeners de cancelación inmediatamente
-        document.removeEventListener('keydown', cancelConnectionOnEscape);
-        document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
-
-        // Evitar conectar una tarjeta consigo misma
-        if (connectingCardId === toCardId) {
-            console.log("Conexión cancelada: No se puede conectar una tarjeta consigo misma.");
-            // No crear conexión, solo salir del modo
-        } else {
-            // Verificar si la conexión ya existe (en cualquier dirección)
-            const existingConnection = connections.find(conn =>
-                (conn.fromId === connectingCardId && conn.toId === toCardId) ||
-                (conn.fromId === toCardId && conn.toId === connectingCardId)
-            );
-
-            if (existingConnection) {
-                console.log("Conexión cancelada: La conexión ya existe.");
-                // No crear conexión duplicada
-            } else {
-                // Crear la nueva conexión
-                const newConnection = {
-                    id: crypto.randomUUID(),
-                    fromId: connectingCardId,
-                    toId: toCardId
-                };
-                connections.push(newConnection); // Añadir al estado
-                renderLine(newConnection); // Dibujar la nueva línea
-                console.log(`Conexión creada: ${connectingCardId} -> ${toCardId}`);
-                saveData(); // Guardar estado con la nueva conexión
+        if (!connectingCardId) return; const clickedCardElement = e.currentTarget; const toCardId = clickedCardElement.dataset.id;
+        document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
+        if (connectingCardId === toCardId) { console.log("Conexión cancelada: misma tarjeta."); } else {
+            const existing = connections.find(c => (c.fromId === connectingCardId && c.toId === toCardId) || (c.fromId === toCardId && c.toId === connectingCardId));
+            if (existing) { console.log("Conexión cancelada: ya existe."); } else {
+                const newConnection = { id: crypto.randomUUID(), fromId: connectingCardId, toId: toCardId };
+                connections.push(newConnection); renderLine(newConnection); console.log(`Conexión creada: ${connectingCardId} -> ${toCardId}`); saveData();
             }
         }
-
-        // Salir del modo conexión (limpia estado y clases CSS)
         cancelConnectionMode();
     }
-
-    // Limpia el estado y las clases CSS del modo conexión
     function cancelConnectionMode() {
-        // Solo si estábamos en modo conexión
         if (!connectingCardId && !document.body.classList.contains('connecting-mode')) return;
-
-        console.log("Modo conexión finalizado/cancelado.");
-        connectingCardId = null; // Limpiar ID origen
-        document.body.classList.remove('connecting-mode'); // Restaurar cursor
-
-        // Quitar clases de resaltado de todas las tarjetas
-        canvasContent?.querySelectorAll('.card.connection-candidate, .card.is-connection-source').forEach(cardEl => {
-            cardEl.classList.remove('connection-candidate', 'is-connection-source');
-        });
-
-        // Asegurarse de que los listeners de cancelación se quitan (por si no se dispararon)
-        document.removeEventListener('keydown', cancelConnectionOnEscape);
-        document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
+        console.log("Modo conexión finalizado/cancelado."); connectingCardId = null; document.body.classList.remove('connecting-mode');
+        canvasContent?.querySelectorAll('.card.connection-candidate, .card.is-connection-source').forEach(el => el.classList.remove('connection-candidate', 'is-connection-source'));
+        document.removeEventListener('keydown', cancelConnectionOnEscape); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
     }
-
-    // Cancela el modo conexión si se presiona Escape
-    function cancelConnectionOnEscape(e) {
-        if (e.key === 'Escape') {
-            console.log("Conexión cancelada por tecla Escape.");
-            // El listener mousedown también debe ser eliminado explícitamente aquí
-            document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true });
-            cancelConnectionMode();
-        } else {
-            // Si no fue Escape, volver a añadir el listener para el próximo keydown (por el {once: true})
-            document.addEventListener('keydown', cancelConnectionOnEscape, { once: true });
-        }
-    }
-
-    // Cancela el modo conexión si se hace click fuera de una tarjeta candidata
+    function cancelConnectionOnEscape(e) { if (e.key === 'Escape') { console.log("Cancelado por Escape."); document.removeEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true }); cancelConnectionMode(); } else { document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); } }
     function cancelConnectionOnClickOutside(e) {
-        // El listener keydown también debe ser eliminado si se hace click
         document.removeEventListener('keydown', cancelConnectionOnEscape);
-
-        // Si el click NO fue sobre una tarjeta (ni origen ni candidata)
-        if (!e.target.closest('.card')) {
-            console.log("Conexión cancelada por click fuera.");
-            cancelConnectionMode();
-        } else {
-             // Si fue en una tarjeta, handleCardClickForConnection se encargará
-             // O si fue en el mismo botón de conectar de la tarjeta origen, no cancelar aún
-             const clickedOnOriginConnectButton = e.target.closest(`.card[data-id="${connectingCardId}"] .card-connect-btn`);
-             if(clickedOnOriginConnectButton){
-                 // Volver a añadir el listener porque el click fue en el botón que inició, pero no finalizó
-                 document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true });
-                 document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); // también el de escape
-             }
-             // En cualquier otro caso (click en tarjeta destino), no se necesita hacer nada aquí,
-             // handleCardClickForConnection llamará a cancelConnectionMode()
+        if (!e.target.closest('.card')) { console.log("Cancelado por click fuera."); cancelConnectionMode(); } else {
+            const clickedOriginBtn = e.target.closest(`.card[data-id="${connectingCardId}"] .card-connect-btn`);
+            if(clickedOriginBtn) { document.addEventListener('mousedown', cancelConnectionOnClickOutside, { capture: true, once: true }); document.addEventListener('keydown', cancelConnectionOnEscape, { once: true }); }
         }
     }
-
-    // Elimina una conexión del estado y su línea del SVG
     function deleteConnection(connectionId) {
-        connections = connections.filter(conn => conn.id !== connectionId); // Quitar del array
-        const lineElement = connectionSvg?.querySelector(`line[data-connection-id="${connectionId}"]`);
-        if (lineElement) lineElement.remove(); // Quitar del DOM
-        saveData(); // Guardar estado sin la conexión
-        console.log(`Conexión eliminada: ${connectionId}`);
+        connections = connections.filter(conn => conn.id !== connectionId); const line = connectionSvg?.querySelector(`line[data-connection-id="${connectionId}"]`); if (line) line.remove(); saveData(); console.log(`Conexión eliminada: ${connectionId}`);
     }
 
     // --- Funcionalidad de Zoom ---
-
-    // Aplica la transformación de escala al canvas y redibuja las líneas
-    function applyZoom() {
-        if (canvasContent) {
-            // Aplicar escala
-            canvasContent.style.transform = `scale(${currentScale})`;
-        }
-        if (scaleLabel) {
-            // Actualizar etiqueta de porcentaje
-            scaleLabel.textContent = `${Math.round(currentScale * 100)}%`;
-        }
-        if (connectionSvg) {
-            // Redibujar todas las líneas porque sus coordenadas dependen de la escala
-            renderAllLines();
-        }
-    }
-
-    // Modifica el nivel de zoom y lo aplica
+    function applyZoom() { if (canvasContent) canvasContent.style.transform = `scale(${currentScale})`; if (scaleLabel) scaleLabel.textContent = `${Math.round(currentScale * 100)}%`; if (connectionSvg) renderAllLines(); }
     function zoom(direction) {
-        const zoomStep = 0.1; // Incremento/decremento de zoom
-        let previousScale = currentScale;
-
-        if (direction === 'in') {
-            currentScale = Math.min(MAX_ZOOM, currentScale + zoomStep); // Aplicar límite máximo
-        } else if (direction === 'out') {
-            currentScale = Math.max(MIN_ZOOM, currentScale - zoomStep); // Aplicar límite mínimo
-        }
-
-        // Redondear a dos decimales para evitar imprecisiones flotantes
+        const step = 0.1; let prev = currentScale;
+        if (direction === 'in') currentScale = Math.min(MAX_ZOOM, currentScale + step); else if (direction === 'out') currentScale = Math.max(MIN_ZOOM, currentScale - step);
         currentScale = Math.round(currentScale * 100) / 100;
-
-        // Aplicar y guardar solo si la escala realmente cambió
-        if (currentScale !== previousScale) {
-            applyZoom();
-            saveData(); // Guardar la nueva escala
-            console.log(`Zoom: ${scaleLabel.textContent}`);
-        }
+        if (currentScale !== prev) { applyZoom(); saveData(); console.log(`Zoom: ${scaleLabel.textContent}`); }
     }
 
     // --- Funcionalidad de Importación/Exportación ---
-
-    // Exporta el estado actual a un archivo JSON
     function exportToJson() {
         try {
-            // Crear objeto con los datos relevantes
-            const dataToExport = {
-                version: STORAGE_KEY, // Incluir versión para futuras migraciones
-                timestamp: new Date().toISOString(),
-                cards: cards,
-                connections: connections,
-                scale: currentScale
-            };
-            const dataStr = JSON.stringify(dataToExport, null, 2); // Formato legible con indentación
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const exportFileDefaultName = `storycanvas_export_${new Date().toISOString().slice(0,10)}.json`;
-
-            // Crear enlace temporal y simular click para descargar
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            document.body.appendChild(linkElement); // Necesario para Firefox
-            linkElement.click();
-            document.body.removeChild(linkElement); // Limpiar
-            console.log("Exportación iniciada.");
-
-        } catch (error) {
-            console.error("Error al exportar a JSON:", error);
-            alert("Hubo un error al intentar exportar los datos.");
-        }
+            const data = { version: STORAGE_KEY, timestamp: new Date().toISOString(), cards: cards, connections: connections, scale: currentScale };
+            const str = JSON.stringify(data, null, 2); const uri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(str);
+            const name = `storycanvas_export_${new Date().toISOString().slice(0,10)}.json`;
+            const link = document.createElement('a'); link.setAttribute('href', uri); link.setAttribute('download', name);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link); console.log("Exportación iniciada.");
+        } catch (e) { console.error("Error exportación:", e); alert("Error al exportar."); }
     }
-
-    // Maneja la selección de un archivo JSON para importar
     function handleFileImport(event) {
-        const file = event.target.files ? event.target.files[0] : null;
-        if (!file) return; // No se seleccionó archivo
-
-        // Confirmación antes de sobrescribir
-        if (!confirm("Importar este archivo reemplazará todo el contenido actual del lienzo. ¿Continuar?")) {
-            if (importFileInput) importFileInput.value = null; // Reset input
-            return;
-        }
-
+        const file = event.target.files ? event.target.files[0] : null; if (!file) return;
+        if (!confirm("Importar reemplazará el lienzo actual. ¿Continuar?")) { if (importFileInput) importFileInput.value = null; return; }
         const reader = new FileReader();
-
-        // Callback cuando el archivo se ha leído
         reader.onload = (e) => {
-            const fileContent = e.target?.result;
-            if (typeof fileContent !== 'string') {
-                alert("Error: No se pudo leer el contenido del archivo.");
-                console.error("Error de lectura: fileContent no es string.");
-                if (importFileInput) importFileInput.value = null; // Reset input
-                return;
-            }
-
+            const content = e.target?.result; if (typeof content !== 'string') { alert("Error lectura archivo."); if (importFileInput) importFileInput.value = null; return; }
             try {
-                const parsedData = JSON.parse(fileContent);
-
-                // Validación robusta de la estructura importada
-                if (typeof parsedData !== 'object' || parsedData === null ||
-                    !Array.isArray(parsedData.cards) ||
-                    !Array.isArray(parsedData.connections) ||
-                    typeof parsedData.scale !== 'number' || parsedData.scale < MIN_ZOOM || parsedData.scale > MAX_ZOOM) {
-                    throw new Error("El archivo JSON no tiene el formato esperado de StoryCanvas o contiene datos inválidos.");
-                }
-
-                // Validación más detallada de tarjetas y conexiones
-                parsedData.cards.forEach((card, index) => {
-                    if (!card.id || typeof card.x !== 'number' || typeof card.y !== 'number' ||
-                        typeof card.width !== 'number' || typeof card.height !== 'number' ||
-                        typeof card.type !== 'string' || typeof card.title !== 'string') {
-                        throw new Error(`Datos inválidos en la tarjeta ${index + 1} del archivo importado.`);
-                    }
-                    // Aplicar valores por defecto si faltan opcionales (color, content)
-                    card.color = card.color || getRandomColor();
-                    card.content = card.content || '';
-                    // Asegurar tamaño mínimo
-                    card.width = Math.max(MIN_CARD_WIDTH, card.width);
-                    card.height = Math.max(MIN_CARD_HEIGHT, card.height);
+                const data = JSON.parse(content);
+                if (typeof data !== 'object' || data === null || !Array.isArray(data.cards) || !Array.isArray(data.connections) || typeof data.scale !== 'number' || data.scale < MIN_ZOOM || data.scale > MAX_ZOOM) { throw new Error("Formato inválido."); }
+                data.cards.forEach((card, i) => {
+                    if (!card.id || typeof card.x!=='number' || typeof card.y!=='number' || typeof card.width!=='number' || typeof card.height!=='number' || typeof card.type!=='string' || typeof card.title!=='string') { throw new Error(`Datos inválidos tarjeta ${i+1}.`); }
+                    card.color = card.color || getRandomColor(); card.width = Math.max(MIN_CARD_WIDTH, card.width); card.height = Math.max(MIN_CARD_HEIGHT, card.height);
+                    card.content = card.content || ''; // Asegurar content
+                    if (card.type === 'image') card.imageUrl = card.imageUrl || ''; else card.imageUrl = undefined;
                 });
-                parsedData.connections.forEach((conn, index) => {
-                    if (!conn.id || !conn.fromId || !conn.toId) {
-                        throw new Error(`Datos inválidos en la conexión ${index + 1} del archivo importado.`);
-                    }
-                    // Verificar que las tarjetas conectadas existen en los datos importados
-                    if (!parsedData.cards.some(c => c.id === conn.fromId) || !parsedData.cards.some(c => c.id === conn.toId)) {
-                         console.warn(`Conexión ${conn.id} apunta a tarjeta(s) no encontradas en el archivo. Se mantendrá, pero podría no visualizarse.`);
-                    }
-                });
-
-                // Actualizar estado de la aplicación con los datos importados
-                cards = parsedData.cards;
-                connections = parsedData.connections;
-                currentScale = parsedData.scale;
-
-                console.log("Datos importados correctamente.");
-                alert("Lienzo importado con éxito.");
-
-                // Re-renderizar todo el canvas con los nuevos datos
-                renderAllCards(); // Renderiza tarjetas y luego líneas
-                applyZoom(); // Aplica escala importada
-
-                saveData(); // Guardar el estado recién importado
-
-            } catch (error) {
-                console.error("Error al importar el archivo JSON:", error);
-                alert(`Error al importar: ${error.message || 'Formato de archivo inválido.'}`);
-            } finally {
-                // Limpiar el input para permitir seleccionar el mismo archivo de nuevo
-                if (importFileInput) importFileInput.value = null;
-            }
+                data.connections.forEach((conn, i) => { if (!conn.id || !conn.fromId || !conn.toId) { throw new Error(`Datos inválidos conexión ${i+1}.`); } if (!data.cards.some(c=>c.id===conn.fromId) || !data.cards.some(c=>c.id===conn.toId)) { console.warn(`Conexión ${conn.id} inválida.`); } });
+                data.connections = data.connections.filter(conn => data.cards.some(c=>c.id===conn.fromId) && data.cards.some(c=>c.id===conn.toId));
+                cards = data.cards; connections = data.connections; currentScale = data.scale;
+                console.log("Importado."); alert("Importado con éxito.");
+                renderAllCards(); applyZoom(); saveData();
+            } catch (err) { console.error("Error importación:", err); alert(`Error: ${err.message || 'Formato inválido.'}`);
+            } finally { if (importFileInput) importFileInput.value = null; }
         };
-
-        // Callback en caso de error de lectura
-        reader.onerror = (e) => {
-            console.error("Error al leer el archivo:", e);
-            alert("Hubo un error al leer el archivo seleccionado.");
-            if (importFileInput) importFileInput.value = null; // Reset input
-        };
-
-        // Iniciar la lectura del archivo como texto
+        reader.onerror = (e) => { console.error("Error lectura:", e); alert("Error al leer archivo."); if (importFileInput) importFileInput.value = null; };
         reader.readAsText(file);
     }
 
     // --- Limpiar Almacenamiento ---
-
-    // Borra todos los datos del localStorage y resetea el lienzo
     function clearStorage() {
-        if (confirm("⚠️ ¿Estás segura de que quieres borrar TODO el progreso? Esta acción no se puede deshacer.")) {
-            try {
-                localStorage.removeItem(STORAGE_KEY); // Eliminar datos guardados
-                resetState(); // Poner arrays y escala a estado inicial
-                renderAllCards(); // Limpiar visualmente tarjetas y líneas
-                applyZoom(); // Aplicar escala por defecto
-                alert("Lienzo limpiado.");
-                console.log("LocalStorage limpiado.");
-                // Mostrar indicador de guardado (aunque no haya nada que guardar, para resetearlo)
-                showSaveIndicator(false);
-            } catch (error) {
-                console.error("Error al limpiar localStorage:", error);
-                alert("Hubo un error al intentar borrar los datos.");
-            }
+        if (confirm("⚠️ ¿Borrar TODO el progreso? ¡No se puede deshacer!")) {
+            try { localStorage.removeItem(STORAGE_KEY); resetState(); renderAllCards(); applyZoom(); alert("Lienzo limpiado."); console.log("LocalStorage limpiado."); showSaveIndicator(false); }
+            catch (e) { console.error("Error limpiar:", e); alert("Error al borrar datos."); }
         }
     }
-
     // --- Utilidades ---
-
-    // Genera un color aleatorio de una paleta predefinida
-    function getRandomColor() {
-        const colors = ['#FFFFFF', '#FFF1F0', '#F0FFF4', '#F0F9FF', '#FAF5FF', '#FFFBEB', '#FFF8F4'];
-        // Dar preferencia al blanco para que no todas tengan color
-        if (Math.random() < 0.5) return '#FFFFFF';
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
+    function getRandomColor() { const c = ['#FFFFFF', '#FFF1F0', '#F0FFF4', '#F0F9FF', '#FAF5FF', '#FFFBEB', '#FFF8F4']; if (Math.random() < 0.5) return '#FFFFFF'; return c[Math.floor(Math.random() * c.length)]; }
 
     // --- Inicialización y Event Listeners ---
-
-    console.log("Inicializando StoryCanvas...");
-
-    // Cargar datos guardados al iniciar
-    loadData();
-
-    // Listeners para botones de añadir tarjeta
-    if (addCardButtons.length > 0) {
-        addCardButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                if (button.dataset.type) { addCard(button.dataset.type); }
-            });
-        });
-    } else { console.warn("Botones para añadir tarjetas no encontrados."); }
-
-    // Listeners para controles de zoom
-    if (zoomInBtn && zoomOutBtn) {
-        zoomInBtn.addEventListener('click', () => zoom('in'));
-        zoomOutBtn.addEventListener('click', () => zoom('out'));
-        // Añadir zoom con rueda del ratón sobre el canvas
-        canvasContainer?.addEventListener('wheel', (e) => {
-             // Prevenir scroll de página si estamos sobre el canvas
-             e.preventDefault();
-             if (e.deltaY < 0) {
-                 zoom('in'); // Rueda hacia arriba -> zoom in
-             } else {
-                 zoom('out'); // Rueda hacia abajo -> zoom out
-             }
-         }, { passive: false }); // Necesario para poder prevenirDefault
-
-    } else { console.warn("Botones de zoom no encontrados."); }
-
-    // Listener para botón de exportar
-    if (exportBtn) {
-        exportBtn.addEventListener('click', exportToJson);
-    } else { console.warn("Botón de exportar no encontrado."); }
-
-    // Listeners para importar (botón abre selector, input maneja archivo)
-    if (importBtn && importFileInput) {
-        importBtn.addEventListener('click', () => importFileInput.click());
-        importFileInput.addEventListener('change', handleFileImport);
-    } else { console.warn("Botón de importar o input de archivo no encontrados."); }
-
-    // Listener para botón de limpiar
-    if (clearStorageBtn) {
-        clearStorageBtn.addEventListener('click', clearStorage);
-    } else { console.warn("Botón de limpiar almacenamiento no encontrado."); }
-
-    // Listener para guardar antes de cerrar/recargar la página
-    window.addEventListener('beforeunload', () => {
-         // Forzar guardado inmediato si hay uno pendiente
-         if(saveTimeout) {
-              clearTimeout(saveTimeout); // Cancelar timeout
-              saveData(); // Llamar directamente (sin el timeout interno)
-              console.log("Guardado forzado antes de descargar la página.");
-         }
-     });
-
-    console.log("StoryCanvas listo.");
+    console.log("Inicializando..."); loadData();
+    if (addCardButtons.length > 0) { addCardButtons.forEach(b => { b.addEventListener('click', () => { if (b.dataset.type) addCard(b.dataset.type); }); }); } else { console.warn("Botones añadir no encontrados."); }
+    if (zoomInBtn && zoomOutBtn) { zoomInBtn.addEventListener('click', () => zoom('in')); zoomOutBtn.addEventListener('click', () => zoom('out')); canvasContainer?.addEventListener('wheel', (e) => { e.preventDefault(); if (e.deltaY < 0) zoom('in'); else zoom('out'); }, { passive: false }); } else { console.warn("Botones zoom no encontrados."); }
+    if (exportBtn) exportBtn.addEventListener('click', exportToJson); else { console.warn("Botón exportar no encontrado."); }
+    if (importBtn && importFileInput) { importBtn.addEventListener('click', () => importFileInput.click()); importFileInput.addEventListener('change', handleFileImport); } else { console.warn("Elementos importación no encontrados."); }
+    if (clearStorageBtn) clearStorageBtn.addEventListener('click', clearStorage); else { console.warn("Botón limpiar no encontrado."); }
+    window.addEventListener('beforeunload', () => { if(saveTimeout) { clearTimeout(saveTimeout); try { const d = { cards: cards, connections: connections, scale: currentScale }; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); console.log("Guardado forzado."); } catch (e) { console.error("Error guardado forzado:", e); } } });
+    console.log("Listo.");
 });
 </script>
 
