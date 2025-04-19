@@ -3,164 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris Completo en un Archivo</title>
+    <title>Tetris Difícil al Inicio</title>
     <style>
-        /* --- CSS Integrado --- */
+        /* --- CSS (Sin cambios respecto a la versión anterior) --- */
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column; /* Para centrar el título y el juego */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             background-color: #f0f0f0;
             margin: 0;
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
+        h1 { color: #333; margin-bottom: 20px; }
         #game-container {
             display: flex;
-            align-items: flex-start; /* Alinea la parte superior del tablero y el panel */
+            align-items: flex-start;
             border: 3px solid #333;
             background-color: #e0e0e0;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            position: relative; /* Para posicionar mensajes superpuestos */
+            position: relative;
         }
-
         #game-board {
             border: 2px solid #555;
-            background-color: #111; /* Fondo oscuro para el tablero */
-            display: block; /* Evita espacio extra debajo del canvas */
+            background-color: #111;
+            display: block;
         }
-
         #side-panel {
             width: 150px;
             margin-left: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centra elementos del panel */
+            align-items: center;
             text-align: center;
             color: #333;
         }
-
         #side-panel div {
             margin-bottom: 15px;
-            width: 100%; /* Asegura que los divs ocupen el ancho */
+            width: 100%;
             background-color: #f8f8f8;
             padding: 10px;
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        #side-panel div:first-child { /* Estilo específico para el 'next piece' */
-             padding-bottom: 5px;
-        }
-
-        #side-panel h2 {
-            font-size: 1em;
-            margin-top: 0;
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        #side-panel p {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin: 0;
-            color: #007bff;
-        }
-
+        #side-panel div:first-child { padding-bottom: 5px; }
+        #side-panel h2 { font-size: 1em; margin: 0 0 5px 0; color: #555; }
+        #side-panel p { font-size: 1.2em; font-weight: bold; margin: 0; color: #007bff; }
         #next-piece {
             border: 1px solid #ccc;
             background-color: #fff;
-            display: block; /* Centrar canvas */
-            margin: 5px auto 0 auto; /* Espacio superior y centrado */
+            display: block;
+            margin: 5px auto 0 auto;
         }
-
         #start-button {
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 10px; /* Espacio sobre el botón */
-            width: 100%; /* Ocupa todo el ancho del panel */
+            padding: 10px 20px; font-size: 1em; cursor: pointer;
+            background-color: #28a745; color: white; border: none;
+            border-radius: 5px; transition: background-color 0.3s ease;
+            margin-top: 10px; width: 100%;
         }
-
-        #start-button:hover {
-            background-color: #218838;
-        }
-
-        #instructions {
-            font-size: 0.8em;
-            color: #666;
-            margin-top: 15px;
-            line-height: 1.4;
-        }
-
-        /* Clases para mensajes superpuestos */
-        .hidden {
-            display: none;
-        }
-
+        #start-button:hover { background-color: #218838; }
+        #instructions { font-size: 0.8em; color: #666; margin-top: 15px; line-height: 1.4; }
+        .hidden { display: none; }
         #game-over, #pause-screen {
-            position: absolute; /* Superponer sobre el tablero */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Centrado absoluto */
-            width: calc(100% - 40px); /* Ancho relativo al contenedor menos padding */
-            max-width: 300px; /* Ancho máximo */
-            background-color: rgba(0, 0, 0, 0.8); /* Más oscuro */
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 10; /* Asegura que esté por encima del canvas */
-            box-sizing: border-box; /* Padding incluido en el width */
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: calc(100% - 40px); max-width: 300px;
+            background-color: rgba(0, 0, 0, 0.8); color: white;
+            padding: 30px; border-radius: 10px; text-align: center;
+            z-index: 10; box-sizing: border-box;
         }
-
-        #game-over h2, #pause-screen h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #ffc107; /* Amarillo */
-        }
-
-        #final-score {
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #fff;
-        }
-
-        /* Ajustes para pantallas más pequeñas */
+        #game-over h2, #pause-screen h2 { margin: 0 0 15px 0; color: #ffc107; }
+        #final-score { font-weight: bold; font-size: 1.2em; color: #fff; }
         @media (max-width: 600px) {
              h1 { font-size: 1.5em; margin-bottom: 15px; }
-            #game-container {
-                flex-direction: column;
-                align-items: center;
-                padding: 5px;
-            }
-            #side-panel {
-                margin-left: 0;
-                margin-top: 15px;
-                width: 200px; /* Ancho similar al tablero */
-            }
-             #game-over, #pause-screen {
-               width: 85%; /* Ocupa más ancho en pantallas pequeñas */
-               padding: 20px;
-            }
+            #game-container { flex-direction: column; align-items: center; padding: 5px; }
+            #side-panel { margin-left: 0; margin-top: 15px; width: 200px; }
+             #game-over, #pause-screen { width: 85%; padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <h1>Tetris</h1>
+    <h1>Tetris Difícil al Inicio</h1>
     <div id="game-container">
         <canvas id="game-board" width="200" height="400"></canvas>
         <div id="side-panel">
@@ -200,8 +126,6 @@
     </div>
 
     <script>
-        // --- JavaScript Integrado ---
-        // Aseguramos que el DOM está listo (aunque al poner el script al final, ya debería estarlo)
         document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.getElementById('game-board');
             const context = canvas.getContext('2d');
@@ -218,37 +142,49 @@
             // --- Configuraciones del Juego ---
             const COLS = 10;
             const ROWS = 20;
-            const BLOCK_SIZE = canvas.width / COLS; // 200 / 10 = 20
-            const NEXT_BLOCK_SIZE = nextCanvas.width / 4; // Tamaño para el canvas 'next'
+            const BLOCK_SIZE = canvas.width / COLS;
+            const NEXT_BLOCK_SIZE = nextCanvas.width / 4;
 
-            // Colores (Índice 0 es celda vacía)
+            // Colores AMPLIADOS (Añadimos 3 colores más para las piezas difíciles)
             const COLORS = [
-                null,         // 0: Celda vacía
-                '#00FFFF',    // 1: I (Cyan)
-                '#FFFF00',    // 2: O (Yellow)
-                '#800080',    // 3: T (Purple)
-                '#00FF00',    // 4: S (Green)
-                '#FF0000',    // 5: Z (Red)
-                '#0000FF',    // 6: J (Blue)
-                '#FFA500'     // 7: L (Orange)
+                null,       // 0: Celda vacía
+                '#00FFFF',  // 1: I (Cyan)
+                '#FFFF00',  // 2: O (Yellow)
+                '#800080',  // 3: T (Purple)
+                '#00FF00',  // 4: S (Green)
+                '#FF0000',  // 5: Z (Red)
+                '#0000FF',  // 6: J (Blue)
+                '#FFA500',  // 7: L (Orange)
+                '#C0C0C0',  // 8: U-Shape (Silver) - NUEVO
+                '#FF69B4',  // 9: Plus-Shape (HotPink) - NUEVO
+                '#8A2BE2'   // 10: Weird-L (BlueViolet) - NUEVO
             ];
 
-            // Tetrominós (formas y color index)
+            // Tetrominós estándar
             const TETROMINOES = [
-                // I
-                { shape: [[1, 1, 1, 1]], color: 1, x: 0, y: 0 },
-                // O
-                { shape: [[2, 2], [2, 2]], color: 2, x: 0, y: 0 },
-                // T
-                { shape: [[0, 3, 0], [3, 3, 3]], color: 3, x: 0, y: 0 },
-                // S
-                { shape: [[0, 4, 4], [4, 4, 0]], color: 4, x: 0, y: 0 },
-                // Z
-                { shape: [[5, 5, 0], [0, 5, 5]], color: 5, x: 0, y: 0 },
-                // J
-                { shape: [[6, 0, 0], [6, 6, 6]], color: 6, x: 0, y: 0 },
-                // L
-                { shape: [[0, 0, 7], [7, 7, 7]], color: 7, x: 0, y: 0 }
+                { shape: [[1, 1, 1, 1]], color: 1 }, // I
+                { shape: [[2, 2], [2, 2]], color: 2 }, // O
+                { shape: [[0, 3, 0], [3, 3, 3]], color: 3 }, // T
+                { shape: [[0, 4, 4], [4, 4, 0]], color: 4 }, // S
+                { shape: [[5, 5, 0], [0, 5, 5]], color: 5 }, // Z
+                { shape: [[6, 0, 0], [6, 6, 6]], color: 6 }, // J
+                { shape: [[0, 0, 7], [7, 7, 7]], color: 7 }  // L
+            ];
+
+             // --- NUEVO: Piezas difíciles para el inicio ---
+            const DIFFICULT_PIECES = [
+                // Forma de U (5 bloques)
+                { shape: [[8, 0, 8], [8, 8, 8]], color: 8 },
+                 // Forma de Cruz Grande (5 bloques)
+                { shape: [[0, 9, 0], [9, 9, 9], [0, 9, 0]], color: 9 },
+                 // Forma de L Rara (5 bloques)
+                { shape: [[10, 10, 0], [0, 10, 0], [0, 10, 10]], color: 10 },
+                // Podrías añadir más formas aquí si quieres
+                // Forma de "Escalera" (6 bloques) - Ejemplo adicional
+                 //{ shape: [[0, 11, 11], [11, 11, 0], [0,11,0]], color: 11}, // Necesitarías color 11
+                  // Piezas estándar conocidas por ser incómodas (S y Z)
+                 { shape: [[0, 4, 4], [4, 4, 0]], color: 4 }, // S
+                 { shape: [[5, 5, 0], [0, 5, 5]], color: 5 }, // Z
             ];
 
             // --- Estado del Juego ---
@@ -263,20 +199,19 @@
             let gameOver;
             let isPaused;
             let animationFrameId;
-            let pieceSequence;
+            let pieceSequence; // Para el 7-bag normal
+            let initialDifficultPiecesCount; // --- NUEVO: Contador para piezas difíciles ---
 
-            // --- Funciones del Juego ---
+            // --- Funciones del Juego (la mayoría sin cambios, solo las modificadas se comentan) ---
 
-            function createBoard() {
+            function createBoard() { /* ... sin cambios ... */
                 return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
             }
 
-            function drawBlock(ctx, x, y, colorIndex, blockSize = BLOCK_SIZE, outline = true) {
+            function drawBlock(ctx, x, y, colorIndex, blockSize = BLOCK_SIZE, outline = true) { /* ... sin cambios ... */
                 if (colorIndex === null || colorIndex === 0) return;
-
                 ctx.fillStyle = COLORS[colorIndex];
                 ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
-
                 if (outline) {
                     ctx.strokeStyle = '#333';
                     ctx.lineWidth = 1;
@@ -284,45 +219,27 @@
                 }
             }
 
-            function drawBoard() {
+            function drawBoard() { /* ... sin cambios ... */
                 context.fillStyle = '#111';
                 context.fillRect(0, 0, canvas.width, canvas.height);
-
                 for (let r = 0; r < ROWS; r++) {
                     for (let c = 0; c < COLS; c++) {
-                        if (board[r][c]) {
-                            drawBlock(context, c, r, board[r][c]);
-                        }
+                        if (board[r][c]) drawBlock(context, c, r, board[r][c]);
                     }
                 }
-
-                context.strokeStyle = '#444';
-                context.lineWidth = 0.5;
-                for (let c = 0; c <= COLS; c++) {
-                    context.beginPath();
-                    context.moveTo(c * BLOCK_SIZE, 0);
-                    context.lineTo(c * BLOCK_SIZE, canvas.height);
-                    context.stroke();
-                }
-                for (let r = 0; r <= ROWS; r++) {
-                    context.beginPath();
-                    context.moveTo(0, r * BLOCK_SIZE);
-                    context.lineTo(canvas.width, r * BLOCK_SIZE);
-                    context.stroke();
-                }
+                // Dibujar cuadrícula (opcional)
+                context.strokeStyle = '#444'; context.lineWidth = 0.5;
+                for (let c = 0; c <= COLS; c++) { context.beginPath(); context.moveTo(c * BLOCK_SIZE, 0); context.lineTo(c * BLOCK_SIZE, canvas.height); context.stroke(); }
+                for (let r = 0; r <= ROWS; r++) { context.beginPath(); context.moveTo(0, r * BLOCK_SIZE); context.lineTo(canvas.width, r * BLOCK_SIZE); context.stroke(); }
             }
 
-            function drawPiece(piece, ctx = context, drawGhost = false) {
-                const shape = piece.shape;
-                const color = piece.color;
-                const pieceX = piece.x;
-                const pieceY = piece.y;
-
+            function drawPiece(piece, ctx = context, drawGhost = false) { /* ... sin cambios ... */
+                const shape = piece.shape; const color = piece.color;
+                const pieceX = piece.x; const pieceY = piece.y;
                 shape.forEach((row, y) => {
                     row.forEach((value, x) => {
                         if (value > 0) {
-                            const drawX = pieceX + x;
-                            const drawY = pieceY + y;
+                            const drawX = pieceX + x; const drawY = pieceY + y;
                             if (drawY >= 0) {
                                 if (drawGhost) {
                                     ctx.fillStyle = `rgba(${hexToRgb(COLORS[color])}, 0.2)`;
@@ -339,44 +256,37 @@
                 });
             }
 
-            function drawGhostPiece() {
+            function drawGhostPiece() { /* ... sin cambios ... */
                 if (!currentPiece || gameOver || isPaused) return;
                 let ghostY = currentPiece.y;
-                while (isValidMove(currentPiece.x, ghostY + 1, currentPiece.shape)) {
-                    ghostY++;
-                }
+                while (isValidMove(currentPiece.x, ghostY + 1, currentPiece.shape)) ghostY++;
                 const ghostPiece = { ...currentPiece, y: ghostY };
                 drawPiece(ghostPiece, context, true);
             }
 
-            function hexToRgb(hex) {
+            function hexToRgb(hex) { /* ... sin cambios ... */
+                if (!hex) return '0,0,0'; // Manejar nulo si un color no está definido
                 const bigint = parseInt(hex.slice(1), 16);
-                const r = (bigint >> 16) & 255;
-                const g = (bigint >> 8) & 255;
-                const b = bigint & 255;
+                const r = (bigint >> 16) & 255; const g = (bigint >> 8) & 255; const b = bigint & 255;
                 return `${r}, ${g}, ${b}`;
             }
 
-            function drawNextPiece() {
+            function drawNextPiece() { /* ... sin cambios ... */
                 nextContext.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
                 if (!nextPiece) return;
-                const shape = nextPiece.shape;
-                const color = nextPiece.color;
-                const shapeWidth = shape[0].length;
-                const shapeHeight = shape.length;
+                const shape = nextPiece.shape; const color = nextPiece.color;
+                const shapeWidth = shape[0].length; const shapeHeight = shape.length;
                 const startX = Math.floor((4 - shapeWidth) / 2);
                 const startY = Math.floor((4 - shapeHeight) / 2);
                 shape.forEach((row, y) => {
                     row.forEach((value, x) => {
-                        if (value > 0) {
-                            drawBlock(nextContext, startX + x, startY + y, color, NEXT_BLOCK_SIZE, false);
-                        }
+                        if (value > 0) drawBlock(nextContext, startX + x, startY + y, color, NEXT_BLOCK_SIZE, false);
                     });
                 });
             }
 
-            function generateSequence() {
-                const sequence = [0, 1, 2, 3, 4, 5, 6];
+            function generateSequence() { /* ... sin cambios ... */
+                const sequence = TETROMINOES.map((_, index) => index); // Usar índices 0-6
                 for (let i = sequence.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
@@ -384,23 +294,52 @@
                 return sequence;
             }
 
-            function getNextPieceFromSequence() {
-                if (!pieceSequence || pieceSequence.length === 0) {
-                    pieceSequence = generateSequence();
+             // --- MODIFICADO: Obtener la siguiente pieza ---
+            function getNextPiece() {
+                let pieceTemplate;
+
+                 // --- NUEVO: Comprobar si quedan piezas difíciles iniciales ---
+                if (initialDifficultPiecesCount > 0) {
+                    // Elegir aleatoriamente una pieza del set difícil
+                    const randomIndex = Math.floor(Math.random() * DIFFICULT_PIECES.length);
+                    pieceTemplate = DIFFICULT_PIECES[randomIndex];
+                    initialDifficultPiecesCount--; // Decrementar contador
+                    console.log("Generating difficult piece. Remaining:", initialDifficultPiecesCount);
+                } else {
+                    // Lógica normal del 7-bag
+                    if (!pieceSequence || pieceSequence.length === 0) {
+                        pieceSequence = generateSequence();
+                        console.log("Generated new 7-bag sequence:", pieceSequence);
+                    }
+                    const pieceIndex = pieceSequence.shift();
+                    pieceTemplate = TETROMINOES[pieceIndex];
+                     console.log("Generating standard piece index:", pieceIndex);
                 }
-                const pieceIndex = pieceSequence.shift();
-                const newPieceTemplate = TETROMINOES[pieceIndex];
-                const newPiece = JSON.parse(JSON.stringify(newPieceTemplate));
+
+                // Crear copia profunda y establecer posición inicial
+                const newPiece = JSON.parse(JSON.stringify(pieceTemplate)); // Copia profunda
                 newPiece.x = Math.floor(COLS / 2) - Math.ceil(newPiece.shape[0].length / 2);
-                newPiece.y = (pieceIndex === 0) ? -1 : 0; // I empieza un poco más arriba
+                // Determinar Y inicial (0 o -1 si es muy alta como la I original)
+                // Para simplificar, empezamos todas en 0 aquí, podrías ajustar esto para piezas específicas
+                newPiece.y = 0;
+                 // Ajuste especial para la pieza 'I' original si aún se usa en el 7-bag
+                 if (pieceTemplate === TETROMINOES[0] && initialDifficultPiecesCount <= 0) {
+                     newPiece.y = -1;
+                 }
+
+
                 return newPiece;
             }
 
+             // --- MODIFICADO: Generar pieza ---
             function spawnPiece() {
-                currentPiece = nextPiece || getNextPieceFromSequence();
-                nextPiece = getNextPieceFromSequence();
-                drawNextPiece();
+                 // La pieza actual es la que estaba en 'next'
+                 currentPiece = nextPiece; // Ya se generó en la llamada anterior o en startGame
+                 // Obtener la siguiente pieza (será difícil o normal según el contador)
+                 nextPiece = getNextPiece();
+                 drawNextPiece(); // Actualizar la preview
 
+                // Comprobar game over con la pieza actual
                 if (!isValidMove(currentPiece.x, currentPiece.y, currentPiece.shape)) {
                     gameOver = true;
                     if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -409,16 +348,16 @@
                     startButton.textContent = "Jugar de Nuevo";
                     startButton.disabled = false;
                     console.log("Game Over!");
+                    currentPiece = null; // Evitar errores de dibujado post-game over
                 }
             }
 
-            function isValidMove(x, y, shape) {
+            function isValidMove(x, y, shape) { /* ... sin cambios ... */
                 for (let r = 0; r < shape.length; r++) {
                     for (let c = 0; c < shape[r].length; c++) {
                         if (shape[r][c] > 0) {
-                            const boardX = x + c;
-                            const boardY = y + r;
-                            if (boardX < 0 || boardX >= COLS || boardY >= ROWS || (boardY >= 0 && board[boardY][boardX] > 0)) {
+                            const boardX = x + c; const boardY = y + r;
+                            if (boardX < 0 || boardX >= COLS || boardY >= ROWS || (boardY >= 0 && board[boardY] && board[boardY][boardX] > 0)) {
                                 return false;
                             }
                         }
@@ -427,76 +366,58 @@
                 return true;
             }
 
-            function rotatePiece() {
+            function rotatePiece() { /* ... sin cambios ... */
+                // Nota: La rotación simple podría no ser ideal para todas las formas custom.
+                // Funciona bien para formas "convexas" o simples.
                 if (!currentPiece || isPaused || gameOver) return;
-                const rows = currentPiece.shape.length;
-                const cols = currentPiece.shape[0].length;
+                const rows = currentPiece.shape.length; const cols = currentPiece.shape[0].length;
                 const rotatedShape = Array.from({ length: cols }, () => Array(rows).fill(0));
                 for (let r = 0; r < rows; r++) {
                     for (let c = 0; c < cols; c++) {
                         rotatedShape[c][rows - 1 - r] = currentPiece.shape[r][c];
                     }
                 }
-
-                // Intenta rotar, luego wall kick
                 if (isValidMove(currentPiece.x, currentPiece.y, rotatedShape)) {
-                    currentPiece.shape = rotatedShape;
-                    resetDropTimer();
+                    currentPiece.shape = rotatedShape; resetDropTimer();
                 } else if (isValidMove(currentPiece.x + 1, currentPiece.y, rotatedShape)) {
-                    currentPiece.x++;
-                    currentPiece.shape = rotatedShape;
-                    resetDropTimer();
+                    currentPiece.x++; currentPiece.shape = rotatedShape; resetDropTimer();
                 } else if (isValidMove(currentPiece.x - 1, currentPiece.y, rotatedShape)) {
-                    currentPiece.x--;
-                    currentPiece.shape = rotatedShape;
-                    resetDropTimer();
+                    currentPiece.x--; currentPiece.shape = rotatedShape; resetDropTimer();
                 }
-                 // Podrían añadirse más wall kicks aquí (ej. mover 2 espacios, kicks verticales)
             }
 
-            function moveDown() {
+            function moveDown() { /* ... sin cambios ... */
                 if (!currentPiece || isPaused || gameOver) return false;
                 if (isValidMove(currentPiece.x, currentPiece.y + 1, currentPiece.shape)) {
-                    currentPiece.y++;
-                    dropStart = Date.now();
-                    return true;
+                    currentPiece.y++; dropStart = Date.now(); return true;
                 } else {
-                    lockPiece();
-                    return false;
+                    lockPiece(); return false;
                 }
             }
-
-            function moveLeft() {
+            function moveLeft() { /* ... sin cambios ... */
                 if (!currentPiece || isPaused || gameOver) return;
                 if (isValidMove(currentPiece.x - 1, currentPiece.y, currentPiece.shape)) {
-                    currentPiece.x--;
-                    resetDropTimer();
+                    currentPiece.x--; resetDropTimer();
                 }
             }
-
-            function moveRight() {
-                if (!currentPiece || isPaused || gameOver) return;
+            function moveRight() { /* ... sin cambios ... */
+                 if (!currentPiece || isPaused || gameOver) return;
                 if (isValidMove(currentPiece.x + 1, currentPiece.y, currentPiece.shape)) {
-                    currentPiece.x++;
-                    resetDropTimer();
+                    currentPiece.x++; resetDropTimer();
                 }
             }
-
-            function hardDrop() {
+            function hardDrop() { /* ... sin cambios ... */
                 if (!currentPiece || isPaused || gameOver) return;
-                while (isValidMove(currentPiece.x, currentPiece.y + 1, currentPiece.shape)) {
-                    currentPiece.y++;
-                }
+                while (isValidMove(currentPiece.x, currentPiece.y + 1, currentPiece.shape)) currentPiece.y++;
                 lockPiece();
             }
 
-            function lockPiece() {
+            function lockPiece() { /* ... sin cambios ... */
                 if (!currentPiece) return;
                 currentPiece.shape.forEach((row, y) => {
                     row.forEach((value, x) => {
                         if (value > 0) {
-                            const boardX = currentPiece.x + x;
-                            const boardY = currentPiece.y + y;
+                            const boardX = currentPiece.x + x; const boardY = currentPiece.y + y;
                             if (boardY >= 0 && boardY < ROWS && boardX >= 0 && boardX < COLS) {
                                 board[boardY][boardX] = currentPiece.color;
                             }
@@ -504,155 +425,102 @@
                     });
                 });
                 clearLines();
+                 // --- Llamada MODIFICADA a spawnPiece (usa la nueva lógica interna) ---
                 spawnPiece();
                 resetDropTimer();
             }
 
-            function clearLines() {
+            function clearLines() { /* ... sin cambios ... */
                 let linesCleared = 0;
                 for (let r = ROWS - 1; r >= 0; ) {
                     if (board[r].every(cell => cell > 0)) {
                         linesCleared++;
-                        for (let y = r; y > 0; y--) {
-                            board[y] = board[y - 1];
-                        }
+                        for (let y = r; y > 0; y--) board[y] = board[y - 1];
                         board[0] = Array(COLS).fill(0);
-                    } else {
-                        r--;
-                    }
+                    } else { r--; }
                 }
-                if (linesCleared > 0) {
-                    updateScoreAndLevel(linesCleared);
-                }
+                if (linesCleared > 0) updateScoreAndLevel(linesCleared);
             }
 
-            function updateScoreAndLevel(cleared) {
+            function updateScoreAndLevel(cleared) { /* ... sin cambios ... */
                 const points = [0, 100, 300, 500, 800];
-                score += points[cleared] * level;
-                lines += cleared;
+                score += points[cleared] * level; lines += cleared;
                 const newLevel = Math.floor(lines / 10) + 1;
                 if (newLevel > level) {
-                    level = newLevel;
-                    dropInterval = Math.max(100, 1000 - (level - 1) * 70); // Acelera
+                    level = newLevel; dropInterval = Math.max(100, 1000 - (level - 1) * 70);
                 }
-                scoreElement.textContent = score;
-                linesElement.textContent = lines;
-                levelElement.textContent = level;
+                scoreElement.textContent = score; linesElement.textContent = lines; levelElement.textContent = level;
             }
 
-            function resetDropTimer() {
-                dropStart = Date.now();
-            }
+            function resetDropTimer() { /* ... sin cambios ... */ dropStart = Date.now(); }
 
-            function gameLoop(timestamp) {
-                if (gameOver || isPaused) {
-                    if (gameOver && animationFrameId) cancelAnimationFrame(animationFrameId);
-                    return;
-                }
-
-                const now = Date.now();
-                const delta = now - dropStart;
-                if (delta > dropInterval) {
-                    moveDown(); // moveDown maneja el bloqueo si es necesario
-                    dropStart = now; // Siempre reiniciar timer después de intentar bajar
-                }
-
-                drawBoard();
-                drawGhostPiece();
-                if (currentPiece) drawPiece(currentPiece);
-
+            function gameLoop(timestamp) { /* ... sin cambios ... */
+                if (gameOver || isPaused) { if (gameOver && animationFrameId) cancelAnimationFrame(animationFrameId); return; }
+                const now = Date.now(); const delta = now - dropStart;
+                if (delta > dropInterval) { moveDown(); dropStart = now; }
+                drawBoard(); drawGhostPiece(); if (currentPiece) drawPiece(currentPiece);
                 animationFrameId = requestAnimationFrame(gameLoop);
             }
 
+            // --- MODIFICADO: Iniciar Juego ---
             function startGame() {
                 board = createBoard();
-                score = 0;
-                lines = 0;
-                level = 1;
-                gameOver = false;
-                isPaused = false;
-                pieceSequence = generateSequence();
-                nextPiece = getNextPieceFromSequence(); // Prepara la primera 'next'
+                score = 0; lines = 0; level = 1;
+                gameOver = false; isPaused = false;
+                pieceSequence = null; // Reiniciar secuencia normal
+                initialDifficultPiecesCount = 2; // --- NUEVO: Establecer contador inicial ---
+                console.log("Starting game. Difficult pieces to generate:", initialDifficultPiecesCount);
 
-                gameOverScreen.classList.add('hidden');
-                pauseScreen.classList.add('hidden');
-                scoreElement.textContent = score;
-                linesElement.textContent = lines;
-                levelElement.textContent = level;
-                startButton.textContent = "Reiniciar";
-                startButton.disabled = true;
+                gameOverScreen.classList.add('hidden'); pauseScreen.classList.add('hidden');
+                scoreElement.textContent = score; linesElement.textContent = lines; levelElement.textContent = level;
+                startButton.textContent = "Reiniciar"; startButton.disabled = true;
 
-                dropInterval = 1000;
-                resetDropTimer();
+                dropInterval = 1000; resetDropTimer();
 
-                spawnPiece(); // Genera la primera pieza real
+                 // --- NUEVO: Obtener la primera pieza (difícil) y la siguiente (difícil) ---
+                nextPiece = getNextPiece(); // Obtiene la 1ra difícil, decrementa contador a 1
+                spawnPiece();               // Pone la 1ra difícil como actual, obtiene la 2da difícil como 'next', decrementa contador a 0
 
                 if (animationFrameId) cancelAnimationFrame(animationFrameId);
                 animationFrameId = requestAnimationFrame(gameLoop);
             }
 
-            function togglePause() {
-                if (gameOver) return;
-                isPaused = !isPaused;
+            function togglePause() { /* ... sin cambios ... */
+                if (gameOver) return; isPaused = !isPaused;
                 if (isPaused) {
                     if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                    pauseScreen.classList.remove('hidden');
-                    startButton.disabled = false;
-                    startButton.textContent = "Reanudar";
+                    pauseScreen.classList.remove('hidden'); startButton.disabled = false; startButton.textContent = "Reanudar";
                 } else {
-                    pauseScreen.classList.add('hidden');
-                    resetDropTimer();
+                    pauseScreen.classList.add('hidden'); resetDropTimer();
                     animationFrameId = requestAnimationFrame(gameLoop);
-                    startButton.disabled = true;
-                    startButton.textContent = "Reiniciar";
+                    startButton.disabled = true; startButton.textContent = "Reiniciar";
                 }
             }
 
-            function handleKeyDown(event) {
-                if (gameOver) return;
-                if (event.key === 'p' || event.key === 'P') {
-                    if (startButton.textContent !== 'Jugar') { // Solo pausar si el juego ha iniciado
-                         togglePause();
-                    }
-                     return;
-                }
+            function handleKeyDown(event) { /* ... sin cambios ... */
+                 if (gameOver) return;
+                if (event.key === 'p' || event.key === 'P') { if (startButton.textContent !== 'Jugar') togglePause(); return; }
                 if (isPaused) return;
-
-                let redraw = false; // Bandera para redibujar solo si hubo acción
+                let redraw = false;
                 switch (event.key) {
                     case 'ArrowLeft': case 'a': moveLeft(); redraw = true; break;
                     case 'ArrowRight': case 'd': moveRight(); redraw = true; break;
-                    case 'ArrowDown': case 's':
-                        if (moveDown()) { /* Opcional: score += 1; */ }
-                         resetDropTimer(); // Reiniciar siempre en caída suave
-                        redraw = true;
-                        break;
+                    case 'ArrowDown': case 's': if (moveDown()) { /* score += 1; */ } resetDropTimer(); redraw = true; break;
                     case 'ArrowUp': case 'w': rotatePiece(); redraw = true; break;
-                    case ' ': event.preventDefault(); hardDrop(); redraw = true; break; // Prevenir scroll
+                    case ' ': event.preventDefault(); hardDrop(); redraw = true; break;
                 }
-
-                // Redibujar inmediatamente si hubo una acción válida
-                if (redraw && !gameOver && !isPaused) {
-                    drawBoard();
-                    drawGhostPiece();
-                    if (currentPiece) drawPiece(currentPiece);
+                if (redraw && !gameOver && !isPaused && currentPiece) { // Añadido check currentPiece
+                    drawBoard(); drawGhostPiece(); drawPiece(currentPiece);
                 }
             }
 
             // --- Inicialización ---
             document.addEventListener('keydown', handleKeyDown);
             startButton.addEventListener('click', () => {
-                if (startButton.textContent === 'Reanudar') {
-                    togglePause();
-                } else {
-                    startGame();
-                }
+                if (startButton.textContent === 'Reanudar') togglePause();
+                else startGame();
             });
-
-            // Estado inicial visual
-            board = createBoard(); // Necesario para el primer drawBoard
-            drawBoard();
-            drawNextPiece(); // Dibuja canvas 'next' vacío
+            board = createBoard(); drawBoard(); drawNextPiece(); // Estado inicial visual
         });
     </script>
 </body>
