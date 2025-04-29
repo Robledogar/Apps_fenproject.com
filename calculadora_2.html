@@ -11,11 +11,11 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4F46E5',
-                        secondary: '#10B981',
-                        accent: '#F59E0B',
-                        dark: '#1F2937',
-                        light: '#F3F4F6',
+                        primary: '#4F46E5',    // Indigo-600
+                        secondary: '#10B981',  // Emerald-500
+                        accent: '#F59E0B',     // Amber-500
+                        dark: '#1F2937',       // Gray-800
+                        light: '#F3F4F6',      // Gray-100
                     }
                 }
             }
@@ -34,26 +34,30 @@
         }
         .result-card { transition: all 0.3s ease; }
         .result-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
-        .tooltip { position: relative; display: inline-block; }
-        .tooltip .tooltip-text { visibility: hidden; width: 160px; background-color: #1F2937; color: #fff; text-align: center; border-radius: 6px; padding: 5px 8px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -80px; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; line-height: 1rem; }
+        .tooltip { position: relative; display: inline-block; cursor: help; }
+        .tooltip .tooltip-text { visibility: hidden; width: 180px; background-color: #1F2937; color: #fff; text-align: center; border-radius: 6px; padding: 6px 10px; position: absolute; z-index: 10; bottom: 130%; left: 50%; margin-left: -90px; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; line-height: 1.1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
-        .tab-btn.active { color: var(--tw-color-primary); border-bottom: 2px solid var(--tw-color-primary); font-weight: 600; }
-        input[readonly] { background-color: #F3F4F6; cursor: not-allowed; }
+        .tab-btn.active { color: #4F46E5; border-bottom: 3px solid #4F46E5; font-weight: 600; }
+        input[readonly] { background-color: #F3F4F6; cursor: not-allowed; color: #4B5563; } /* Gray-300 bg, Gray-600 text */
+        /* Custom scrollbar for tab bar if needed */
+        .flex.overflow-x-auto::-webkit-scrollbar { height: 4px; }
+        .flex.overflow-x-auto::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 2px; } /* Gray-300 */
+        .flex.overflow-x-auto { scrollbar-width: thin; scrollbar-color: #D1D5DB transparent;} /* Firefox */
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-100 font-sans">
     <header class="bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-6 md:mb-0">
+                <div class="mb-6 md:mb-0 text-center md:text-left">
                     <h1 class="text-3xl md:text-4xl font-bold mb-2">Calculadora de Autopublicación</h1>
                     <p class="text-lg opacity-90">Planifica los costes y beneficios de tu libro</p>
                 </div>
-                <div class="flex space-x-4">
-                    <button onclick="window.print()" class="bg-white text-primary px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center">
+                <div class="flex space-x-3 sm:space-x-4">
+                    <button onclick="window.print()" class="bg-white text-primary px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium hover:bg-gray-100 transition flex items-center text-sm sm:text-base shadow-sm">
                         <i class="fas fa-print mr-2"></i> Imprimir
                     </button>
-                    <button onclick="resetAll()" class="bg-accent text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-600 transition flex items-center">
+                    <button onclick="resetAll()" class="bg-accent text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium hover:bg-yellow-600 transition flex items-center text-sm sm:text-base shadow-sm">
                         <i class="fas fa-redo mr-2"></i> Reiniciar
                     </button>
                 </div>
@@ -61,32 +65,32 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-            <div class="flex overflow-x-auto border-b">
-                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition active" data-tab="basic">Datos Básicos</button>
-                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="costs">Costes</button>
-                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="pricing">Precio y Ventas</button>
-                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="compare">Comparativa</button>
-                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="results">Resultados</button>
+            <div class="flex overflow-x-auto border-b border-gray-200 bg-gray-50">
+                <button class="tab-btn px-4 sm:px-6 py-4 font-medium text-gray-600 hover:text-primary transition active whitespace-nowrap" data-tab="basic">Datos Básicos</button>
+                <button class="tab-btn px-4 sm:px-6 py-4 font-medium text-gray-600 hover:text-primary transition whitespace-nowrap" data-tab="costs">Costes</button>
+                <button class="tab-btn px-4 sm:px-6 py-4 font-medium text-gray-600 hover:text-primary transition whitespace-nowrap" data-tab="pricing">Precio y Ventas</button>
+                <button class="tab-btn px-4 sm:px-6 py-4 font-medium text-gray-600 hover:text-primary transition whitespace-nowrap" data-tab="compare">Comparativa</button>
+                <button class="tab-btn px-4 sm:px-6 py-4 font-medium text-gray-600 hover:text-primary transition whitespace-nowrap" data-tab="results">Resultados</button>
             </div>
 
             <!-- Basic Info Tab -->
-            <div id="basic" class="tab-content active p-6">
+            <div id="basic" class="tab-content active p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-dark mb-6">Información Básica del Libro</h2>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                      <div>
                         <label class="block text-gray-700 font-medium mb-2">Tipo de Libro</label>
-                        <div class="flex space-x-4">
+                        <div class="flex flex-wrap gap-3">
                             <div class="flex items-center">
                                 <input type="radio" id="children" name="bookType" value="children" class="custom-radio hidden">
-                                <label for="children" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base">
+                                <label for="children" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base hover:border-primary transition">
                                     <i class="fas fa-child mr-2"></i> Infantil
                                 </label>
                             </div>
                             <div class="flex items-center">
                                 <input type="radio" id="novel" name="bookType" value="novel" class="custom-radio hidden" checked>
-                                <label for="novel" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base">
+                                <label for="novel" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base hover:border-primary transition">
                                     <i class="fas fa-book mr-2"></i> Novela / Otros
                                 </label>
                             </div>
@@ -94,16 +98,16 @@
                     </div>
                      <div>
                         <label class="block text-gray-700 font-medium mb-2">Formato de Publicación</label>
-                        <div class="flex space-x-4">
+                        <div class="flex flex-wrap gap-3">
                              <div class="flex items-center">
                                 <input type="radio" id="kdp" name="publishingFormat" value="kdp" class="custom-radio hidden" checked>
-                                <label for="kdp" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base">
+                                <label for="kdp" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base hover:border-primary transition">
                                     <i class="fab fa-amazon mr-2"></i> Amazon KDP
                                 </label>
                             </div>
                             <div class="flex items-center">
                                 <input type="radio" id="traditional" name="publishingFormat" value="traditional" class="custom-radio hidden">
-                                <label for="traditional" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base">
+                                <label for="traditional" class="px-4 py-2 border rounded-lg cursor-pointer flex items-center text-sm sm:text-base hover:border-primary transition">
                                     <i class="fas fa-print mr-2"></i> Imprenta
                                 </label>
                             </div>
@@ -113,11 +117,11 @@
                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div>
                         <label for="pageCount" class="block text-gray-700 font-medium mb-2">Número de páginas</label>
-                        <input type="number" id="pageCount" min="24" max="1000" value="150" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <input type="number" id="pageCount" min="24" max="1000" value="150" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                     </div>
                     <div>
                         <label for="bookSize" class="block text-gray-700 font-medium mb-2">Tamaño del libro</label>
-                        <select id="bookSize" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select id="bookSize" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
                             <option value="12.7x20.32">5" x 8" (12.7 x 20.32 cm)</option>
                             <option value="13.97x21.59" selected>5.5" x 8.5" (13.97 x 21.59 cm)</option>
                             <option value="15.24x22.86">6" x 9" (15.24 x 22.86 cm)</option>
@@ -129,7 +133,7 @@
                     </div>
                      <div>
                         <label for="printType" class="block text-gray-700 font-medium mb-2">Tipo de impresión interior</label>
-                        <select id="printType" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select id="printType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
                             <option value="bw" selected>Blanco y negro</option>
                             <option value="color_standard">Color estándar</option>
                             <option value="color_premium">Color premium</option>
@@ -140,7 +144,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
                         <label for="paperType" class="block text-gray-700 font-medium mb-2">Tipo de papel <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">KDP ofrece Blanco o Crema (B/N), Blanco (Color). Imprentas tienen más variedad. Selecciona el más parecido.</span></span></label>
-                        <select id="paperType" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select id="paperType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
                             <option value="cream">Crema (B/N - KDP)</option>
                             <option value="white" selected>Blanco (B/N, Color - KDP)</option>
                             <option value="standard_80">Estándar (80-90 gr)</option>
@@ -151,7 +155,7 @@
                     </div>
                      <div>
                         <label for="bindingType" class="block text-gray-700 font-medium mb-2">Tipo de encuadernación</label>
-                        <select id="bindingType" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select id="bindingType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
                             <option value="soft_matte" selected>Tapa blanda Mate (KDP)</option>
                             <option value="soft_glossy">Tapa blanda Brillo (KDP)</option>
                             <option value="hard">Tapa dura (KDP & Imprenta)</option>
@@ -160,15 +164,15 @@
                          <p class="text-xs text-gray-500 mt-1">KDP ofrece tapa blanda (mate/brillo) y dura. Imprentas varían.</p>
                     </div>
                 </div>
-                 <div class="flex justify-end">
-                    <button onclick="navigateToTab('costs')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center">
+                 <div class="flex justify-end mt-10">
+                    <button onclick="navigateToTab('costs')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center shadow-md hover:shadow-lg">
                         Siguiente <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Costs Tab -->
-            <div id="costs" class="tab-content p-6">
+            <div id="costs" class="tab-content p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-dark mb-6">Costes de Producción</h2>
                  <div class="mb-8">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -176,31 +180,31 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                         <div>
-                            <label for="editingCost" class="block text-gray-700 font-medium mb-2">Corrección / Edición <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Ortotipográfica y de estilo. Coste estimado: 1-3€/página.</span></span></label>
+                            <label for="editingCost" class="block text-gray-700 font-medium mb-2">Corrección / Edición <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Ortotipográfica y de estilo. Coste estimado: 1-3€/página. Introduce el coste total estimado.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="editingCost" min="0" value="300" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="editingCost" min="0" value="300" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                         <div>
-                            <label for="layoutCost" class="block text-gray-700 font-medium mb-2">Maquetación <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Diseño interior del libro. Coste estimado: 0.7-4€/página.</span></span></label>
+                            <label for="layoutCost" class="block text-gray-700 font-medium mb-2">Maquetación <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Diseño interior del libro. Coste estimado: 0.7-4€/página. Introduce el coste total estimado.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="layoutCost" min="0" value="250" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="layoutCost" min="0" value="250" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                          <div>
-                            <label for="coverDesignCost" class="block text-gray-700 font-medium mb-2">Diseño de portada <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Diseño profesional. Coste estimado: 150-500€.</span></span></label>
+                            <label for="coverDesignCost" class="block text-gray-700 font-medium mb-2">Diseño de portada <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Diseño profesional. Coste estimado: 150-600€. Introduce el coste total estimado.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="coverDesignCost" min="0" value="375" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="coverDesignCost" min="0" value="375" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                         <div>
-                            <label for="illustrationsCost" class="block text-gray-700 font-medium mb-2">Ilustraciones / Gráficos <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Importante para infantil, opcional otros. Coste: 20-150€/ilustración.</span></span></label>
+                            <label for="illustrationsCost" class="block text-gray-700 font-medium mb-2">Ilustraciones / Gráficos <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Importante para infantil, opcional otros. Coste: 20-150€/ilustración. Introduce el coste total estimado.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="illustrationsCost" min="0" value="0" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="illustrationsCost" min="0" value="0" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                     </div>
@@ -214,14 +218,14 @@
                             <label for="isbnCost" class="block text-gray-700 font-medium mb-2">ISBN <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Gratis en KDP (asignado por Amazon) o de pago si lo compras tú (45€ en España). Necesario para venta fuera de Amazon.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="isbnCost" min="0" value="0" step="1" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="isbnCost" min="0" value="0" step="1" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                         <div>
-                            <label for="legalDepositCost" class="block text-gray-700 font-medium mb-2">Depósito Legal <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Obligatorio en España si imprimes con imprenta y usas ISBN español. Gratuito (solo coste envío copias). No aplica a KDP normalmente.</span></span></label>
+                            <label for="legalDepositCost" class="block text-gray-700 font-medium mb-2">Depósito Legal <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Obligatorio en España si imprimes con imprenta y usas ISBN español. Gratuito (solo coste envío copias). No aplica a KDP normalmente. Pon coste estimado de envío.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="legalDepositCost" min="0" value="0" step="1" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="legalDepositCost" min="0" value="0" step="1" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                     </div>
@@ -232,23 +236,23 @@
                     </h3>
                      <!-- KDP Specific Costs -->
                     <div id="kdpCostsSection">
-                        <div class="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-                            <h4 class="font-semibold text-blue-800 mb-1 flex items-center"><i class="fab fa-amazon mr-2"></i> Amazon KDP (Impresión Bajo Demanda)</h4>
-                            <p class="text-sm text-blue-700">No hay coste inicial de tirada. El coste de impresión se deduce de las regalías por cada venta. Introduce abajo el coste estimado que te da KDP.</p>
+                        <div class="bg-indigo-50 p-4 rounded-lg mb-4 border border-indigo-200">
+                            <h4 class="font-semibold text-indigo-800 mb-1 flex items-center"><i class="fab fa-amazon mr-2"></i> Amazon KDP (Impresión Bajo Demanda)</h4>
+                            <p class="text-sm text-indigo-700">No hay coste inicial de tirada. El coste de impresión se deduce de las regalías por cada venta. Introduce abajo el coste estimado que te da KDP para tu mercado principal.</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div>
-                                <label for="kdpPrintCost" class="block text-gray-700 font-medium mb-2">Coste impresión KDP por unidad <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Encuéntralo en la calculadora de KDP al configurar tu libro. Varía por mercado (.es, .com).</span></span></label>
+                                <label for="kdpPrintCost" class="block text-gray-700 font-medium mb-2">Coste impresión KDP por unidad <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Encuéntralo en la calculadora de KDP al configurar tu libro (Precio y calidad > Costes de impresión). Varía por mercado (.es, .com, etc).</span></span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="kdpPrintCost" min="0" step="0.01" value="3.50" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="kdpPrintCost" min="0" step="0.01" value="3.50" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                              <div>
-                                <label for="kdpAuthorCopiesCost" class="block text-gray-700 font-medium mb-2">Coste total copias autor <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste de pedir copias para ti (impresión + envío). Inclúyelo si planeas pedir varias.</span></span></label>
+                                <label for="kdpAuthorCopiesCost" class="block text-gray-700 font-medium mb-2">Coste total copias autor <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste de pedir copias para ti (impresión + envío). Inclúyelo como coste inicial si planeas pedir varias para promoción o venta directa inicial.</span></span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="kdpAuthorCopiesCost" min="0" step="1" value="50" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="kdpAuthorCopiesCost" min="0" step="1" value="50" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                         </div>
@@ -262,36 +266,36 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
                             <div>
                                 <label for="printRun" class="block text-gray-700 font-medium mb-2">Tirada inicial (copias)</label>
-                                <input type="number" id="printRun" min="50" value="200" step="50" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="printRun" min="50" value="200" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                             <div>
                                 <label for="unitPrintCost" class="block text-gray-700 font-medium mb-2">Coste impresión por unidad</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="unitPrintCost" min="0" step="0.01" value="4.50" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="unitPrintCost" min="0" step="0.01" value="4.50" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                              <div>
                                 <label for="totalPrintCost" class="block text-gray-700 font-medium mb-2">Coste total impresión</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="totalPrintCost" min="0" step="0.01" value="900" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-100" readonly>
+                                    <input type="number" id="totalPrintCost" min="0" step="0.01" value="900" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-gray-100" readonly>
                                 </div>
                             </div>
                         </div>
                          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="storageCost" class="block text-gray-700 font-medium mb-2">Almacenamiento / Distrib. <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste anual o mensual si usas un distribuidor o alquilas espacio. Pon 0 si lo almacenas tú.</span></span></label>
+                                <label for="storageCost" class="block text-gray-700 font-medium mb-2">Almacenamiento / Distrib. <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste anual o mensual si usas un distribuidor o alquilas espacio. Pon 0 si lo almacenas tú sin coste extra. Incluir como parte del coste inicial o anual.</span></span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="storageCost" min="0" value="50" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="storageCost" min="0" value="50" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                              <div>
-                                <label for="shippingCost" class="block text-gray-700 font-medium mb-2">Coste envío estimado (total) <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste total estimado para enviar libros a distribuidores, librerías o clientes directos durante el periodo.</span></span></label>
+                                <label for="shippingCost" class="block text-gray-700 font-medium mb-2">Coste envío inicial (total) <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Coste inicial estimado para enviar libros a distribuidores, librerías o clientes directos al empezar. Añadir a la inversión.</span></span></label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="shippingCost" min="0" step="5" value="100" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="shippingCost" min="0" step="5" value="100" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                         </div>
@@ -303,90 +307,92 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="marketingCost" class="block text-gray-700 font-medium mb-2">Publicidad y Marketing <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Amazon Ads, Facebook Ads, material promocional, etc. Coste total estimado.</span></span></label>
+                            <label for="marketingCost" class="block text-gray-700 font-medium mb-2">Publicidad y Marketing <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Amazon Ads, Facebook Ads, material promocional, influencers, etc. Coste total estimado para el periodo de proyección.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="marketingCost" min="0" value="200" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="marketingCost" min="0" value="200" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                         <div>
-                            <label for="eventsCost" class="block text-gray-700 font-medium mb-2">Eventos y Presentaciones <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Costes asociados a lanzamientos, firmas, ferias, etc.</span></span></label>
+                            <label for="eventsCost" class="block text-gray-700 font-medium mb-2">Eventos y Presentaciones <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Costes asociados a lanzamientos, firmas, ferias (viajes, material, etc.). Coste total estimado para el periodo.</span></span></label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="eventsCost" min="0" value="150" step="10" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="eventsCost" min="0" value="150" step="10" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                     </div>
                 </div>
-                 <div class="flex justify-between">
-                    <button onclick="navigateToTab('basic')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                 <div class="flex justify-between mt-10">
+                    <button onclick="navigateToTab('basic')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center shadow hover:shadow-md">
                         <i class="fas fa-arrow-left mr-2"></i> Anterior
                     </button>
-                    <button onclick="navigateToTab('pricing')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center">
+                    <button onclick="navigateToTab('pricing')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center shadow-md hover:shadow-lg">
                         Siguiente <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Pricing Tab -->
-            <div id="pricing" class="tab-content p-6">
+            <div id="pricing" class="tab-content p-6 md:p-8">
                  <h2 class="text-2xl font-bold text-dark mb-6">Precio y Proyección de Ventas</h2>
                  <div class="mb-8">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-tag mr-2 text-accent"></i> Precio y Regalías
+                        <i class="fas fa-tag mr-2 text-accent"></i> Precio y Regalías/Ganancias
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                          <div>
                             <label for="retailPrice" class="block text-gray-700 font-medium mb-2">Precio de venta al público (PVP)</label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="retailPrice" min="0" step="0.01" value="15.99" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="retailPrice" min="0" step="0.01" value="15.99" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Precio final en tienda (ej. Amazon.es)</p>
+                            <p class="text-xs text-gray-500 mt-1">Precio final en tienda (ej. Amazon.es) para libro en papel.</p>
                         </div>
                          <div>
                              <label for="ebookPrice" class="block text-gray-700 font-medium mb-2">Precio Ebook (Opcional)</label>
                              <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                <input type="number" id="ebookPrice" min="0" step="0.01" value="4.99" class="w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="ebookPrice" min="0" step="0.01" value="4.99" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                              </div>
-                             <p class="text-xs text-gray-500 mt-1">Introduce 0 si no hay ebook.</p>
+                             <p class="text-xs text-gray-500 mt-1">Introduce 0 si no publicas ebook.</p>
                          </div>
                     </div>
                      <!-- KDP Royalties -->
                     <div id="kdpRoyaltySection">
-                        <div class="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-                            <h4 class="font-semibold text-blue-800 mb-1 flex items-center"><i class="fab fa-amazon mr-2"></i> Regalías Amazon KDP</h4>
-                            <p class="text-sm text-blue-700">Regalía Papel: 60% del PVP menos coste de impresión. Regalía Ebook: 70% (si precio 2.99-9.99€) o 35%.</p>
+                        <div class="bg-indigo-50 p-4 rounded-lg mb-4 border border-indigo-200">
+                            <h4 class="font-semibold text-indigo-800 mb-1 flex items-center"><i class="fab fa-amazon mr-2"></i> Regalías Amazon KDP</h4>
+                            <p class="text-sm text-indigo-700">Regalía Papel: 60% del PVP menos coste de impresión. Regalía Ebook: 70% (si precio 2.99-9.99€ y mercado aplicable) o 35%. Costes de envío digital pueden aplicar al 70%.</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div>
-                                <label for="kdpPaperRoyaltyRate" class="block text-gray-700 font-medium mb-2">Regalía Papel KDP</label>
+                                <label for="kdpPaperRoyaltyRate" class="block text-gray-700 font-medium mb-2">Regalía Papel KDP (Fija)</label>
                                 <div class="relative">
                                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
-                                    <input type="number" id="kdpPaperRoyaltyRate" value="60" class="w-full pr-10 pl-4 py-2 border rounded-lg bg-gray-100" readonly>
+                                    <input type="number" id="kdpPaperRoyaltyRate" value="60" class="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
                                 </div>
                             </div>
                              <div>
                                 <label for="kdpAuthorEarningsPaper" class="block text-gray-700 font-medium mb-2">Ganancia por libro Papel (KDP)</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="kdpAuthorEarningsPaper" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border rounded-lg bg-gray-100" readonly>
+                                    <input type="number" id="kdpAuthorEarningsPaper" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
                                 </div>
+                                <p class="text-xs text-gray-500 mt-1">Estimación: (PVP * 60%) - Coste Impresión</p>
                             </div>
                             <div>
-                               <label for="kdpEbookRoyaltyRate" class="block text-gray-700 font-medium mb-2">Regalía Ebook KDP</label>
-                               <select id="kdpEbookRoyaltyRate" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                                   <option value="70">70% (Precio entre 2.99 y 9.99)</option>
-                                   <option value="35">35% (Otros precios)</option>
+                               <label for="kdpEbookRoyaltyRate" class="block text-gray-700 font-medium mb-2">Opción Regalía Ebook KDP</label>
+                               <select id="kdpEbookRoyaltyRate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white">
+                                   <option value="70" selected>70% (Precio entre 2.99 y 9.99)</option>
+                                   <option value="35">35% (Otros precios o mercados)</option>
                                </select>
                            </div>
                             <div>
                                <label for="kdpAuthorEarningsEbook" class="block text-gray-700 font-medium mb-2">Ganancia por Ebook (KDP)</label>
                                <div class="relative">
                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                   <input type="number" id="kdpAuthorEarningsEbook" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border rounded-lg bg-gray-100" readonly>
+                                   <input type="number" id="kdpAuthorEarningsEbook" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Estimación: (Precio Ebook * % Regalía) - Coste envío digital (si 70%)</p>
                            </div>
                         </div>
                     </div>
@@ -394,31 +400,31 @@
                     <div id="traditionalRoyaltySection" class="hidden">
                          <div class="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
                             <h4 class="font-semibold text-purple-800 mb-1 flex items-center"><i class="fas fa-store mr-2"></i> Ganancias Imprenta Tradicional</h4>
-                            <p class="text-sm text-purple-700">Tus ganancias dependen del canal de venta: directo (mayor margen) o a través de distribuidores/librerías (menor margen).</p>
+                            <p class="text-sm text-purple-700">Tus ganancias dependen del canal de venta: directo (mayor margen) o a través de distribuidores/librerías (menor margen porque se quedan un %).</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label for="distributorCut" class="block text-gray-700 font-medium mb-2">% Distribuidor/Librería <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Porcentaje del PVP que se queda el canal de venta (30-60% habitual).</span></span></label>
+                                <label for="distributorCut" class="block text-gray-700 font-medium mb-2">% Distribuidor/Librería <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Porcentaje del PVP que se queda el canal de venta (distribuidor + librería). Habitual: 40-60%.</span></span></label>
                                 <div class="relative">
                                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
-                                    <input type="number" id="distributorCut" min="0" max="100" value="50" step="1" class="w-full pr-10 pl-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <input type="number" id="distributorCut" min="0" max="100" value="50" step="1" class="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                                 </div>
                             </div>
                              <div>
-                                <label for="traditionalAuthorEarningsStore" class="block text-gray-700 font-medium mb-2">Ganancia Venta Tienda</label>
+                                <label for="traditionalAuthorEarningsStore" class="block text-gray-700 font-medium mb-2">Ganancia Venta Tienda/Distrib.</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                    <input type="number" id="traditionalAuthorEarningsStore" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border rounded-lg bg-gray-100" readonly>
+                                    <input type="number" id="traditionalAuthorEarningsStore" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">(PVP - % Distrib. - Coste Impresión)</p>
+                                <p class="text-xs text-gray-500 mt-1">PVP * (1 - %Distrib.) - Coste Impresión</p>
                             </div>
                             <div>
                                <label for="traditionalAuthorEarningsDirect" class="block text-gray-700 font-medium mb-2">Ganancia Venta Directa</label>
                                <div class="relative">
                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
-                                   <input type="number" id="traditionalAuthorEarningsDirect" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border rounded-lg bg-gray-100" readonly>
+                                   <input type="number" id="traditionalAuthorEarningsDirect" min="0" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
                                </div>
-                               <p class="text-xs text-gray-500 mt-1">(PVP - Coste Impresión)</p>
+                               <p class="text-xs text-gray-500 mt-1">PVP - Coste Impresión</p>
                            </div>
                         </div>
                     </div>
@@ -427,69 +433,71 @@
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-chart-line mr-2 text-accent"></i> Proyección de Ventas
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                     <p class="text-sm text-gray-600 mb-4">Introduce una estimación realista de las ventas anuales para cada formato.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                         <div>
                             <label for="firstYearSalesPaper" class="block text-gray-700 font-medium mb-2">Ventas Papel 1er Año</label>
-                            <input type="number" id="firstYearSalesPaper" min="0" value="300" step="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <input type="number" id="firstYearSalesPaper" min="0" value="300" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                         </div>
                         <div>
-                            <label for="subsequentSalesPaper" class="block text-gray-700 font-medium mb-2">Ventas Papel Años Sig.</label>
-                            <input type="number" id="subsequentSalesPaper" min="0" value="100" step="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label for="subsequentSalesPaper" class="block text-gray-700 font-medium mb-2">Ventas Papel Años Sig. (Promedio)</label>
+                            <input type="number" id="subsequentSalesPaper" min="0" value="100" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                         </div>
                          <div>
                             <label for="firstYearSalesEbook" class="block text-gray-700 font-medium mb-2">Ventas Ebook 1er Año</label>
-                            <input type="number" id="firstYearSalesEbook" min="0" value="150" step="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <input type="number" id="firstYearSalesEbook" min="0" value="150" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                         </div>
                          <div>
-                            <label for="subsequentSalesEbook" class="block text-gray-700 font-medium mb-2">Ventas Ebook Años Sig.</label>
-                            <input type="number" id="subsequentSalesEbook" min="0" value="50" step="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label for="subsequentSalesEbook" class="block text-gray-700 font-medium mb-2">Ventas Ebook Años Sig. (Promedio)</label>
+                            <input type="number" id="subsequentSalesEbook" min="0" value="50" step="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div id="directSalesSection" class="hidden">
-                            <label for="directSalesPercent" class="block text-gray-700 font-medium mb-2">% Ventas Papel Directas (Autor) <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Para imprenta: Qué porcentaje de ventas en papel harás tú directamente (web, eventos...).</span></span></label>
+                            <label for="directSalesPercent" class="block text-gray-700 font-medium mb-2">% Ventas Papel Directas (Autor) <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Solo para Imprenta: Qué porcentaje de ventas en papel estimas hacer tú directamente (web, eventos, mano...). El resto se venderá vía distribuidor/tienda.</span></span></label>
                             <div class="relative">
                                 <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
-                                <input type="number" id="directSalesPercent" min="0" max="100" value="30" step="5" class="w-full pr-10 pl-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <input type="number" id="directSalesPercent" min="0" max="100" value="30" step="5" class="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                             </div>
                         </div>
                          <div>
                             <label for="yearsProjection" class="block text-gray-700 font-medium mb-2">Años de proyección</label>
-                            <input type="number" id="yearsProjection" min="1" max="10" value="3" step="1" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <input type="number" id="yearsProjection" min="1" max="10" value="3" step="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
                         </div>
                     </div>
                 </div>
-                 <div class="flex justify-between">
-                    <button onclick="navigateToTab('costs')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                 <div class="flex justify-between mt-10">
+                    <button onclick="navigateToTab('costs')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center shadow hover:shadow-md">
                         <i class="fas fa-arrow-left mr-2"></i> Anterior
                     </button>
-                    <button onclick="navigateToTab('compare')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center">
+                    <button onclick="navigateToTab('compare')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center shadow-md hover:shadow-lg">
                         Siguiente <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Compare Tab -->
-            <div id="compare" class="tab-content p-6">
+             <!-- Compare Tab -->
+            <div id="compare" class="tab-content p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-dark mb-6">Comparativa: KDP vs Imprenta Tradicional</h2>
                  <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
                     <div class="grid grid-cols-1 md:grid-cols-2">
                          <!-- KDP Column -->
                         <div class="p-6 border-b md:border-b-0 md:border-r border-gray-200">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xl font-semibold text-blue-700 flex items-center">
+                                <h3 class="text-xl font-semibold text-indigo-700 flex items-center">
                                     <i class="fab fa-amazon mr-2"></i> Amazon KDP
                                 </h3>
-                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">Impresión Bajo Demanda</span>
+                                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">Impresión Bajo Demanda</span>
                             </div>
                              <div class="space-y-3">
-                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Baja inversión inicial</h4><p class="text-xs text-gray-600">Sin coste de impresión por adelantado.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Baja inversión inicial</h4><p class="text-xs text-gray-600">Sin coste de impresión por adelantado (excepto copias autor).</p></div></div>
                                 <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Distribución Global Fácil</h4><p class="text-xs text-gray-600">Acceso a tiendas Amazon mundiales.</p></div></div>
                                 <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Sin gestión de stock</h4><p class="text-xs text-gray-600">Impresión solo cuando se vende.</p></div></div>
                                 <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Facilidad de uso</h4><p class="text-xs text-gray-600">Plataforma integrada para publicar.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Menor control de calidad final</h4><p class="text-xs text-gray-600">No ves cada copia impresa.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Menor margen por libro (generalmente)</h4><p class="text-xs text-gray-600">El coste de impresión unitario suele ser mayor.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Dependencia de Amazon</h4><p class="text-xs text-gray-600">Difícil venta en librerías físicas.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Menor control de calidad final</h4><p class="text-xs text-gray-600">No ves cada copia impresa para cliente.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Menor margen por libro (generalmente)</h4><p class="text-xs text-gray-600">El coste de impresión unitario suele ser mayor que en tiradas grandes.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Dependencia de Amazon</h4><p class="text-xs text-gray-600">Difícil venta en librerías físicas tradicionales.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Opciones de acabado limitadas</h4><p class="text-xs text-gray-600">Menos variedad de papeles, tintas especiales, etc.</p></div></div>
                             </div>
                         </div>
                          <!-- Traditional Column -->
@@ -501,63 +509,71 @@
                                 <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">Tirada Inicial</span>
                             </div>
                             <div class="space-y-3">
-                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Mayor control de calidad</h4><p class="text-xs text-gray-600">Puedes revisar pruebas (ferros).</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Mayor control de calidad</h4><p class="text-xs text-gray-600">Puedes revisar pruebas (ferros, plotters).</p></div></div>
                                 <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Potencial mayor margen por libro</h4><p class="text-xs text-gray-600">Coste unitario menor en tiradas grandes.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Flexibilidad de distribución</h4><p class="text-xs text-gray-600">Puedes vender donde quieras.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Variedad de acabados</h4><p class="text-xs text-gray-600">Más opciones de papeles, tintas, etc.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Alta inversión inicial</h4><p class="text-xs text-gray-600">Debes pagar la tirada completa.</p></div></div>
-                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Gestión de stock y logística</h4><p class="text-xs text-gray-600">Almacenamiento y envíos a tu cargo.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Flexibilidad de distribución</h4><p class="text-xs text-gray-600">Puedes vender donde quieras (librerías, web, eventos).</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Variedad de acabados</h4><p class="text-xs text-gray-600">Más opciones de papeles, tintas, solapas, etc.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Alta inversión inicial</h4><p class="text-xs text-gray-600">Debes pagar la tirada completa por adelantado.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Gestión de stock y logística</h4><p class="text-xs text-gray-600">Almacenamiento y envíos a tu cargo o de distribuidor.</p></div></div>
                                 <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Riesgo de inventario no vendido</h4><p class="text-xs text-gray-600">Puedes quedarte con libros sin vender.</p></div></div>
+                                <div class="flex items-start"><i class="fas fa-times-circle text-red-500 mt-1 mr-2 flex-shrink-0"></i><div><h4 class="font-medium text-gray-800 text-sm">Proceso más complejo</h4><p class="text-xs text-gray-600">Requiere buscar imprenta, distribuidor, etc.</p></div></div>
                             </div>
                         </div>
                     </div>
                 </div>
                  <div class="bg-gray-50 p-6 rounded-lg mb-8 border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Cuál elegir?</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Cuál elegir? Consideraciones clave</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
-                            <h4 class="font-medium text-blue-700 mb-2 flex items-center"><i class="fab fa-amazon mr-2"></i> KDP puede ser mejor si...</h4>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-indigo-200">
+                            <h4 class="font-medium text-indigo-700 mb-2 flex items-center"><i class="fab fa-amazon mr-2"></i> KDP puede ser mejor si...</h4>
                             <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                                <li>Priorizas la baja inversión inicial.</li>
+                                <li>Priorizas la baja inversión inicial y minimizar riesgos.</li>
                                 <li>Es tu primer libro y quieres probar el mercado.</li>
-                                <li>Tu público principal compra online (Amazon).</li>
-                                <li>No quieres gestionar stock ni envíos complejos.</li>
-                                <li>Buscas simplicidad y alcance global rápido.</li>
+                                <li>Tu público principal compra online (especialmente en Amazon).</li>
+                                <li>No quieres/puedes gestionar stock ni envíos complejos.</li>
+                                <li>Buscas simplicidad y alcance global rápido en la plataforma Amazon.</li>
+                                <li>La calidad estándar de KDP es suficiente para tu libro.</li>
                             </ul>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow-sm border border-purple-200">
                             <h4 class="font-medium text-purple-700 mb-2 flex items-center"><i class="fas fa-print mr-2"></i> Imprenta puede ser mejor si...</h4>
                             <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                                <li>Buscas la máxima calidad y control sobre el producto final.</li>
+                                <li>Buscas la máxima calidad y control sobre el producto final (acabados especiales).</li>
                                 <li>Quieres vender activamente en librerías físicas y eventos.</li>
-                                <li>Tienes capital para la inversión inicial.</li>
-                                <li>Tienes un plan claro de distribución y almacenamiento.</li>
-                                <li>Preveés ventas suficientes para que el menor coste unitario compense.</li>
+                                <li>Tienes capital para la inversión inicial de la tirada.</li>
+                                <li>Tienes un plan claro (o un socio) de distribución y almacenamiento.</li>
+                                <li>Preveés ventas altas (>500-1000 copias) donde el menor coste unitario compense.</li>
+                                <li>Necesitas copias físicas rápidamente para un evento de lanzamiento.</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                 <div class="flex justify-between">
-                    <button onclick="navigateToTab('pricing')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                 <div class="flex justify-between mt-10">
+                    <button onclick="navigateToTab('pricing')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center shadow hover:shadow-md">
                         <i class="fas fa-arrow-left mr-2"></i> Anterior
                     </button>
-                    <button onclick="navigateToTab('results')" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center">
+                    <button onclick="navigateToTab('results'); calculateAndDisplayResults();" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center shadow-md hover:shadow-lg">
                         Ver Resultados <i class="fas fa-chart-bar ml-2"></i>
                     </button>
                 </div>
             </div>
 
              <!-- Results Tab -->
-            <div id="results" class="tab-content p-6">
-                <h2 class="text-2xl font-bold text-dark mb-6">Resultados y Planificación Financiera (<span id="resultsPublishingFormat">KDP</span>)</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div id="results" class="tab-content p-6 md:p-8">
+                 <div class="flex justify-between items-center mb-6 flex-wrap gap-2">
+                    <h2 class="text-2xl font-bold text-dark">Resultados y Planificación (<span id="resultsPublishingFormat" class="text-primary">KDP</span>)</h2>
+                    <button onclick="calculateAndDisplayResults()" class="bg-secondary text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-600 transition flex items-center text-sm shadow">
+                        <i class="fas fa-sync-alt mr-2"></i> Recalcular
+                    </button>
+                 </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <!-- Initial Investment Card -->
                     <div class="result-card bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-base font-semibold text-gray-800">Inversión Inicial</h3>
                             <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-wallet mr-1"></i> Coste Fijo</span>
                         </div>
-                        <div class="text-2xl font-bold text-gray-900 mb-1" id="initialInvestmentDisplay">€0.00</div>
+                        <div class="text-3xl font-bold text-red-600 mb-1" id="initialInvestmentDisplay">€0.00</div>
                         <p class="text-xs text-gray-500 mb-3">Costes antes de vender la 1ª copia.</p>
                         <div class="pt-3 border-t border-gray-100">
                             <h4 class="text-xs font-medium text-gray-600 mb-1">Desglose:</h4>
@@ -566,7 +582,7 @@
                                 <li class="flex justify-between"><span>Diseño/Ilustración:</span> <span id="designCostsBreakdown">€0.00</span></li>
                                 <li class="flex justify-between"><span>Legal/Admin:</span> <span id="legalCostsBreakdown">€0.00</span></li>
                                 <li class="flex justify-between"><span>Marketing/Eventos:</span> <span id="marketingCostsBreakdown">€0.00</span></li>
-                                <li class="flex justify-between"><span>Impresión/Otros:</span> <span id="printCostsBreakdown">€0.00</span></li>
+                                <li class="flex justify-between"><span id="printCostLabel">Copias Autor (KDP):</span> <span id="printCostsBreakdown">€0.00</span></li>
                             </ul>
                         </div>
                     </div>
@@ -576,14 +592,14 @@
                             <h3 class="text-base font-semibold text-gray-800">Punto de Equilibrio</h3>
                             <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-balance-scale mr-1"></i> Rentabilidad</span>
                         </div>
-                        <div class="text-2xl font-bold text-gray-900 mb-1" id="breakEvenDisplay">0 libros</div>
-                        <p class="text-xs text-gray-500 mb-3">Copias a vender para cubrir inversión.</p>
+                        <div class="text-3xl font-bold text-accent mb-1" id="breakEvenDisplay">0 libros</div>
+                        <p class="text-xs text-gray-500 mb-3">Copias a vender para cubrir inversión inicial.</p>
                          <div class="pt-3 border-t border-gray-100">
                             <h4 class="text-xs font-medium text-gray-600 mb-1">Detalles:</h4>
                             <ul class="text-xs space-y-0.5 text-gray-500">
                                 <li class="flex justify-between"><span>Ganancia media/libro:</span> <span id="avgEarningsPerBook">€0.00</span></li>
                                 <li class="flex justify-between"><span>Ventas 1er año (total):</span> <span id="firstYearTotalSalesDisplay">0</span></li>
-                                <li class="flex justify-between"><span>Tiempo estimado:</span> <span id="timeToBreakEven">N/A</span></li>
+                                <li class="flex justify-between"><span>Tiempo estimado:</span> <span id="timeToBreakEven" class="font-semibold">N/A</span></li>
                              </ul>
                         </div>
                     </div>
@@ -591,14 +607,14 @@
                     <div class="result-card bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-base font-semibold text-gray-800">Proyección <span id="projectionYearsDisplay">3</span> años</h3>
-                            <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-chart-line mr-1"></i> Beneficio Neto</span>
+                             <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-chart-line mr-1"></i> Beneficio Neto</span>
                         </div>
-                        <div class="text-2xl font-bold text-gray-900 mb-1" id="totalNetProfitDisplay">€0.00</div>
-                        <p class="text-xs text-gray-500 mb-3">Beneficio acumulado tras costes.</p>
+                        <div class="text-3xl font-bold text-secondary mb-1" id="totalNetProfitDisplay">€0.00</div>
+                        <p class="text-xs text-gray-500 mb-3">Beneficio acumulado tras inversión y costes.</p>
                          <div class="pt-3 border-t border-gray-100">
-                             <h4 class="text-xs font-medium text-gray-600 mb-1">Beneficio Neto Anual:</h4>
+                             <h4 class="text-xs font-medium text-gray-600 mb-1">Beneficio Neto Anual Estimado:</h4>
                              <ul class="text-xs space-y-0.5 text-gray-500" id="yearlyNetProfitList">
-                                <!-- Populated by JS -->
+                                <!-- Populated by JS: <li>Año 1: €XXX.XX</li> ... -->
                              </ul>
                         </div>
                     </div>
@@ -627,19 +643,19 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concepto</th>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Amazon KDP</th>
-                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Imprenta</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Concepto</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider whitespace-nowrap">Amazon KDP</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider whitespace-nowrap">Imprenta</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 text-sm">
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900">Inversión inicial</td>
-                                    <td class="px-4 py-3 text-gray-600" id="compKdpInitialInvestment">€0.00</td>
-                                    <td class="px-4 py-3 text-gray-600" id="compTraditionalInitialInvestment">€0.00</td>
+                                    <td class="px-4 py-3 text-gray-600 font-semibold text-red-600" id="compKdpInitialInvestment">€0.00</td>
+                                    <td class="px-4 py-3 text-gray-600 font-semibold text-red-600" id="compTraditionalInitialInvestment">€0.00</td>
                                 </tr>
                                 <tr>
-                                    <td class="px-4 py-3 font-medium text-gray-900">Coste impresión / unidad</td>
+                                    <td class="px-4 py-3 font-medium text-gray-900">Coste impresión / unidad (papel)</td>
                                     <td class="px-4 py-3 text-gray-600" id="compKdpUnitCost">€0.00</td>
                                     <td class="px-4 py-3 text-gray-600" id="compTraditionalUnitCost">€0.00</td>
                                 </tr>
@@ -651,12 +667,12 @@
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900">Ganancia media / ebook</td>
                                     <td class="px-4 py-3 text-gray-600" id="compKdpEarningsEbook">€0.00</td>
-                                    <td class="px-4 py-3 text-gray-600">N/A</td>
+                                    <td class="px-4 py-3 text-gray-500 text-xs">N/A <span class="tooltip"><i class="fas fa-info-circle text-xs text-gray-400"></i><span class="tooltip-text">Cálculo no incluye ebook para imprenta (se gestionaría aparte, ej. KDP).</span></span></td>
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900">Punto de equilibrio (libros)</td>
-                                    <td class="px-4 py-3 text-gray-600" id="compKdpBreakEven">0</td>
-                                    <td class="px-4 py-3 text-gray-600" id="compTraditionalBreakEven">0</td>
+                                    <td class="px-4 py-3 text-gray-600 font-semibold text-accent" id="compKdpBreakEven">0</td>
+                                    <td class="px-4 py-3 text-gray-600 font-semibold text-accent" id="compTraditionalBreakEven">0</td>
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900">Beneficio neto 1er año</td>
@@ -665,8 +681,8 @@
                                 </tr>
                                 <tr class="bg-gray-50">
                                     <td class="px-4 py-3 font-semibold text-gray-900">Beneficio neto total (<span id="compProjectionYears">3</span> años)</td>
-                                    <td class="px-4 py-3 font-semibold text-blue-700" id="compKdpTotalNetProfit">€0.00</td>
-                                    <td class="px-4 py-3 font-semibold text-purple-700" id="compTraditionalTotalNetProfit">€0.00</td>
+                                    <td class="px-4 py-3 font-semibold text-indigo-700 text-base" id="compKdpTotalNetProfit">€0.00</td>
+                                    <td class="px-4 py-3 font-semibold text-purple-700 text-base" id="compTraditionalTotalNetProfit">€0.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -674,33 +690,31 @@
                 </div>
                  <!-- Recommendations -->
                 <div class="bg-gray-50 p-6 rounded-lg mb-8 border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recomendaciones Personalizadas (Ejemplos)</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recomendaciones Basadas en Cálculos</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                             <h4 class="font-medium text-secondary mb-2 flex items-center"><i class="fas fa-piggy-bank mr-2"></i> Optimizar Rentabilidad</h4>
                             <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700" id="profitRecommendations">
-                                <li>Considera ajustar el PVP para mejorar el margen por copia.</li>
-                                <li>Si usas imprenta, pide presupuestos para tiradas mayores y compara el coste unitario.</li>
-                                <li>Explora opciones de servicios editoriales más económicas si el presupuesto es ajustado.</li>
+                                <!-- Populated by JS -->
+                                <li>Revisa si puedes reducir costes editoriales o de diseño sin sacrificar calidad esencial.</li>
                             </ul>
                         </div>
                          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                            <h4 class="font-medium text-accent mb-2 flex items-center"><i class="fas fa-rocket mr-2"></i> Impulsar Ventas</h4>
+                            <h4 class="font-medium text-accent mb-2 flex items-center"><i class="fas fa-rocket mr-2"></i> Impulsar Ventas y Alcance</h4>
                              <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700" id="salesRecommendations">
-                                <li>Define tu público y enfoca el marketing (Amazon Ads, redes sociales).</li>
-                                <li>Si usas imprenta, planifica activamente la distribución y ventas directas.</li>
-                                <li>Ofrecer un ebook puede ampliar tu alcance y generar ingresos adicionales.</li>
-                                <li>Recopila reseñas en Amazon; son cruciales para la visibilidad.</li>
+                                 <!-- Populated by JS -->
+                                 <li>Considera invertir en publicidad (ej. Amazon Ads) si el margen por libro lo permite.</li>
+                                 <li>Fomenta las reseñas de lectores, son clave para la visibilidad.</li>
                              </ul>
                         </div>
                     </div>
                 </div>
-                 <div class="flex justify-between items-center flex-wrap gap-4">
-                    <button onclick="navigateToTab('compare')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center order-2 sm:order-1">
+                 <div class="flex justify-between items-center flex-wrap gap-4 mt-10">
+                    <button onclick="navigateToTab('compare')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition flex items-center order-2 sm:order-1 shadow hover:shadow-md">
                         <i class="fas fa-arrow-left mr-2"></i> Anterior
                     </button>
-                    <span class="text-xs text-gray-500 order-1 sm:order-2">Estos cálculos son estimaciones. Consulta precios finales con proveedores.</span>
-                    <button onclick="window.print()" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center order-3">
+                    <span class="text-xs text-gray-500 order-1 sm:order-2 text-center sm:text-left w-full sm:w-auto">Estos cálculos son estimaciones. Consulta precios finales con proveedores.</span>
+                    <button onclick="window.print()" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center order-3 shadow-md hover:shadow-lg">
                         <i class="fas fa-print mr-2"></i> Imprimir Informe
                     </button>
                 </div>
@@ -709,14 +723,14 @@
     </main>
 
      <footer class="bg-dark text-white py-8 mt-12">
-        <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-6 md:mb-0 text-center md:text-left">
                     <h2 class="text-xl font-bold mb-2">Calculadora de Autopublicación</h2>
-                    <p class="text-gray-400 text-sm">Herramienta de planificación para autores.</p>
+                    <p class="text-gray-400 text-sm">Herramienta de planificación para autores independientes.</p>
                 </div>
                  <div class="text-center text-gray-500 text-xs">
-                    <p>Los cálculos son estimaciones basadas en los datos introducidos.</p>
+                    <p>Los cálculos son estimaciones basadas en los datos introducidos y fórmulas estándar.</p>
                     <p>© 2024 Calculadora Autopublicación. Adaptado y mejorado.</p>
                 </div>
              </div>
@@ -724,6 +738,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- Optional: For time scale, but not strictly needed here -->
     <script>
         // Chart instances
         let costsChartInstance = null;
@@ -732,15 +747,19 @@
         // Helper Functions
         const getElementValue = (id, type = 'float') => {
             const element = document.getElementById(id);
-            if (!element) return 0;
-            const value = element.value;
-            return type === 'int' ? parseInt(value) || 0 : parseFloat(value) || 0;
+            if (!element) { console.warn(`Element with id "${id}" not found.`); return 0; }
+            const value = element.value.trim();
+            if (value === '') return 0;
+            const num = type === 'int' ? parseInt(value, 10) : parseFloat(value.replace(',', '.')); // Allow comma as decimal separator
+            return isNaN(num) ? 0 : num;
         };
 
         const setElementValue = (id, value, format = true) => {
             const element = document.getElementById(id);
             if (element) {
-                element.value = format ? value.toFixed(2) : value;
+                element.value = (typeof value === 'number' && format) ? value.toFixed(2) : value;
+            } else {
+                 console.warn(`Element with id "${id}" not found for setting value.`);
             }
         };
 
@@ -748,11 +767,16 @@
             const element = document.getElementById(id);
             if (element) {
                 element.textContent = value;
+            } else {
+                console.warn(`Element with id "${id}" not found for setting text.`);
             }
         };
 
         const formatCurrency = (value) => {
-            return value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+            if (typeof value !== 'number' || isNaN(value)) {
+                value = 0;
+            }
+            return value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
 
         // Tab Navigation
@@ -760,13 +784,19 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-            document.getElementById(tabId)?.classList.add('active');
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
+            const tabElement = document.getElementById(tabId);
+            const btnElement = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
 
+            if (tabElement) tabElement.classList.add('active'); else console.error(`Tab content not found: ${tabId}`);
+            if (btnElement) btnElement.classList.add('active'); else console.error(`Tab button not found for: ${tabId}`);
+
+            // Calculate results ONLY when navigating TO the results tab
             if (tabId === 'results') {
-                calculateAndDisplayResults();
+                 // Ensure intermediate calculations are done *before* calculating final results
+                calculateDynamicUpdates();
+                calculateAndDisplayResults(); // Calculate and display fresh results
             }
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Event listeners for tab buttons
@@ -786,11 +816,13 @@
                 document.getElementById('traditionalRoyaltySection').style.display = isKdp ? 'none' : 'block';
                 document.getElementById('directSalesSection').style.display = isKdp ? 'none' : 'block';
 
-                // Update results tab title
+                // Update results tab title and other labels
                 setElementText('resultsPublishingFormat', isKdp ? 'KDP' : 'Imprenta');
+                setElementText('printCostLabel', isKdp ? 'Copias Autor (KDP):' : 'Impresión/Distrib. Inicial:');
+
 
                 // Recalculate dynamic fields and potentially results if on results tab
-                calculateDynamicUpdates();
+                calculateDynamicUpdates(); // Crucial to update earnings based on the new mode
                 if (document.getElementById('results').classList.contains('active')) {
                     calculateAndDisplayResults();
                 }
@@ -807,13 +839,10 @@
             const printRun = getElementValue('printRun', 'int');
             const unitCost = getElementValue('unitPrintCost');
             setElementValue('totalPrintCost', printRun * unitCost);
-            // If results are visible, update them
-             if (document.getElementById('results').classList.contains('active')) {
-                calculateAndDisplayResults();
-            }
+             // No need to update results here directly, rely on the global listener or Recalculate button
         }
 
-        // --- Dynamic Calculations ---
+        // --- Dynamic Calculations for Earnings (Called on input change) ---
         function calculateDynamicUpdates() {
             calculateKdpEarnings();
             calculateTraditionalEarnings();
@@ -824,15 +853,15 @@
             const retailPrice = getElementValue('retailPrice');
             const kdpPrintCost = getElementValue('kdpPrintCost');
             const paperRoyaltyRate = getElementValue('kdpPaperRoyaltyRate') / 100; // Should be 0.60
-            const ebookPrice = getElementValue('ebookPrice');
-            const ebookRoyaltyRate = getElementValue('kdpEbookRoyaltyRate') / 100; // 0.70 or 0.35
 
             const kdpEarningsPaper = Math.max(0, (retailPrice * paperRoyaltyRate) - kdpPrintCost);
             setElementValue('kdpAuthorEarningsPaper', kdpEarningsPaper);
 
-            // Basic delivery cost estimation for ebook royalty (can be refined)
-            // Example: 0.15 EUR per MB, assume 2MB average size = 0.30 EUR
-            const ebookDeliveryCost = ebookPrice > 0 ? (ebookRoyaltyRate === 0.70 ? 0.15 : 0) : 0; // Simplified - KDP has complex rules
+            const ebookPrice = getElementValue('ebookPrice');
+            const ebookRoyaltyRate = getElementValue('kdpEbookRoyaltyRate') / 100; // 0.70 or 0.35
+            // Simplified KDP ebook delivery cost for 70% royalty (e.g., €0.15/MB, assuming ~1-2MB average)
+            // KDP exact calculation is complex and based on file size per market. This is a rough estimate.
+            const ebookDeliveryCost = (ebookPrice > 0 && ebookRoyaltyRate === 0.70) ? 0.15 * Math.max(1, ebookPrice / 5) : 0; // Very rough estimate
             const kdpEarningsEbook = Math.max(0, (ebookPrice * ebookRoyaltyRate) - ebookDeliveryCost);
             setElementValue('kdpAuthorEarningsEbook', kdpEarningsEbook);
         }
@@ -851,41 +880,64 @@
              setElementValue('traditionalAuthorEarningsDirect', directEarnings);
         }
 
-        // Add listeners to recalculate earnings dynamically
+        // Add listeners to recalculate earnings dynamically whenever relevant inputs change
         const fieldsAffectingEarnings = [
             'retailPrice', 'kdpPrintCost', 'ebookPrice', 'kdpEbookRoyaltyRate',
             'unitPrintCost', 'distributorCut'
         ];
         fieldsAffectingEarnings.forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                 calculateDynamicUpdates();
-                 // If results are visible, update them
-                 if (document.getElementById('results').classList.contains('active')) {
-                    calculateAndDisplayResults();
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', () => {
+                    calculateDynamicUpdates();
+                    // If results are visible, update them immediately
+                    if (document.getElementById('results').classList.contains('active')) {
+                        calculateAndDisplayResults();
+                    }
+                });
+                 // Add change listener too for select elements
+                 if (element.tagName === 'SELECT') {
+                     element.addEventListener('change', () => {
+                        calculateDynamicUpdates();
+                        if (document.getElementById('results').classList.contains('active')) {
+                            calculateAndDisplayResults();
+                        }
+                    });
                  }
-            });
+            } else {
+                 console.warn(`Element ${id} for earnings calculation not found.`);
+            }
         });
 
-         // Add listeners to all input/select fields to potentially trigger results update
+         // Add listeners to *all* input/select fields in the first 3 tabs to potentially trigger results update if results tab is active
          document.querySelectorAll('#basic input, #basic select, #costs input, #costs select, #pricing input, #pricing select').forEach(el => {
-            el.addEventListener('input', () => {
-                if (document.getElementById('results').classList.contains('active')) {
-                    calculateAndDisplayResults();
-                }
-            });
-             el.addEventListener('change', () => { // For selects primarily
-                 if (document.getElementById('results').classList.contains('active')) {
-                     calculateAndDisplayResults();
+             // Avoid adding duplicate listeners to fields already covered
+             if (!fieldsAffectingEarnings.includes(el.id) && el.id !== 'printRun' && el.id !== 'unitPrintCost') {
+                 const updateResultsIfNeeded = () => {
+                     if (document.getElementById('results').classList.contains('active')) {
+                         calculateAndDisplayResults();
+                     }
+                 };
+                 el.addEventListener('input', updateResultsIfNeeded);
+                 if (el.tagName === 'SELECT' || el.type === 'radio') {
+                     el.addEventListener('change', updateResultsIfNeeded);
                  }
-             });
+             }
          });
+
 
         // --- Main Calculation Function for Results Tab ---
         function calculateAndDisplayResults() {
-            calculateDynamicUpdates(); // Ensure intermediate values are current
+            console.log("Calculating results...");
+            calculateDynamicUpdates(); // Ensure intermediate values like earnings/unit are current
 
             const isKdp = document.getElementById('kdp').checked;
             const yearsProjection = getElementValue('yearsProjection', 'int');
+            if (yearsProjection <= 0) {
+                alert("Por favor, introduce un número válido de años para la proyección (mínimo 1).");
+                return;
+            }
+
 
             // --- Gather Costs ---
             const editingCost = getElementValue('editingCost');
@@ -894,28 +946,29 @@
             const illustrationsCost = getElementValue('illustrationsCost');
             const isbnCost = getElementValue('isbnCost');
             const legalDepositCost = getElementValue('legalDepositCost');
-            const marketingCost = getElementValue('marketingCost');
-            const eventsCost = getElementValue('eventsCost');
+            const marketingCost = getElementValue('marketingCost'); // Assume this is total for projection period for simplicity
+            const eventsCost = getElementValue('eventsCost'); // Assume this is total for projection period
 
             const editorialCosts = editingCost + layoutCost;
             const designCosts = coverDesignCost + illustrationsCost;
             const legalCosts = isbnCost + legalDepositCost;
-            const marketingEventsCosts = marketingCost + eventsCost;
+            // Distribute marketing/events costs over the years? Or lump sum? Let's assume total initial/period cost for now.
+             const marketingEventsCosts = marketingCost + eventsCost;
 
             // KDP Specific Costs
             const kdpPrintCostPerUnit = getElementValue('kdpPrintCost');
-            const kdpAuthorCopiesCost = getElementValue('kdpAuthorCopiesCost'); // This is an upfront cost if buying copies
+            const kdpAuthorCopiesCost = getElementValue('kdpAuthorCopiesCost'); // Upfront cost
 
             // Traditional Specific Costs
-            const traditionalTotalPrintRunCost = getElementValue('totalPrintCost');
+            const traditionalTotalPrintRunCost = getElementValue('totalPrintCost'); // Calculated automatically
             const traditionalUnitPrintCost = getElementValue('unitPrintCost');
-            const storageCost = getElementValue('storageCost'); // Assume this is a periodic cost, maybe factor per year later? For now, lump into initial.
-            const shippingCost = getElementValue('shippingCost'); // Assume upfront estimate for distribution
+            const storageCost = getElementValue('storageCost'); // Treat as initial for simplicity, could be annualized
+            const shippingCost = getElementValue('shippingCost'); // Treat as initial
 
             // --- Calculate Initial Investment ---
             const baseInvestment = editorialCosts + designCosts + legalCosts + marketingEventsCosts;
-            let kdpInitialInvestment = baseInvestment + kdpAuthorCopiesCost; // KDP: Base + Author Copies
-            let traditionalInitialInvestment = baseInvestment + traditionalTotalPrintRunCost + storageCost + shippingCost; // Trad: Base + Print Run + Storage + Shipping
+            let kdpInitialInvestment = baseInvestment + kdpAuthorCopiesCost;
+            let traditionalInitialInvestment = baseInvestment + traditionalTotalPrintRunCost + storageCost + shippingCost;
 
             // --- Gather Sales Projections ---
             const firstYearSalesPaper = getElementValue('firstYearSalesPaper', 'int');
@@ -924,25 +977,55 @@
             const subsequentSalesEbook = getElementValue('subsequentSalesEbook', 'int');
             const directSalesPercent = getElementValue('directSalesPercent') / 100; // Only for traditional paper
 
-            // --- Calculate Earnings Per Unit ---
+            // --- Gather Earnings Per Unit (already calculated by calculateDynamicUpdates) ---
             const kdpEarningsPaper = getElementValue('kdpAuthorEarningsPaper');
             const kdpEarningsEbook = getElementValue('kdpAuthorEarningsEbook');
             const traditionalEarningsStore = getElementValue('traditionalAuthorEarningsStore');
             const traditionalEarningsDirect = getElementValue('traditionalAuthorEarningsDirect');
 
             // Average traditional earnings per paper book based on direct/store split
-            const traditionalEarningsPaperAvg = (traditionalEarningsDirect * directSalesPercent) + (traditionalEarningsStore * (1 - directSalesPercent));
+             const traditionalEarningsPaperAvg = (traditionalEarningsDirect * directSalesPercent) + (traditionalEarningsStore * (1 - directSalesPercent));
 
             // --- Calculate Projections (for both models) ---
-            let kdpProjection = calculateProjection(kdpInitialInvestment, kdpEarningsPaper, kdpEarningsEbook, firstYearSalesPaper, subsequentSalesPaper, firstYearSalesEbook, subsequentSalesEbook, yearsProjection);
-            let traditionalProjection = calculateProjection(traditionalInitialInvestment, traditionalEarningsPaperAvg, 0, firstYearSalesPaper, subsequentSalesPaper, 0, 0, yearsProjection, directSalesPercent); // No ebook earnings assumed for traditional here
+             // KDP Projection
+            let kdpProjection = calculateProjection(
+                kdpInitialInvestment,
+                kdpEarningsPaper,
+                kdpEarningsEbook,
+                firstYearSalesPaper, subsequentSalesPaper,
+                firstYearSalesEbook, subsequentSalesEbook,
+                yearsProjection
+            );
+
+             // Traditional Projection (assuming no separate ebook calculation here)
+             let traditionalProjection = calculateProjection(
+                traditionalInitialInvestment,
+                traditionalEarningsPaperAvg, // Use the weighted average for paper
+                0, // No distinct ebook earnings for traditional model in this calc
+                firstYearSalesPaper, subsequentSalesPaper,
+                0, 0, // No ebook sales factored into traditional model here
+                yearsProjection
+            );
 
              // --- Determine which results to display based on user selection ---
             const selectedInvestment = isKdp ? kdpInitialInvestment : traditionalInitialInvestment;
             const selectedProjection = isKdp ? kdpProjection : traditionalProjection;
-            const selectedAvgEarningsPerBook = isKdp
-                ? ( (kdpEarningsPaper * (firstYearSalesPaper + subsequentSalesPaper * (yearsProjection -1))) + (kdpEarningsEbook * (firstYearSalesEbook + subsequentSalesEbook * (yearsProjection -1))) ) / Math.max(1, (firstYearSalesPaper + subsequentSalesPaper * (yearsProjection -1)) + (firstYearSalesEbook + subsequentSalesEbook * (yearsProjection -1)))
-                : traditionalEarningsPaperAvg; // Simplified average for traditional (only paper)
+
+             // Calculate average earnings per book sold FOR THE SELECTED MODEL for display
+             let totalSelectedUnits = 0;
+             let totalSelectedGrossEarnings = 0;
+             for (let year = 1; year <= yearsProjection; year++) {
+                 const salesPaper = (year === 1) ? firstYearSalesPaper : subsequentSalesPaper;
+                 const salesEbook = (year === 1) ? firstYearSalesEbook : subsequentSalesEbook;
+                 if (isKdp) {
+                    totalSelectedUnits += salesPaper + salesEbook;
+                    totalSelectedGrossEarnings += (salesPaper * kdpEarningsPaper) + (salesEbook * kdpEarningsEbook);
+                 } else {
+                     totalSelectedUnits += salesPaper; // Only paper for trad model here
+                     totalSelectedGrossEarnings += salesPaper * traditionalEarningsPaperAvg;
+                 }
+             }
+             const selectedAvgEarningsPerBook = totalSelectedUnits > 0 ? (totalSelectedGrossEarnings / totalSelectedUnits) : 0;
 
             // --- Display Results ---
             // Cards
@@ -951,15 +1034,14 @@
             setElementText('designCostsBreakdown', formatCurrency(designCosts));
             setElementText('legalCostsBreakdown', formatCurrency(legalCosts));
             setElementText('marketingCostsBreakdown', formatCurrency(marketingEventsCosts));
-            // Display the relevant 'other' cost based on selection
-             const printDisplayCosts = isKdp ? kdpAuthorCopiesCost : (traditionalTotalPrintRunCost + storageCost + shippingCost);
+            const printDisplayCosts = isKdp ? kdpAuthorCopiesCost : (traditionalTotalPrintRunCost + storageCost + shippingCost);
             setElementText('printCostsBreakdown', formatCurrency(printDisplayCosts));
 
 
-            setElementText('breakEvenDisplay', `${selectedProjection.breakEvenUnits.toLocaleString()} libros`);
-             setElementText('avgEarningsPerBook', formatCurrency(selectedAvgEarningsPerBook || 0));
-             setElementText('firstYearTotalSalesDisplay', isKdp ? (firstYearSalesPaper + firstYearSalesEbook).toLocaleString() : firstYearSalesPaper.toLocaleString());
-            setElementText('timeToBreakEven', selectedProjection.breakEvenTime);
+             setElementText('breakEvenDisplay', `${selectedProjection.breakEvenUnits.toLocaleString('es-ES')} libros`);
+             setElementText('avgEarningsPerBook', formatCurrency(selectedAvgEarningsPerBook));
+             setElementText('firstYearTotalSalesDisplay', isKdp ? (firstYearSalesPaper + firstYearSalesEbook).toLocaleString('es-ES') : firstYearSalesPaper.toLocaleString('es-ES'));
+             setElementText('timeToBreakEven', selectedProjection.breakEvenTime);
 
             setElementText('projectionYearsDisplay', yearsProjection);
             setElementText('totalNetProfitDisplay', formatCurrency(selectedProjection.totalNetProfit));
@@ -968,7 +1050,7 @@
             selectedProjection.yearlyNetProfits.forEach((profit, index) => {
                 const li = document.createElement('li');
                 li.className = 'flex justify-between';
-                li.innerHTML = `<span>Año ${index + 1}:</span> <span>${formatCurrency(profit)}</span>`;
+                li.innerHTML = `<span>Año ${index + 1}:</span> <span class="${profit >= 0 ? 'text-green-600' : 'text-red-600'} font-medium">${formatCurrency(profit)}</span>`;
                 yearlyProfitList.appendChild(li);
             });
 
@@ -980,35 +1062,35 @@
             setElementText('compKdpEarningsPaper', formatCurrency(kdpEarningsPaper));
             setElementText('compTraditionalEarningsPaperAvg', formatCurrency(traditionalEarningsPaperAvg));
             setElementText('compKdpEarningsEbook', formatCurrency(kdpEarningsEbook));
-             setElementText('compKdpBreakEven', kdpProjection.breakEvenUnits.toLocaleString());
-            setElementText('compTraditionalBreakEven', traditionalProjection.breakEvenUnits.toLocaleString());
-            setElementText('compKdpYear1NetProfit', formatCurrency(kdpProjection.yearlyNetProfits[0] || 0));
+             setElementText('compKdpBreakEven', kdpProjection.breakEvenUnits.toLocaleString('es-ES'));
+             setElementText('compTraditionalBreakEven', traditionalProjection.breakEvenUnits.toLocaleString('es-ES'));
+             setElementText('compKdpYear1NetProfit', formatCurrency(kdpProjection.yearlyNetProfits[0] || 0));
             setElementText('compTraditionalYear1NetProfit', formatCurrency(traditionalProjection.yearlyNetProfits[0] || 0));
              setElementText('compProjectionYears', yearsProjection);
             setElementText('compKdpTotalNetProfit', formatCurrency(kdpProjection.totalNetProfit));
             setElementText('compTraditionalTotalNetProfit', formatCurrency(traditionalProjection.totalNetProfit));
 
             // --- Update Charts ---
-             updateCostsChart(isKdp, editorialCosts, designCosts, legalCosts, marketingEventsCosts, printDisplayCosts);
-             updateEarningsChart(selectedProjection.cumulativeNetProfits, yearsProjection, selectedInvestment);
+            updateCostsChart(isKdp, editorialCosts, designCosts, legalCosts, marketingEventsCosts, printDisplayCosts);
+             updateEarningsChart(selectedProjection.cumulativeNetProfits, yearsProjection);
 
              // --- Update Recommendations (Example) ---
-             updateRecommendations(selectedProjection, selectedInvestment, getElementValue('retailPrice'));
+             updateRecommendations(selectedProjection, selectedInvestment, getElementValue('retailPrice'), isKdp);
 
+            console.log("Results displayed.");
         }
 
-         function calculateProjection(initialInvestment, earningsPerPaper, earningsPerEbook, firstYearSalesPaper, subsequentSalesPaper, firstYearSalesEbook, subsequentSalesEbook, years, directSalesPercent = 0) {
+        /**
+         * Calculates financial projections over a number of years.
+         */
+         function calculateProjection(initialInvestment, earningsPerPaper, earningsPerEbook, firstYearSalesPaper, subsequentSalesPaper, firstYearSalesEbook, subsequentSalesEbook, years) {
              let cumulativeNetProfit = -initialInvestment;
              let totalGrossProfit = 0;
              let totalUnitsSold = 0;
+             let totalPaperUnitsSold = 0;
+             let totalEbookUnitsSold = 0;
              let yearlyNetProfits = [];
              let cumulativeNetProfits = [-initialInvestment]; // Start at year 0 with the investment
-
-             const avgEarningsPerUnitCombined = // Calculate a weighted average for break-even
-                 ((earningsPerPaper * (firstYearSalesPaper + subsequentSalesPaper * (years - 1))) +
-                  (earningsPerEbook * (firstYearSalesEbook + subsequentSalesEbook * (years - 1)))) /
-                 Math.max(1, (firstYearSalesPaper + subsequentSalesPaper * (years - 1)) + (firstYearSalesEbook + subsequentSalesEbook * (years - 1)));
-
 
              for (let year = 1; year <= years; year++) {
                  const salesPaper = (year === 1) ? firstYearSalesPaper : subsequentSalesPaper;
@@ -1020,73 +1102,111 @@
 
                  totalGrossProfit += yearlyGrossProfit;
                  totalUnitsSold += salesPaper + salesEbook;
+                 totalPaperUnitsSold += salesPaper;
+                 totalEbookUnitsSold += salesEbook;
 
-                 let yearlyNetProfit;
+                 // Net profit for the year (only subtracts investment in year 1 logic below)
+                 let currentYearNetProfit = yearlyGrossProfit;
                  if (year === 1) {
-                     yearlyNetProfit = yearlyGrossProfit - initialInvestment;
-                 } else {
-                     yearlyNetProfit = yearlyGrossProfit;
+                     // The cumulative calculation handles the initial investment subtraction
                  }
-                 yearlyNetProfits.push(yearlyNetProfit);
+                 yearlyNetProfits.push(currentYearNetProfit - (year === 1 ? initialInvestment : 0)); // Store yearly profit *after* investment covered
 
-                 cumulativeNetProfit += yearlyGrossProfit;
+                 cumulativeNetProfit += yearlyGrossProfit; // Add this year's gross profit
                  cumulativeNetProfits.push(cumulativeNetProfit);
              }
 
-             // Break-even calculation (simplified: uses combined average earnings)
+             // Break-even calculation (Units needed to cover Initial Investment)
+             // Use a weighted average earning across all projected units
+             const totalProjectedGrossProfit = (totalPaperUnitsSold * earningsPerPaper) + (totalEbookUnitsSold * earningsPerEbook);
+             const avgEarningsPerUnitCombined = totalUnitsSold > 0 ? (totalProjectedGrossProfit / totalUnitsSold) : 0;
+
              const breakEvenUnits = (avgEarningsPerUnitCombined > 0) ? Math.ceil(initialInvestment / avgEarningsPerUnitCombined) : Infinity;
-             let breakEvenTime = "Más de " + years + " años";
-             if (breakEvenUnits !== Infinity) {
-                 const firstYearTotalSales = firstYearSalesPaper + firstYearSalesEbook;
-                 if (breakEvenUnits <= firstYearTotalSales && firstYearTotalSales > 0) {
-                     const months = Math.ceil((breakEvenUnits / firstYearTotalSales) * 12);
-                     breakEvenTime = `${months} meses`;
-                 } else if (firstYearTotalSales > 0) {
-                    let unitsRemaining = breakEvenUnits - firstYearTotalSales;
-                    const subsequentYearlySales = subsequentSalesPaper + subsequentSalesEbook;
-                    if (subsequentYearlySales > 0) {
-                       const yearsNeeded = Math.ceil(unitsRemaining / subsequentYearlySales);
-                       if (1 + yearsNeeded <= years) {
-                            breakEvenTime = `~${1 + yearsNeeded} años`;
-                       }
-                    }
+
+             let breakEvenTime = "Nunca"; // Default if never break even
+             if (initialInvestment <= 0) {
+                breakEvenTime = "Inmediato";
+             } else if (breakEvenUnits !== Infinity && breakEvenUnits > 0) {
+                 let unitsAccumulated = 0;
+                 let timeInMonths = 0;
+                 for (let year = 1; year <= years; year++) {
+                     const salesPaper = (year === 1) ? firstYearSalesPaper : subsequentSalesPaper;
+                     const salesEbook = (year === 1) ? firstYearSalesEbook : subsequentSalesEbook;
+                     const yearlySales = salesPaper + salesEbook;
+
+                     if (yearlySales <= 0 && unitsAccumulated < breakEvenUnits) {
+                         // If no sales in a year and not yet broken even, stop calculation for time
+                         breakEvenTime = `Más de ${year - 1} años (ventas nulas)`;
+                         break;
+                     }
+
+                     if (unitsAccumulated + yearlySales >= breakEvenUnits) {
+                         // Break even happens within this year
+                         const unitsNeededThisYear = breakEvenUnits - unitsAccumulated;
+                         const monthsThisYear = Math.ceil((unitsNeededThisYear / yearlySales) * 12);
+                         timeInMonths = ((year - 1) * 12) + monthsThisYear;
+                         const totalYears = Math.floor(timeInMonths / 12);
+                         const remainingMonths = timeInMonths % 12;
+                         if (totalYears > 0 && remainingMonths > 0) {
+                             breakEvenTime = `~${totalYears} años y ${remainingMonths} meses`;
+                         } else if (totalYears > 0) {
+                             breakEvenTime = `~${totalYears} años`;
+                         } else {
+                             breakEvenTime = `~${remainingMonths} meses`;
+                         }
+                         break; // Exit loop once break-even time is found
+                     }
+                     unitsAccumulated += yearlySales;
+
+                      // If loop finishes without breaking even
+                      if (year === years && unitsAccumulated < breakEvenUnits) {
+                           breakEvenTime = `Más de ${years} años`;
+                      }
                  }
+             } else if (breakEvenUnits === 0 && initialInvestment > 0) {
+                 breakEvenTime = "Nunca (ganancia nula/negativa)";
              }
-              if (breakEvenUnits === 0 || initialInvestment === 0) breakEvenTime = "Inmediato";
-              if (breakEvenUnits === Infinity) breakEvenTime = "Nunca";
 
 
              return {
                  totalNetProfit: cumulativeNetProfit,
-                 breakEvenUnits: breakEvenUnits === Infinity ? 0 : breakEvenUnits, // Show 0 if infinite
+                 breakEvenUnits: (breakEvenUnits === Infinity || isNaN(breakEvenUnits)) ? 0 : breakEvenUnits, // Show 0 if infinite/NaN
                  breakEvenTime: breakEvenTime,
-                 yearlyNetProfits: yearlyNetProfits,
-                 cumulativeNetProfits: cumulativeNetProfits
+                 yearlyNetProfits: yearlyNetProfits, // Profit earned *each year* (Yr1 includes investment deduction)
+                 cumulativeNetProfits: cumulativeNetProfits // Running total starting from -Investment
              };
          }
 
+
         // --- Chart Functions ---
         function updateCostsChart(isKdp, editorial, design, legal, marketing, printOther) {
-            const ctx = document.getElementById('costsChart').getContext('2d');
+            const ctx = document.getElementById('costsChart')?.getContext('2d');
+            if (!ctx) { console.error("Costs chart canvas not found"); return; }
+
             const labels = ['Serv. Editoriales', 'Diseño/Ilust.', 'Legal/Admin', 'Marketing/Eventos', isKdp ? 'Copias Autor' : 'Impresión/Distrib.'];
             const data = [editorial, design, legal, marketing, printOther];
-            const backgroundColors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', isKdp ? '#6366F1' : '#A855F7'];
+            // Filter out zero-value costs for cleaner chart if desired
+            const filteredLabels = labels.filter((_, i) => data[i] > 0);
+            const filteredData = data.filter(value => value > 0);
+            const backgroundColors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', isKdp ? '#8B5CF6' : '#A855F7'].filter((_, i) => data[i] > 0); // Primary, Secondary, Accent, Red, Indigo/Purple
 
             if (costsChartInstance) {
-                costsChartInstance.data.labels = labels;
-                costsChartInstance.data.datasets[0].data = data;
+                costsChartInstance.data.labels = filteredLabels;
+                costsChartInstance.data.datasets[0].data = filteredData;
                 costsChartInstance.data.datasets[0].backgroundColor = backgroundColors;
                 costsChartInstance.update();
             } else {
                 costsChartInstance = new Chart(ctx, {
-                    type: 'doughnut', // or 'pie'
+                    type: 'doughnut',
                     data: {
-                        labels: labels,
+                        labels: filteredLabels,
                         datasets: [{
-                            label: 'Distribución de Costes Iniciales',
-                            data: data,
+                            label: 'Distribución de Inversión Inicial',
+                            data: filteredData,
                             backgroundColor: backgroundColors,
-                            hoverOffset: 4
+                            hoverOffset: 8,
+                            borderWidth: 1,
+                            borderColor: '#fff'
                         }]
                     },
                     options: {
@@ -1095,7 +1215,11 @@
                         plugins: {
                             legend: {
                                 position: 'bottom',
-                                labels: { boxWidth: 12, font: { size: 10 } }
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15,
+                                    font: { size: 11 }
+                                }
                             },
                              tooltip: {
                                 callbacks: {
@@ -1104,28 +1228,40 @@
                                         if (label) { label += ': '; }
                                         if (context.parsed !== null) {
                                             label += formatCurrency(context.parsed);
+                                            // Calculate percentage
+                                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) + '%' : '0%';
+                                            label += ` (${percentage})`;
                                         }
                                         return label;
                                     }
                                 }
                             }
-                        }
+                        },
+                         cutout: '60%' // Makes it a doughnut chart
                     }
                 });
             }
         }
 
-        function updateEarningsChart(cumulativeData, years, initialInvestment) {
-            const ctx = document.getElementById('earningsChart').getContext('2d');
-            const labels = Array.from({ length: years + 1 }, (_, i) => `Año ${i}`); // Year 0, Year 1, ...
+        function updateEarningsChart(cumulativeData, years) {
+            const ctx = document.getElementById('earningsChart')?.getContext('2d');
+             if (!ctx) { console.error("Earnings chart canvas not found"); return; }
+
+            const labels = Array.from({ length: years + 1 }, (_, i) => `Año ${i}`); // Year 0, Year 1, ... Year 'years'
+
+             // Ensure cumulativeData has the correct length (years + 1, starting with Year 0)
+             if (!cumulativeData || cumulativeData.length !== years + 1) {
+                 console.error("Cumulative earnings data is invalid for the chart.", cumulativeData);
+                 // Provide default data to avoid breaking chart rendering completely
+                 cumulativeData = Array(years + 1).fill(0);
+                 cumulativeData[0] = -getElementValue(document.getElementById('kdp').checked ? 'kdpInitialInvestment' : 'traditionalInitialInvestment'); // Best guess at investment
+             }
+
 
             if (earningsChartInstance) {
                 earningsChartInstance.data.labels = labels;
                 earningsChartInstance.data.datasets[0].data = cumulativeData;
-                 // Update the break-even line position
-                if (earningsChartInstance.options.plugins.annotation) {
-                   earningsChartInstance.options.plugins.annotation.annotations.line1.label.content = `Inversión: ${formatCurrency(initialInvestment)}`;
-                }
                 earningsChartInstance.update();
             } else {
                  earningsChartInstance = new Chart(ctx, {
@@ -1135,28 +1271,42 @@
                         datasets: [{
                             label: 'Beneficio Neto Acumulado',
                             data: cumulativeData,
-                            borderColor: '#10B981',
+                            borderColor: '#10B981', // Secondary color
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
                             fill: true,
-                            tension: 0.1
+                            tension: 0.2, // Slight curve
+                             pointBackgroundColor: '#10B981',
+                             pointBorderColor: '#fff',
+                             pointHoverBackgroundColor: '#fff',
+                             pointHoverBorderColor: '#10B981',
+                             pointRadius: 4,
+                             pointHoverRadius: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
+                             x: {
+                                 grid: { display: false }
+                             },
                             y: {
                                 beginAtZero: false, // Allow negative for initial investment
                                 ticks: {
                                     callback: function(value, index, values) {
                                         return formatCurrency(value);
                                     }
+                                },
+                                grid: {
+                                     color: '#e5e7eb' // Gray-200
                                 }
                             }
                         },
                         plugins: {
-                           legend: { display: false },
+                           legend: { display: false }, // Keep it clean, title explains it
                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
                                 callbacks: {
                                     label: function(context) {
                                         let label = context.dataset.label || '';
@@ -1168,69 +1318,72 @@
                                     }
                                 }
                             },
-                            // Potential Annotation plugin for break-even line (requires separate import)
-                           // annotation: {
-                           //     annotations: {
-                           //         line1: {
-                           //             type: 'line',
-                           //             yMin: 0,
-                           //             yMax: 0,
-                           //             borderColor: 'rgb(255, 99, 132)',
-                           //             borderWidth: 1,
-                           //             borderDash: [5, 5],
-                           //             label: {
-                           //                 enabled: true,
-                           //                 content: `Inversión: ${formatCurrency(initialInvestment)}`,
-                           //                 position: 'end',
-                           //                 yAdjust: -10,
-                           //                 font: { size: 9 },
-                           //                 backgroundColor: 'rgba(0,0,0,0.6)'
-                           //             }
-                           //         }
-                           //     }
-                           // }
-                        }
+                           // Annotation plugin could draw a line at y=0 for break-even visualization
+                           // Requires importing and registering the plugin: chartjs-plugin-annotation
+                        },
+                        interaction: { // Better tooltip interaction
+                            mode: 'index',
+                            intersect: false,
+                        },
                     }
                 });
             }
         }
 
-        // --- Recommendations Function (Example) ---
-        function updateRecommendations(projection, investment, retailPrice) {
+        // --- Recommendations Function (Example Implementation) ---
+        function updateRecommendations(projection, investment, retailPrice, isKdp) {
              const profitRecList = document.getElementById('profitRecommendations');
-             profitRecList.innerHTML = ''; // Clear
-
-             // Example Rec 1: Suggest increasing price if profit is low/negative
-            if (projection.totalNetProfit < investment * 0.5 && projection.breakEvenUnits > 500) {
-                const suggestedPrice = (retailPrice * 1.1).toFixed(2);
-                 profitRecList.innerHTML += `<li>Considera subir el PVP (ej. a ${formatCurrency(parseFloat(suggestedPrice))}) para mejorar márgenes, si el mercado lo permite.</li>`;
-             } else {
-                  profitRecList.innerHTML += `<li>Tu margen actual parece razonable. Evalúa si los costes editoriales o de impresión se pueden optimizar.</li>`;
-             }
-
-             // Example Rec 2: Break-even time
-             if (projection.breakEvenTime.includes("años") && parseInt(projection.breakEvenTime) > 2) {
-                 profitRecList.innerHTML += `<li>El punto de equilibrio estimado es superior a 2 años. Revisa costes o estrategia de ventas.</li>`;
-             } else if (projection.breakEvenTime === "Nunca") {
-                 profitRecList.innerHTML += `<li class="text-red-600 font-medium">Con los datos actuales, no se recuperaría la inversión. Revisa PVP, costes y ventas.</li>`;
-             }
-
-             // Example Rec 3: Traditional print run cost
-             if (!document.getElementById('kdp').checked && getElementValue('printRun', 'int') < 300 && getElementValue('unitPrintCost') > 5) {
-                profitRecList.innerHTML += `<li>Para imprenta, tiradas bajas (< 300) suelen tener coste unitario alto. Compara presupuestos para 300-500 copias.</li>`;
-             }
-
-            // Add more recommendations based on your criteria
-            profitRecList.innerHTML += `<li>Busca siempre varios presupuestos para servicios (edición, maquetación, impresión).</li>`;
-
-            // Sales Recommendations (can also be dynamic)
              const salesRecList = document.getElementById('salesRecommendations');
-             // Clear and add default or dynamic recommendations here if needed
+             profitRecList.innerHTML = ''; // Clear previous
+             salesRecList.innerHTML = ''; // Clear previous
+
+             // Profit Recommendations
+             if (projection.totalNetProfit <= 0 && projection.breakEvenTime === "Nunca") {
+                 profitRecList.innerHTML += `<li class="text-red-600 font-medium">🚨 Con los datos actuales, no se espera recuperar la inversión. Es crucial revisar el PVP, reducir costes drásticamente o reevaluar las expectativas de ventas.</li>`;
+             } else if (projection.breakEvenTime.includes("años") && parseInt(projection.breakEvenTime) > 2) {
+                 profitRecList.innerHTML += `<li>El punto de equilibrio estimado es superior a 2 años. Considera si puedes <strong class="font-medium">optimizar costes</strong> (edición, maquetación, impresión) o necesitas una estrategia de ventas más agresiva.</li>`;
+             } else if (projection.totalNetProfit < investment * 0.5 && investment > 0) {
+                 profitRecList.innerHTML += `<li>La rentabilidad proyectada es baja. Valora <strong class="font-medium">incrementar ligeramente el PVP</strong> (si el mercado lo permite) o buscar alternativas más económicas para los servicios editoriales/producción.</li>`;
+             } else {
+                 profitRecList.innerHTML += `<li>El margen y tiempo de recuperación parecen razonables inicialmente. Enfócate en <strong class="font-medium">controlar los costes variables</strong> y maximizar ventas.</li>`;
+             }
+
+             if (!isKdp && getElementValue('printRun', 'int') < 300 && getElementValue('unitPrintCost') > 5) {
+                 profitRecList.innerHTML += `<li>Para imprenta, tiradas bajas (< 300) suelen tener coste unitario alto (${formatCurrency(getElementValue('unitPrintCost'))}). <strong class="font-medium">Pide presupuestos para 300-500 copias</strong> y compara si baja significativamente el coste unitario.</li>`;
+             } else if (!isKdp) {
+                 profitRecList.innerHTML += `<li>Compara siempre presupuestos de <strong class="font-medium">varias imprentas</strong> para la tirada deseada, las diferencias pueden ser notables.</li>`;
+             }
+
+              profitRecList.innerHTML += `<li>Busca siempre varios presupuestos para servicios (edición, maquetación, portada). Considera <strong class="font-medium">packs o profesionales freelance</strong>.</li>`;
+
+
+             // Sales Recommendations
+             const firstYearUnits = getElementValue('firstYearSalesPaper', 'int') + (isKdp ? getElementValue('firstYearSalesEbook', 'int') : 0);
+             if (firstYearUnits < projection.breakEvenUnits && projection.breakEvenTime !== "Inmediato" && projection.breakEvenTime !== "Nunca") {
+                 salesRecList.innerHTML += `<li>Las ventas estimadas del 1er año (${firstYearUnits.toLocaleString('es-ES')}) no cubren la inversión inicial. Necesitarás <strong class="font-medium">mantener el ritmo de ventas</strong> o <strong class="font-medium">impulsarlas en años siguientes</strong> para alcanzar la rentabilidad.</li>`;
+             }
+
+             salesRecList.innerHTML += `<li>Define tu <strong class="font-medium">público objetivo</strong> y enfoca tus esfuerzos de marketing (Amazon Ads si usas KDP, redes sociales, email marketing, colaboraciones).</li>`;
+             if (isKdp) {
+                 salesRecList.innerHTML += `<li>Optimiza tu página de producto en Amazon: <strong class="font-medium">palabras clave</strong>, descripción atractiva (HTML básico), categoría correcta, y portada profesional son cruciales.</li>`;
+                 salesRecList.innerHTML += `<li>Considera usar <strong class="font-medium">promociones de KDP Select</strong> (días gratis, cuenta atrás) si te inscribes, pero evalúa el impacto en ventas normales.</li>`;
+             } else {
+                 salesRecList.innerHTML += `<li>Si usas imprenta, planifica la <strong class="font-medium">distribución activamente</strong>: contacta con distribuidores, librerías locales, y potencia la venta directa (web, eventos, ferias).</li>`;
+             }
+
+             if (getElementValue('ebookPrice') > 0) {
+                 salesRecList.innerHTML += `<li>Ofrecer un ebook amplía tu alcance y puede generar ingresos adicionales con <strong class="font-medium">costes variables bajos</strong>. Promociónalo junto al libro físico.</li>`;
+             } else {
+                  salesRecList.innerHTML += `<li>Considera <strong class="font-medium">crear una versión ebook</strong>. Es un formato popular y relativamente fácil de añadir si ya tienes el libro maquetado.</li>`;
+             }
+             salesRecList.innerHTML += `<li>Recopila <strong class="font-medium">reseñas honestas</strong>. Son vitales para la prueba social y la visibilidad, especialmente en plataformas online. Pídelas a tus lectores beta y primeros compradores.</li>`;
         }
+
 
         // --- Reset Function ---
         function resetAll() {
             if (confirm('¿Estás seguro de que quieres reiniciar todos los datos a los valores por defecto?')) {
+                 console.log("Resetting form...");
                 // Reset basic info
                 document.getElementById('novel').checked = true;
                 document.getElementById('kdp').checked = true; // Default to KDP
@@ -1251,7 +1404,7 @@
                 document.getElementById('kdpAuthorCopiesCost').value = '50';
                 document.getElementById('printRun').value = '200';
                 document.getElementById('unitPrintCost').value = '4.50';
-                // totalPrintCost will update automatically
+                // totalPrintCost will update automatically via calculateDynamicUpdates
                 document.getElementById('storageCost').value = '50';
                 document.getElementById('shippingCost').value = '100';
                 document.getElementById('marketingCost').value = '200';
@@ -1269,25 +1422,47 @@
                 document.getElementById('directSalesPercent').value = '30';
                 document.getElementById('yearsProjection').value = '3';
 
-                 // Trigger UI update for sections visibility
-                document.querySelector('input[name="publishingFormat"]:checked').dispatchEvent(new Event('change'));
+                 // Trigger UI update for sections visibility (dispatch change on the checked KDP radio)
+                document.getElementById('kdp').dispatchEvent(new Event('change'));
 
-                // Recalculate dynamic fields
+                // Recalculate dynamic fields based on defaults
                 calculateDynamicUpdates();
 
-                // Go to first tab and clear results if calculated
-                navigateToTab('basic');
-                 if(costsChartInstance) costsChartInstance.destroy(); costsChartInstance = null;
-                 if(earningsChartInstance) earningsChartInstance.destroy(); earningsChartInstance = null;
-                 // Clear results fields manually if needed or rely on next calculation
+                // Destroy charts if they exist
+                 if(costsChartInstance) { costsChartInstance.destroy(); costsChartInstance = null; }
+                 if(earningsChartInstance) { earningsChartInstance.destroy(); earningsChartInstance = null; }
+
+                 // Clear results fields manually and navigate to first tab
+                 // (Alternatively, navigating away from results will clear them on next view, but this is safer)
+                 const resultsFieldsIds = [
+                    'initialInvestmentDisplay', 'editorialCostsBreakdown', 'designCostsBreakdown', 'legalCostsBreakdown', 'marketingCostsBreakdown', 'printCostsBreakdown',
+                    'breakEvenDisplay', 'avgEarningsPerBook', 'firstYearTotalSalesDisplay', 'timeToBreakEven',
+                    'totalNetProfitDisplay',
+                    'compKdpInitialInvestment', 'compTraditionalInitialInvestment', 'compKdpUnitCost', 'compTraditionalUnitCost',
+                    'compKdpEarningsPaper', 'compTraditionalEarningsPaperAvg', 'compKdpEarningsEbook',
+                    'compKdpBreakEven', 'compTraditionalBreakEven', 'compKdpYear1NetProfit', 'compTraditionalYear1NetProfit',
+                    'compKdpTotalNetProfit', 'compTraditionalTotalNetProfit'
+                 ];
+                 resultsFieldsIds.forEach(id => setElementText(id, id.toLowerCase().includes('break') ? '0 libros' : '€0.00'));
+                 document.getElementById('yearlyNetProfitList').innerHTML = '';
+                 document.getElementById('profitRecommendations').innerHTML = '<li>Revisa si puedes reducir costes editoriales o de diseño sin sacrificar calidad esencial.</li>';
+                 document.getElementById('salesRecommendations').innerHTML = '<li>Considera invertir en publicidad (ej. Amazon Ads) si el margen por libro lo permite.</li><li>Fomenta las reseñas de lectores, son clave para la visibilidad.</li>';
+
+                navigateToTab('basic'); // Go back to the first tab
+                console.log("Form reset complete.");
             }
         }
 
         // Initial setup on page load
         document.addEventListener('DOMContentLoaded', () => {
-             document.querySelector('input[name="publishingFormat"]:checked').dispatchEvent(new Event('change')); // Ensure correct sections are visible
-             calculateDynamicUpdates(); // Calculate initial earnings etc.
-             navigateToTab('basic'); // Start on the first tab
+            console.log("DOM loaded. Initializing calculator...");
+             // Ensure correct sections are visible based on the default checked radio
+             document.querySelector('input[name="publishingFormat"]:checked').dispatchEvent(new Event('change'));
+             // Calculate initial dynamic values (earnings per book etc.) based on defaults
+             calculateDynamicUpdates();
+             // Start on the first tab
+             navigateToTab('basic');
+              console.log("Calculator initialized.");
         });
 
     </script>
