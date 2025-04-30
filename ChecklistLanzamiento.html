@@ -7,75 +7,103 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Animación de entrada */
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
+        /* Mostrar acciones en hover (si se añadieran en el futuro) */
         .task-item:hover .task-actions {
             opacity: 1;
         }
-        
+
+        /* Estilo y transición para cabecera de fase */
         .phase-header {
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease;
         }
-        
         .phase-header:hover {
-            background-color: rgba(59, 130, 246, 0.1);
+            background-color: rgba(59, 130, 246, 0.1); /* Azul claro al pasar el ratón */
         }
-        
+
+        /* Scrollbar personalizado */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #a0aec0; /* Gris más suave */
             border-radius: 10px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #718096; /* Gris más oscuro al pasar el ratón */
         }
-        
+
+        /* Tooltip (Ayuda) */
+        .fa-info-circle {
+            position: relative;
+            display: inline-block;
+            bottom: 130%; /* Posición encima del icono */
+            left: 330%;
+            
+        }
+
         .tooltip {
             position: relative;
             display: inline-block;
+            cursor: help; /* Indica que hay ayuda disponible */
         }
-        
         .tooltip .tooltip-text {
             visibility: hidden;
-            width: 200px;
-            background-color: #333;
+            width: 300px; /* Un poco más ancho */
+            background-color: #2d3748; /* Gris oscuro */
             color: #fff;
-            text-align: center;
+            text-align: left; /* Mejor para texto más largo */
             border-radius: 6px;
-            padding: 5px;
+            padding: 8px 10px; /* Más padding */
             position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
+            z-index: 10; /* Asegura que esté encima */
+            bottom: 130%; /* Posición encima del icono */
+            left: 400%;
+            margin-left: -110px; /* Centrado */
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: 0.8rem; /* Tamaño de fuente */
+            line-height: 1.3; /* Espaciado de línea */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra sutil */
         }
-        
+        .tooltip .tooltip-text::after { /* Flecha del tooltip */
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2d3748 transparent transparent transparent;
+        }
         .tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
+
+        /* Rotación para icono de colapsar/expandir */
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+        .transition-transform {
+            transition: transform 0.2s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans">
+<body class="bg-gray-100 min-h-screen font-sans text-gray-800">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header -->
         <header class="mb-8 text-center">
@@ -84,100 +112,112 @@
         </header>
 
         <!-- Main Content -->
-        <main id="app" class="bg-white rounded-lg shadow-md overflow-hidden">
+        <main id="app" class="bg-white rounded-lg shadow-lg overflow-hidden">
             <!-- Initial Setup (shown when no project exists) -->
-            <div id="setup-container" class="p-6 fade-in">
+            <div id="setup-container" class="p-6 md:p-8 fade-in">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Configura tu proyecto</h2>
-                
+
                 <div class="space-y-6">
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2" for="book-type">Tipo de Libro</label>
+                        <label class="block text-gray-700 font-medium mb-2">Tipo de Libro</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button id="children-book" class="book-type-btn py-3 px-4 border-2 border-blue-100 rounded-lg text-left hover:border-blue-300 transition" data-value="Cuento Infantil">
-                                <i class="fas fa-book-open text-blue-500 mr-2"></i>
-                                <span class="font-medium">Cuento Infantil</span>
-                                <p class="text-sm text-gray-500 mt-1">Libros ilustrados para niños con énfasis en imágenes y texto simple.</p>
+                            <button class="book-type-btn flex flex-col items-start py-3 px-4 border-2 border-gray-200 rounded-lg text-left hover:border-blue-400 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-300" data-value="Cuento Infantil">
+                                <div class="flex items-center mb-1">
+                                    <i class="fas fa-book-open text-blue-500 w-5 text-center mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Cuento Infantil</span>
+                                </div>
+                                <p class="text-sm text-gray-500 pl-7">Libros ilustrados para niños con énfasis en imágenes y texto simple.</p>
                             </button>
-                            <button id="novel-book" class="book-type-btn py-3 px-4 border-2 border-blue-100 rounded-lg text-left hover:border-blue-300 transition" data-value="Novela">
-                                <i class="fas fa-book text-blue-500 mr-2"></i>
-                                <span class="font-medium">Novela</span>
-                                <p class="text-sm text-gray-500 mt-1">Obras de ficción o no ficción con texto continuo y menos imágenes.</p>
+                            <button class="book-type-btn flex flex-col items-start py-3 px-4 border-2 border-gray-200 rounded-lg text-left hover:border-blue-400 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-300" data-value="Novela">
+                                <div class="flex items-center mb-1">
+                                    <i class="fas fa-book text-blue-500 w-5 text-center mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Novela</span>
+                                </div>
+                                <p class="text-sm text-gray-500 pl-7">Obras de ficción o no ficción con texto continuo y menos imágenes.</p>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2" for="publish-method">Método de Publicación</label>
+                        <label class="block text-gray-700 font-medium mb-2">Método de Publicación</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button id="kdp-method" class="publish-method-btn py-3 px-4 border-2 border-blue-100 rounded-lg text-left hover:border-blue-300 transition" data-value="Amazon KDP">
-                                <i class="fab fa-amazon text-blue-500 mr-2"></i>
-                                <span class="font-medium">Amazon KDP</span>
-                                <p class="text-sm text-gray-500 mt-1">Publicación digital e impresión bajo demanda con Amazon.</p>
+                             <button class="publish-method-btn flex flex-col items-start py-3 px-4 border-2 border-gray-200 rounded-lg text-left hover:border-blue-400 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-300" data-value="Amazon KDP">
+                                <div class="flex items-center mb-1">
+                                    <i class="fab fa-amazon text-blue-500 w-5 text-center mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Amazon KDP</span>
+                                </div>
+                                <p class="text-sm text-gray-500 pl-7">Publicación digital e impresión bajo demanda con Amazon.</p>
                             </button>
-                            <button id="printing-method" class="publish-method-btn py-3 px-4 border-2 border-blue-100 rounded-lg text-left hover:border-blue-300 transition" data-value="Imprenta">
-                                <i class="fas fa-print text-blue-500 mr-2"></i>
-                                <span class="font-medium">Imprenta</span>
-                                <p class="text-sm text-gray-500 mt-1">Publicación tradicional con imprenta local o servicio de POD.</p>
+                             <button class="publish-method-btn flex flex-col items-start py-3 px-4 border-2 border-gray-200 rounded-lg text-left hover:border-blue-400 hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-blue-300" data-value="Imprenta">
+                                <div class="flex items-center mb-1">
+                                    <i class="fas fa-print text-blue-500 w-5 text-center mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Imprenta</span>
+                                </div>
+                                <p class="text-sm text-gray-500 pl-7">Publicación tradicional con imprenta local o servicio de POD.</p>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="pt-4">
-                        <button id="generate-checklist" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center">
-                            <i class="fas fa-magic mr-2"></i>
+                        <button id="generate-checklist" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-lg transition flex items-center justify-center shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-list-check mr-2"></i>
                             Generar Checklist Personalizada
                         </button>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Checklist (shown when project exists) -->
             <div id="checklist-container" class="hidden">
                 <!-- Project Info Header -->
-                <div class="bg-blue-600 text-white p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
-                    <div class="mb-2 md:mb-0">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                    <div class="mb-3 sm:mb-0">
                         <h2 class="text-xl font-bold">Tu Checklist de Lanzamiento</h2>
-                        <div class="flex items-center mt-1">
-                            <span id="project-type-badge" class="inline-block bg-blue-500 text-xs px-2 py-1 rounded mr-2"></span>
-                            <span id="publish-method-badge" class="inline-block bg-blue-500 text-xs px-2 py-1 rounded"></span>
+                        <div class="flex items-center flex-wrap mt-1">
+                            <span id="project-type-badge" class="inline-block bg-blue-500 text-xs px-2 py-1 rounded mr-2 mb-1 sm:mb-0"></span>
+                            <span id="publish-method-badge" class="inline-block bg-blue-500 text-xs px-2 py-1 rounded mb-1 sm:mb-0"></span>
                         </div>
                     </div>
-                    
-                    <div class="flex space-x-2">
-                        <button id="new-project-btn" class="bg-white text-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-sm font-medium transition">
-                            <i class="fas fa-plus mr-1"></i> Nuevo Proyecto
+
+                    <div class="flex flex-wrap space-x-2">
+                        <button id="new-project-btn" title="Empezar un nuevo checklist (se borrará el actual)" class="bg-white text-blue-600 hover:bg-gray-100 px-3 py-1 rounded text-sm font-medium transition shadow-sm hover:shadow">
+                            <i class="fas fa-plus mr-1"></i> Nuevo
                         </button>
-                        <button id="export-btn" class="bg-white text-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-sm font-medium transition">
+                        <button id="export-btn" title="Guardar el progreso actual en un archivo" class="bg-white text-blue-600 hover:bg-gray-100 px-3 py-1 rounded text-sm font-medium transition shadow-sm hover:shadow">
                             <i class="fas fa-file-export mr-1"></i> Exportar
                         </button>
-                        <button id="import-btn" class="bg-white text-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-sm font-medium transition">
+                        <button id="import-btn" title="Cargar un checklist desde un archivo" class="bg-white text-blue-600 hover:bg-gray-100 px-3 py-1 rounded text-sm font-medium transition shadow-sm hover:shadow">
                             <i class="fas fa-file-import mr-1"></i> Importar
                         </button>
                         <input type="file" id="import-file" class="hidden" accept=".json">
                     </div>
                 </div>
-                
+
                 <!-- Progress Bar -->
-                <div class="bg-gray-100 px-4 py-2">
+                <div class="bg-gray-100 px-4 py-3 border-b border-gray-200">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-medium text-gray-700">Progreso</span>
-                        <span id="progress-percentage" class="text-sm font-medium text-gray-700">0%</span>
+                        <span class="text-sm font-medium text-gray-700">Progreso General</span>
+                        <span id="progress-percentage" class="text-sm font-bold text-blue-600">0%</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
                     </div>
                 </div>
-                
+
                 <!-- Checklist Content -->
-                <div id="checklist-content" class="p-4 max-h-[calc(100vh-220px)] overflow-y-auto custom-scrollbar">
+                <div id="checklist-content" class="p-4 md:p-6 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
                     <!-- Phases will be inserted here by JavaScript -->
+                    <div id="no-tasks-message" class="text-center text-gray-500 py-10 hidden">
+                        <i class="fas fa-check-double fa-3x mb-4 text-gray-300"></i>
+                        <p>Parece que no hay tareas para esta configuración o el checklist está vacío.</p>
+                    </div>
                 </div>
             </div>
         </main>
-        
+
         <!-- Footer -->
         <footer class="mt-8 text-center text-gray-500 text-sm">
-            <p>LanzamientoListo - Checklist para autopublicación de libros</p>
+            <p>© <span id="current-year"></span> LanzamientoListo - Una herramienta para autores</p>
         </footer>
     </div>
 
@@ -196,16 +236,24 @@
             const projectTypeBadge = document.getElementById('project-type-badge');
             const publishMethodBadge = document.getElementById('publish-method-badge');
             const checklistContent = document.getElementById('checklist-content');
-            
+            const noTasksMessage = document.getElementById('no-tasks-message');
+            const currentYearSpan = document.getElementById('current-year');
+
             // Book type and publish method buttons
             const bookTypeBtns = document.querySelectorAll('.book-type-btn');
             const publishMethodBtns = document.querySelectorAll('.publish-method-btn');
-            
-            // Selected options
+
+            // State Variables
             let selectedBookType = null;
             let selectedPublishMethod = null;
-            
-            // Task data structure
+            let currentProject = {
+                projectType: null,
+                publishMethod: null,
+                checklist: []
+            };
+
+            // --- Task Templates ---
+            // (Manteniendo la estructura original que proporcionaste)
             const taskTemplates = {
                 "Cuento Infantil": {
                     "Amazon KDP": {
@@ -263,355 +311,481 @@
                 },
                 "Novela": {
                     "Amazon KDP": {
-                        "Preparación del Manuscrito": [
+                         "Preparación del Manuscrito": [
                             { id: "nov-kdp-1", description: "Finalizar la escritura del manuscrito", help: "Completa todos los capítulos y revisa la estructura general." },
                             { id: "nov-kdp-2", description: "Realizar una ronda de autoedición/revisión", help: "Revisa coherencia, ritmo y desarrollo de personajes." },
-                            { id: "nov-kdp-3", description: "Contratar edición profesional (estructura y estilo)", help: "Un editor profesional puede mejorar significativamente tu obra." },
-                            { id: "nov-kdp-4", description: "Contratar corrección de pruebas (gramática y ortografía)", help: "Errores ortográficos pueden restar credibilidad a tu trabajo." }
+                            { id: "nov-kdp-3", description: "Contratar edición profesional (estructural, de estilo)", help: "Un editor profesional puede mejorar significativamente tu obra. Considera una lectura beta previa." },
+                            { id: "nov-kdp-4", description: "Contratar corrección de pruebas (gramática y ortografía final)", help: "Última revisión antes de maquetar para cazar errores tipográficos y gramaticales menores." }
                         ],
                         "Diseño y Formato": [
-                            { id: "nov-kdp-5", description: "Diseñar una cubierta profesional y atractiva", help: "La cubierta debe reflejar el género y llamar la atención en miniaturas." },
-                            { id: "nov-kdp-6", description: "Formatear el manuscrito para eBook (MOBI/EPUB)", help: "Usa herramientas como Kindle Create o contrata a un formateador." },
-                            { id: "nov-kdp-7", description: "Formatear el manuscrito para versión impresa (PDF)", help: "Asegúrate de que los márgenes y fuentes sean adecuados para impresión." },
-                            { id: "nov-kdp-8", description: "Preparar el archivo de la cubierta según especificaciones KDP", help: "Calcula el lomo basado en páginas y tipo de papel." }
+                            { id: "nov-kdp-5", description: "Diseñar una cubierta profesional y atractiva (eBook y Print)", help: "La cubierta debe reflejar el género, ser legible en miniatura y cumplir especificaciones KDP." },
+                            { id: "nov-kdp-6", description: "Formatear el manuscrito para eBook (EPUB/MOBI)", help: "Asegura una correcta visualización en distintos dispositivos. Usa Kindle Create, Vellum o contrata a un profesional." },
+                            { id: "nov-kdp-7", description: "Formatear el manuscrito para versión impresa (PDF listo para imprenta)", help: "Asegúrate de que los márgenes, fuentes, paginación y cabeceras/pies sean correctos. Incluye página de derechos, etc." },
+                            { id: "nov-kdp-8", description: "Preparar el archivo PDF de la cubierta impresa según especificaciones KDP", help: "Calcula el lomo con la calculadora de KDP basado en páginas y tipo de papel. Incluye contraportada y solapas si aplica." }
                         ],
-                        "Publicación": [
-                            { id: "nov-kdp-9", description: "Crear o acceder a cuenta de Amazon KDP", help: "Necesitarás una cuenta de Amazon para publicar." },
-                            { id: "nov-kdp-10", description: "Subir archivos del manuscrito y cubierta", help: "Sigue cuidadosamente las instrucciones de KDP." },
-                            { id: "nov-kdp-11", description: "Configurar detalles del libro (precio, categorías, palabras clave)", help: "Investiga palabras clave relevantes para tu género." },
-                            { id: "nov-kdp-12", description: "Decidir sobre inscripción en KDP Select (exclusividad)", help: "KDP Select ofrece ventajas pero requiere exclusividad por 90 días." }
+                        "Publicación en KDP": [
+                            { id: "nov-kdp-9", description: "Crear o acceder a cuenta de Amazon KDP", help: "Configura tu información fiscal y de pagos." },
+                            { id: "nov-kdp-10", description: "Subir archivo del interior (eBook y/o Print)", help: "Sube el archivo formateado (EPUB/MOBI para eBook, PDF para Print)." },
+                             { id: "nov-kdp-11", description: "Subir archivo de la cubierta (eBook y/o Print)", help: "Sube el JPG para eBook y el PDF para Print." },
+                            { id: "nov-kdp-12", description: "Configurar detalles del libro (título, autor, descripción, palabras clave, categorías)", help: "Investiga palabras clave y categorías relevantes para tu género. Escribe una descripción atractiva." },
+                            { id: "nov-kdp-13", description: "Establecer precios y derechos de distribución", help: "Define el precio en diferentes mercados y elige los territorios donde venderás." },
+                            { id: "nov-kdp-14", description: "Revisar la vista previa digital y solicitar pruebas de impresión", help: "Utiliza el previsualizador online de KDP y pide una copia física de prueba antes de publicar." },
+                            { id: "nov-kdp-15", description: "Decidir sobre inscripción en KDP Select (exclusividad)", help: "KDP Select ofrece herramientas promocionales (Kindle Unlimited, Free Promotions) a cambio de exclusividad digital en Amazon por 90 días." }
                         ],
                         "Marketing y Legal": [
-                            { id: "nov-kdp-13", description: "Registrar los derechos de autor", help: "Considera registrar tu obra en el organismo correspondiente de tu país." },
-                            { id: "nov-kdp-14", description: "Obtener ISBN (si no usas el gratuito de KDP)", help: "KDP proporciona ISBN gratis para sus plataformas." },
-                            { id: "nov-kdp-15", description: "Escribir una sinopsis atractiva para la descripción", help: "Destaca los puntos clave de tu historia sin spoilers." },
-                            { id: "nov-kdp-16", description: "Planificar una estrategia de lanzamiento", help: "Considera promociones, redes sociales y contactar reseñadores." }
+                            { id: "nov-kdp-16", description: "Registrar los derechos de autor", help: "Considera registrar tu obra en el organismo correspondiente de tu país para mayor protección legal." },
+                            { id: "nov-kdp-17", description: "Obtener ISBN (opcional si usas el gratuito de KDP)", help: "KDP proporciona ISBN gratis pero solo es válido en Amazon. Compra uno propio si planeas distribución más amplia." },
+                            { id: "nov-kdp-18", description: "Crear página de autor en Amazon Author Central", help: "Personaliza tu perfil de autor con biografía, fotos y conecta tu blog." },
+                            { id: "nov-kdp-19", description: "Planificar estrategia de lanzamiento (preventa, promociones, ARC team)", help: "Define acciones para el día del lanzamiento y semanas posteriores. Considera enviar copias avanzadas (ARC) a reseñadores." },
+                             { id: "nov-kdp-20", description: "Preparar material de marketing (imágenes, banners, etc.)", help: "Crea gráficos para redes sociales, web, etc." }
                         ]
                     },
                     "Imprenta": {
                         "Preparación del Manuscrito": [
                             { id: "nov-imp-1", description: "Finalizar la escritura del manuscrito", help: "Completa todos los capítulos y revisa la estructura general." },
                             { id: "nov-imp-2", description: "Realizar una ronda de autoedición/revisión", help: "Revisa coherencia, ritmo y desarrollo de personajes." },
-                            { id: "nov-imp-3", description: "Contratar edición profesional (estructura y estilo)", help: "Un editor profesional puede mejorar significativamente tu obra." },
-                            { id: "nov-imp-4", description: "Contratar corrección de pruebas (gramática y ortografía)", help: "Errores ortográficos pueden restar credibilidad a tu trabajo." }
+                            { id: "nov-imp-3", description: "Contratar edición profesional (estructural, de estilo)", help: "Un editor profesional puede mejorar significativamente tu obra." },
+                            { id: "nov-imp-4", description: "Contratar corrección de pruebas (gramática y ortografía)", help: "Última revisión antes de maquetar para cazar errores." }
                         ],
                         "Diseño y Formato": [
-                            { id: "nov-imp-5", description: "Diseñar una cubierta profesional incluyendo lomo y contraportada", help: "La contraportada debe incluir sinopsis y biografía del autor." },
-                            { id: "nov-imp-6", description: "Formatear el interior profesionalmente para imprenta", help: "Incluye márgenes adecuados, medianil y considera tipografía legible." },
-                            { id: "nov-imp-7", description: "Seleccionar imprenta y obtener presupuestos", help: "Compara varias opciones y verifica su calidad con muestras." },
-                            { id: "nov-imp-8", description: "Determinar tamaño de corte, tipo de papel y encuadernación", help: "Para novelas, considera papel de buen gramaje pero no demasiado grueso." }
+                            { id: "nov-imp-5", description: "Diseñar una cubierta profesional incluyendo lomo y contraportada", help: "La contraportada debe incluir sinopsis, ISBN con código de barras y opcionalmente biografía del autor. Considera acabados (mate, brillo, solapas)." },
+                            { id: "nov-imp-6", description: "Formatear el interior profesionalmente para imprenta (PDF/X)", help: "Incluye márgenes adecuados, medianil, paginación, fuentes incrustadas. Exporta en PDF/X-1a o según requiera la imprenta." },
+                            { id: "nov-imp-7", description: "Seleccionar imprenta y obtener presupuestos detallados", help: "Compara varias opciones (calidad, precio, plazos, mínimos de tirada). Pide muestras de trabajos anteriores." },
+                            { id: "nov-imp-8", description: "Determinar especificaciones finales (tamaño, tipo de papel, gramaje, encuadernación, acabados)", help: "Define todos los detalles técnicos con la imprenta." }
                         ],
                         "Producción": [
-                            { id: "nov-imp-9", description: "Preparar archivos finales según especificaciones de la imprenta", help: "Asegúrate de incluir marcas de corte y sangrado si es necesario." },
-                            { id: "nov-imp-10", description: "Revisar y aprobar pruebas de impresión (galeradas)", help: "Pide pruebas físicas para evaluar calidad antes de la tirada completa." },
-                            { id: "nov-imp-11", description: "Firmar contrato y acordar plazos de entrega", help: "Asegúrate de entender los términos de pago y responsabilidades." },
-                            { id: "nov-imp-12", description: "Coordinar envío de archivos finales a la imprenta", help: "Verifica que todos los archivos sean los correctos y finales." }
+                            { id: "nov-imp-9", description: "Preparar archivos finales (Artes Finales) según especificaciones de la imprenta", help: "Asegúrate de incluir sangrado (bleed), marcas de corte si son necesarias, y que las imágenes estén en CMYK a 300 DPI." },
+                            { id: "nov-imp-10", description: "Revisar y aprobar pruebas de impresión (ferros o pruebas de color)", help: "Pide pruebas físicas (impresas) o digitales certificadas para evaluar calidad antes de la tirada completa." },
+                            { id: "nov-imp-11", description: "Firmar contrato y acordar plazos de entrega y condiciones de pago", help: "Asegúrate de entender todos los términos." },
+                            { id: "nov-imp-12", description: "Coordinar envío de archivos finales a la imprenta y confirmar recepción", help: "Usa métodos seguros como WeTransfer o FTP si son archivos grandes." }
                         ],
                         "Distribución y Legal": [
-                            { id: "nov-imp-13", description: "Registrar los derechos de autor", help: "Considera registrar tu obra en el organismo correspondiente de tu país." },
-                            { id: "nov-imp-14", description: "Obtener ISBN (necesario para distribución en librerías)", help: "Adquiere tu propio ISBN para mantener control sobre la edición." },
-                            { id: "nov-imp-15", description: "Planificar almacenamiento y distribución", help: "Considera costos de almacén y envíos si vas a vender directamente." },
-                            { id: "nov-imp-16", description: "Desarrollar estrategia de marketing y promoción", help: "Planifica presentaciones, firmas de libros y presencia en redes." }
+                            { id: "nov-imp-13", description: "Registrar los derechos de autor", help: "Fundamental para proteger tu obra." },
+                            { id: "nov-imp-14", description: "Obtener ISBN propio (obligatorio para distribución comercial)", help: "Adquiere tu propio bloque de ISBNs en la agencia de tu país." },
+                            { id: "nov-imp-15", description: "Planificar almacenamiento (si aplica) y estrategia de distribución", help: "Considera si usarás distribuidora, venderás directamente, o ambas. Calcula costos de almacén y envíos." },
+                            { id: "nov-imp-16", description: "Desarrollar estrategia de marketing y promoción (preventa, lanzamiento, post-lanzamiento)", help: "Planifica presentaciones, firmas de libros, presencia en redes, notas de prensa, contacto con librerías." }
                         ]
                     }
                 }
             };
-            
-            // Current project data
-            let currentProject = {
-                projectType: null,
-                publishMethod: null,
-                checklist: []
-            };
-            
-            // Initialize the app
+
+            // --- Initialization ---
             function initApp() {
-                // Load saved project from localStorage if exists
+                // Set current year in footer
+                currentYearSpan.textContent = new Date().getFullYear();
+
+                // Load saved project from localStorage
                 const savedProject = localStorage.getItem('lanzamientoListoProject');
-                
+                let projectData = null;
+
                 if (savedProject) {
-                    currentProject = JSON.parse(savedProject);
-                    showChecklist();
+                    try {
+                        projectData = JSON.parse(savedProject);
+                        // Basic validation of loaded data
+                        if (projectData && projectData.projectType && projectData.publishMethod && Array.isArray(projectData.checklist)) {
+                            currentProject = projectData;
+                            showChecklist();
+                        } else {
+                            console.warn("Saved project data is invalid. Starting fresh.");
+                            localStorage.removeItem('lanzamientoListoProject'); // Clear invalid data
+                            showSetup();
+                        }
+                    } catch (error) {
+                        console.error("Error parsing saved project data:", error);
+                        localStorage.removeItem('lanzamientoListoProject'); // Clear corrupted data
+                        showSetup();
+                    }
                 } else {
                     showSetup();
                 }
-                
-                // Set up event listeners for book type selection
-                bookTypeBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        // Remove active class from all buttons
-                        bookTypeBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50'));
-                        
-                        // Add active class to clicked button
-                        this.classList.add('border-blue-500', 'bg-blue-50');
-                        selectedBookType = this.getAttribute('data-value');
-                    });
-                });
-                
-                // Set up event listeners for publish method selection
-                publishMethodBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        // Remove active class from all buttons
-                        publishMethodBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50'));
-                        
-                        // Add active class to clicked button
-                        this.classList.add('border-blue-500', 'bg-blue-50');
-                        selectedPublishMethod = this.getAttribute('data-value');
-                    });
-                });
-                
-                // Generate checklist button
+
+                setupEventListeners();
+            }
+
+            // --- Event Listeners Setup ---
+            function setupEventListeners() {
+                // Setup screen buttons
+                bookTypeBtns.forEach(btn => btn.addEventListener('click', handleBookTypeSelect));
+                publishMethodBtns.forEach(btn => btn.addEventListener('click', handlePublishMethodSelect));
                 generateChecklistBtn.addEventListener('click', generateChecklist);
-                
-                // New project button
-                newProjectBtn.addEventListener('click', function() {
-                    if (confirm('¿Estás seguro de que quieres comenzar un nuevo proyecto? Se perderá el progreso actual.')) {
-                        localStorage.removeItem('lanzamientoListoProject');
-                        currentProject = {
-                            projectType: null,
-                            publishMethod: null,
-                            checklist: []
-                        };
-                        showSetup();
-                    }
-                });
-                
-                // Export button
+
+                // Checklist screen buttons
+                newProjectBtn.addEventListener('click', handleNewProject);
                 exportBtn.addEventListener('click', exportProject);
-                
-                // Import button
-                importBtn.addEventListener('click', function() {
-                    importFileInput.click();
-                });
-                
+                importBtn.addEventListener('click', () => importFileInput.click());
                 importFileInput.addEventListener('change', importProject);
             }
-            
-            // Show setup screen
+
+            // --- UI State Management ---
             function showSetup() {
                 setupContainer.classList.remove('hidden');
                 checklistContainer.classList.add('hidden');
-                
-                // Reset selections
-                selectedBookType = null;
-                selectedPublishMethod = null;
-                bookTypeBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50'));
-                publishMethodBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50'));
+                resetSetupSelections();
             }
-            
-            // Show checklist screen
+
             function showChecklist() {
                 setupContainer.classList.add('hidden');
                 checklistContainer.classList.remove('hidden');
-                
-                // Update project info badges
-                projectTypeBadge.textContent = currentProject.projectType;
-                publishMethodBadge.textContent = currentProject.publishMethod;
-                
-                // Render checklist
+                updateProjectInfoBadges();
                 renderChecklist();
-                
-                // Update progress
                 updateProgress();
             }
-            
-            // Generate checklist based on selections
+
+            function resetSetupSelections() {
+                selectedBookType = null;
+                selectedPublishMethod = null;
+                bookTypeBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300'));
+                publishMethodBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300'));
+                generateChecklistBtn.disabled = true; // Disable button initially
+            }
+
+             function updateProjectInfoBadges() {
+                projectTypeBadge.textContent = currentProject.projectType || 'N/A';
+                publishMethodBadge.textContent = currentProject.publishMethod || 'N/A';
+            }
+
+            // --- Setup Screen Logic ---
+            function handleBookTypeSelect(event) {
+                bookTypeBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300'));
+                const btn = event.currentTarget;
+                btn.classList.add('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300');
+                selectedBookType = btn.getAttribute('data-value');
+                checkEnableGenerateButton();
+            }
+
+            function handlePublishMethodSelect(event) {
+                publishMethodBtns.forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300'));
+                const btn = event.currentTarget;
+                btn.classList.add('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300');
+                selectedPublishMethod = btn.getAttribute('data-value');
+                checkEnableGenerateButton();
+            }
+
+            function checkEnableGenerateButton() {
+                 generateChecklistBtn.disabled = !(selectedBookType && selectedPublishMethod);
+            }
+
+            // --- Checklist Generation ---
             function generateChecklist() {
                 if (!selectedBookType || !selectedPublishMethod) {
                     alert('Por favor selecciona tanto el tipo de libro como el método de publicación.');
                     return;
                 }
-                
-                // Create new project
+
+                // Create new project structure
                 currentProject = {
                     projectType: selectedBookType,
                     publishMethod: selectedPublishMethod,
                     checklist: []
                 };
-                
-                // Get tasks from template
-                const phases = taskTemplates[selectedBookType][selectedPublishMethod];
-                
-                // Add all tasks to checklist
-                for (const phase in phases) {
-                    phases[phase].forEach(task => {
-                        currentProject.checklist.push({
-                            id: task.id,
-                            description: task.description,
-                            help: task.help,
-                            phase: phase,
-                            isCompleted: false
-                        });
-                    });
+
+                // Get tasks from template or handle case where template might be missing
+                const phases = taskTemplates[selectedBookType]?.[selectedPublishMethod];
+
+                if (phases) {
+                    for (const phaseName in phases) {
+                        if (phases.hasOwnProperty(phaseName)) {
+                           phases[phaseName].forEach(taskTemplate => {
+                                currentProject.checklist.push({
+                                    id: taskTemplate.id,
+                                    description: taskTemplate.description,
+                                    help: taskTemplate.help || null, // Ensure help is null if undefined
+                                    phase: phaseName,
+                                    isCompleted: false
+                                });
+                            });
+                        }
+                    }
+                } else {
+                    console.warn(`No task template found for: ${selectedBookType} / ${selectedPublishMethod}`);
+                    // Optionally inform the user
+                    // alert("No se encontró una plantilla de tareas para la combinación seleccionada.");
                 }
-                
-                // Save to localStorage
-                localStorage.setItem('lanzamientoListoProject', JSON.stringify(currentProject));
-                
-                // Show checklist
+
+
+                saveProject();
                 showChecklist();
             }
-            
-            // Render checklist
+
+            // --- Checklist Rendering ---
             function renderChecklist() {
-                // Clear current content
-                checklistContent.innerHTML = '';
-                
+                checklistContent.innerHTML = ''; // Clear current content
+                noTasksMessage.classList.add('hidden'); // Hide no tasks message initially
+
+                if (!currentProject.checklist || currentProject.checklist.length === 0) {
+                     noTasksMessage.classList.remove('hidden'); // Show message if no tasks
+                    return;
+                }
+
                 // Group tasks by phase
-                const tasksByPhase = {};
-                currentProject.checklist.forEach(task => {
-                    if (!tasksByPhase[task.phase]) {
-                        tasksByPhase[task.phase] = [];
+                const tasksByPhase = currentProject.checklist.reduce((acc, task) => {
+                    if (!acc[task.phase]) {
+                        acc[task.phase] = [];
                     }
-                    tasksByPhase[task.phase].push(task);
-                });
-                
-                // Create phase sections
-                for (const phase in tasksByPhase) {
+                    acc[task.phase].push(task);
+                    return acc;
+                }, {});
+
+                // Order phases if needed (optional, could define an order array)
+                const phaseOrder = Object.keys(taskTemplates[currentProject.projectType]?.[currentProject.publishMethod] || {});
+
+
+                // Create phase sections based on the defined order or natural object order
+                (phaseOrder.length > 0 ? phaseOrder : Object.keys(tasksByPhase)).forEach(phaseName => {
+                     if (!tasksByPhase[phaseName]) return; // Skip if phase has no tasks (e.g., from import)
+
+                    const phaseTasks = tasksByPhase[phaseName];
                     const phaseSection = document.createElement('div');
-                    phaseSection.className = 'mb-6';
-                    
-                    // Phase header
+                    phaseSection.className = 'mb-6 border border-gray-200 rounded-lg overflow-hidden shadow-sm'; // Add border and shadow
+
+                    // Phase header (clickable for collapse/expand)
                     const phaseHeader = document.createElement('div');
-                    phaseHeader.className = 'flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-3 rounded-lg phase-header';
+                    phaseHeader.className = 'flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-3 phase-header hover:bg-gray-200';
+                    const phaseId = `phase-${phaseName.replace(/\s+/g, '-')}`; // Create unique ID for content
+                    phaseHeader.setAttribute('aria-expanded', 'true');
+                    phaseHeader.setAttribute('aria-controls', phaseId);
+
+                    const completedCount = getCompletedCount(phaseTasks);
                     phaseHeader.innerHTML = `
                         <h3 class="font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-folder-open text-blue-500 mr-2"></i>
-                            ${phase}
+                            <i class="fas fa-tasks text-blue-500 mr-3"></i> <!-- Changed icon -->
+                            ${phaseName}
                         </h3>
-                        <span class="text-sm text-gray-600">${getCompletedCount(tasksByPhase[phase])}/${tasksByPhase[phase].length}</span>
+                        <div class="flex items-center">
+                           <span class="text-sm text-gray-600 mr-3">${completedCount}/${phaseTasks.length}</span>
+                           <i class="fas fa-chevron-down text-gray-500 transition-transform"></i>
+                        </div>
                     `;
-                    
-                    // Phase content (initially shown)
+
+                    // Phase content (tasks list)
                     const phaseContent = document.createElement('div');
-                    phaseContent.className = 'mt-2 pl-2';
-                    
-                    // Add tasks
-                    tasksByPhase[phase].forEach(task => {
-                        const taskItem = document.createElement('div');
-                        taskItem.className = 'flex items-start py-3 px-2 border-b border-gray-100 task-item';
-                        taskItem.innerHTML = `
-                            <div class="flex items-start flex-1">
-                                <input type="checkbox" id="${task.id}" ${task.isCompleted ? 'checked' : ''} 
-                                    class="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 task-checkbox">
-                                <div class="ml-3 flex-1">
-                                    <label for="${task.id}" class="block text-gray-700 ${task.isCompleted ? 'line-through text-gray-400' : ''}">
-                                        ${task.description}
-                                    </label>
-                                    ${task.help ? `
-                                    <div class="tooltip mt-1 inline-block">
-                                        <i class="fas fa-info-circle text-blue-400 text-sm"></i>
-                                        <span class="tooltip-text">${task.help}</span>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                        
-                        // Add event listener for checkbox
-                        const checkbox = taskItem.querySelector('.task-checkbox');
-                        checkbox.addEventListener('change', function() {
-                            const taskIndex = currentProject.checklist.findIndex(t => t.id === task.id);
-                            if (taskIndex !== -1) {
-                                currentProject.checklist[taskIndex].isCompleted = this.checked;
-                                localStorage.setItem('lanzamientoListoProject', JSON.stringify(currentProject));
-                                updateProgress();
-                                
-                                // Update task appearance
-                                const label = taskItem.querySelector('label');
-                                if (this.checked) {
-                                    label.classList.add('line-through', 'text-gray-400');
-                                } else {
-                                    label.classList.remove('line-through', 'text-gray-400');
-                                }
-                                
-                                // Update phase count
-                                phaseHeader.querySelector('span').textContent = `${getCompletedCount(tasksByPhase[phase])}/${tasksByPhase[phase].length}`;
-                            }
-                        });
-                        
+                    phaseContent.id = phaseId;
+                    phaseContent.className = 'bg-white phase-content'; // Content area
+
+                    // Add tasks to phase content
+                    phaseTasks.forEach(task => {
+                        const taskItem = createTaskElement(task, phaseTasks, phaseHeader); // Pass phase info
                         phaseContent.appendChild(taskItem);
                     });
-                    
+
+                    // Add event listener for collapse/expand
+                    phaseHeader.addEventListener('click', () => {
+                        const isExpanded = phaseHeader.getAttribute('aria-expanded') === 'true';
+                        phaseHeader.setAttribute('aria-expanded', !isExpanded);
+                        phaseContent.classList.toggle('hidden');
+                        phaseHeader.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+                    });
+
                     phaseSection.appendChild(phaseHeader);
                     phaseSection.appendChild(phaseContent);
                     checklistContent.appendChild(phaseSection);
-                }
+                });
             }
-            
-            // Get completed task count for a phase
+
+             // Creates a single task element HTML
+             function createTaskElement(task, phaseTasks, phaseHeaderElement) {
+                 const taskItem = document.createElement('div');
+                 taskItem.className = 'flex items-start py-3 px-4 border-b border-gray-100 task-item hover:bg-gray-50'; // Subtle hover
+
+                 // Checkbox and label container
+                 const taskContent = document.createElement('div');
+                 taskContent.className = 'flex items-start flex-1';
+
+                 const checkbox = document.createElement('input');
+                 checkbox.type = 'checkbox';
+                 checkbox.id = task.id;
+                 checkbox.checked = task.isCompleted;
+                 checkbox.className = 'mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 task-checkbox cursor-pointer flex-shrink-0'; // Added cursor & shrink
+
+                 const labelContainer = document.createElement('div');
+                 labelContainer.className = 'ml-3 flex-1 min-w-0'; // Allow shrinking
+
+                 const label = document.createElement('label');
+                 label.htmlFor = task.id;
+                 label.className = `block text-gray-700 cursor-pointer ${task.isCompleted ? 'line-through text-gray-400' : ''}`;
+                 label.textContent = task.description;
+
+                 labelContainer.appendChild(label);
+
+                 // Add tooltip if help text exists
+                 if (task.help) {
+                     const tooltipWrapper = document.createElement('div');
+                     tooltipWrapper.className = 'tooltip mt-1 inline-block';
+                     tooltipWrapper.innerHTML = `
+                        <i class="fas fa-info-circle text-blue-400 hover:text-blue-600 text-sm ml-1"></i>
+                        <span class="tooltip-text">${task.help}</span>
+                     `;
+                     labelContainer.appendChild(tooltipWrapper);
+                 }
+
+                 taskContent.appendChild(checkbox);
+                 taskContent.appendChild(labelContainer);
+                 taskItem.appendChild(taskContent);
+
+                 // Add event listener for checkbox change
+                 checkbox.addEventListener('change', function() {
+                     const taskIndex = currentProject.checklist.findIndex(t => t.id === task.id);
+                     if (taskIndex !== -1) {
+                         currentProject.checklist[taskIndex].isCompleted = this.checked;
+                         saveProject();
+                         updateProgress();
+
+                         // Update task appearance
+                         label.classList.toggle('line-through', this.checked);
+                         label.classList.toggle('text-gray-400', this.checked);
+
+                         // Update phase count in the header
+                         const newCompletedCount = getCompletedCount(phaseTasks);
+                         const countSpan = phaseHeaderElement.querySelector('span');
+                         if(countSpan) {
+                            countSpan.textContent = `${newCompletedCount}/${phaseTasks.length}`;
+                         }
+                     }
+                 });
+
+                 return taskItem;
+             }
+
+            // --- Progress Calculation ---
             function getCompletedCount(tasks) {
                 return tasks.filter(t => t.isCompleted).length;
             }
-            
-            // Update progress bar and percentage
+
             function updateProgress() {
-                if (currentProject.checklist.length === 0) return;
-                
+                if (!currentProject.checklist || currentProject.checklist.length === 0) {
+                    progressPercentage.textContent = '0%';
+                    progressBar.style.width = '0%';
+                    return;
+                }
+
                 const completedCount = currentProject.checklist.filter(t => t.isCompleted).length;
                 const totalCount = currentProject.checklist.length;
-                const percentage = Math.round((completedCount / totalCount) * 100);
-                
+                const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
                 progressPercentage.textContent = `${percentage}%`;
                 progressBar.style.width = `${percentage}%`;
             }
-            
-            // Export project to JSON file
-            function exportProject() {
-                const dataStr = JSON.stringify(currentProject, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `lanzamientolisto_${currentProject.projectType.replace(' ', '_')}_${currentProject.publishMethod.replace(' ', '_')}_${new Date().toISOString().slice(0, 10)}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
+
+            // --- Project Management ---
+            function handleNewProject() {
+                if (confirm('¿Estás seguro de que quieres comenzar un nuevo proyecto? Se perderá todo el progreso no guardado del proyecto actual.')) {
+                    localStorage.removeItem('lanzamientoListoProject');
+                    currentProject = { projectType: null, publishMethod: null, checklist: [] };
+                    showSetup();
+                }
             }
-            
-            // Import project from JSON file
+
+            function saveProject() {
+                 try {
+                    localStorage.setItem('lanzamientoListoProject', JSON.stringify(currentProject));
+                 } catch (error) {
+                     console.error("Error saving project to localStorage:", error);
+                     alert("Hubo un problema al guardar el proyecto. Es posible que el almacenamiento local esté lleno o desactivado.");
+                 }
+            }
+
+            // --- Import/Export ---
+            function exportProject() {
+                 if (!currentProject || !currentProject.projectType) {
+                     alert("No hay ningún proyecto activo para exportar.");
+                     return;
+                 }
+
+                try {
+                    const dataStr = JSON.stringify(currentProject, null, 2); // Pretty print JSON
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+                    // Sanitize names for filename
+                    const typeSanitized = currentProject.projectType.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    const methodSanitized = currentProject.publishMethod.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    const exportFileDefaultName = `lanzamientolisto_${typeSanitized}_${methodSanitized}_${new Date().toISOString().slice(0, 10)}.json`;
+
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    document.body.appendChild(linkElement); // Required for Firefox
+                    linkElement.click();
+                    document.body.removeChild(linkElement); // Clean up
+                 } catch (error) {
+                     console.error("Error exporting project:", error);
+                     alert("Error al exportar el proyecto.");
+                 }
+            }
+
             function importProject(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                
+
+                // Check if file type is JSON
+                if (file.type !== "application/json") {
+                     alert("Por favor, selecciona un archivo JSON válido (.json).");
+                     event.target.value = ''; // Reset file input
+                     return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         const importedData = JSON.parse(e.target.result);
-                        
-                        // Validate imported data structure
-                        if (!importedData.projectType || !importedData.publishMethod || !importedData.checklist) {
-                            throw new Error('El archivo no contiene un proyecto válido de LanzamientoListo.');
+
+                        // **Enhanced Validation**
+                        if (typeof importedData !== 'object' || importedData === null) {
+                             throw new Error('El archivo no contiene un objeto JSON válido.');
                         }
-                        
-                        // Check if the checklist has the required fields
-                        const isValidChecklist = importedData.checklist.every(task => 
-                            task.id && task.description !== undefined && task.isCompleted !== undefined
+                        if (!importedData.projectType || typeof importedData.projectType !== 'string') {
+                            throw new Error('El archivo JSON no contiene un "projectType" válido.');
+                        }
+                        if (!importedData.publishMethod || typeof importedData.publishMethod !== 'string') {
+                            throw new Error('El archivo JSON no contiene un "publishMethod" válido.');
+                        }
+                         if (!Array.isArray(importedData.checklist)) {
+                             throw new Error('El archivo JSON no contiene una "checklist" (array) válida.');
+                         }
+
+                        // Validate checklist items structure (basic check)
+                        const isValidChecklist = importedData.checklist.every(task =>
+                            task && typeof task.id === 'string' &&
+                            typeof task.description === 'string' &&
+                            typeof task.phase === 'string' &&
+                            typeof task.isCompleted === 'boolean'
+                            // 'help' can be string or null/undefined
                         );
-                        
+
                         if (!isValidChecklist) {
-                            throw new Error('La checklist en el archivo no tiene la estructura correcta.');
+                            throw new Error('Algunos elementos de la checklist en el archivo no tienen la estructura correcta (id, description, phase, isCompleted).');
                         }
-                        
+
+                        // Optional: Check if projectType and publishMethod exist in templates (more strict)
+                         // if (!taskTemplates[importedData.projectType] || !taskTemplates[importedData.projectType][importedData.publishMethod]) {
+                         //     throw new Error(`El tipo de proyecto (${importedData.projectType}) o método de publicación (${importedData.publishMethod}) no es reconocido por esta versión de la aplicación.`);
+                         // }
+
+
                         // Confirm import with user
-                        if (confirm(`¿Importar proyecto de ${importedData.projectType} (${importedData.publishMethod})? Esto sobrescribirá tu proyecto actual.`)) {
+                        if (confirm(`¿Importar proyecto "${importedData.projectType} - ${importedData.publishMethod}"?\n\nESTO SOBRESCRIBIRÁ TU PROYECTO ACTUAL.`)) {
                             currentProject = importedData;
-                            localStorage.setItem('lanzamientoListoProject', JSON.stringify(currentProject));
-                            showChecklist();
+                            saveProject(); // Save the newly imported project
+                            showChecklist(); // Refresh UI with imported data
+                            alert("Proyecto importado con éxito.");
                         }
                     } catch (error) {
+                        console.error("Error importing file:", error);
                         alert(`Error al importar el archivo: ${error.message}`);
-                        console.error(error);
+                    } finally {
+                         // Reset file input regardless of success or failure
+                         event.target.value = '';
                     }
-                    
-                    // Reset file input
-                    event.target.value = '';
                 };
-                
+
+                 reader.onerror = function() {
+                     alert("Error al leer el archivo seleccionado.");
+                      event.target.value = ''; // Reset file input
+                 };
+
                 reader.readAsText(file);
             }
-            
-            // Initialize the app
+
+            // --- Start the application ---
             initApp();
         });
     </script>
