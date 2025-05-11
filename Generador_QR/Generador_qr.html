@@ -37,8 +37,9 @@
             justify-content: space-around; 
             gap: 8px; 
             transition: background 0.3s;
-            background-size: cover;
+            background-size: cover; /* Importante para que las imágenes de textura cubran */
             background-position: center;
+            background-repeat: no-repeat; /* Evitar repetición por defecto si no es tileable */
             position: relative; 
             overflow: hidden; 
         }
@@ -53,15 +54,16 @@
             margin-top: 5px; 
         }
         #cardUsername { 
-            font-size: 1.2em; 
+            font-size: 1.2em; /* Reducido para no competir con el fondo */
             font-weight: 700; color: #262626; 
-            text-shadow: 0 1px 2px rgba(255,255,255,0.35);
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5); /* Sombra más notable */
             z-index: 1;
         }
         #cardBio { 
             font-size: 0.8em; 
-            color: #444; max-width: 90%; line-height: 1.4; 
-            text-shadow: 0 1px 1px rgba(255,255,255,0.25);
+            color: #333; /* Un poco más oscuro para legibilidad */
+            max-width: 90%; line-height: 1.4; 
+            text-shadow: 0 1px 1px rgba(255,255,255,0.4);
             z-index: 1;
         }
 
@@ -82,10 +84,10 @@
         }
         #cardQrCallToAction {
             font-size: 0.85em; 
-            color: #555; 
+            color: #444; /* Un poco más oscuro */
             margin-top: 8px; 
             font-weight: 500;
-            text-shadow: 0 1px 1px rgba(255,255,255,0.2);
+            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
             z-index: 1;
             margin-bottom: 10px; 
         }
@@ -173,6 +175,11 @@
                         <button class="texture-option" data-texture="texture3" style="background-color: #f0f2f6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);" title="Líneas Diagonales"> <i class="fas fa-check"></i></button>
                         <button class="texture-option" data-texture="texture4" style="background-color: #ffffff; background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1.5px); background-size: 12px 12px;" title="Puntos Sutiles"> <i class="fas fa-check"></i></button>
                         <button class="texture-option" data-texture="texture5" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200h20L0%2020z%22%20fill%3D%22%236366f1%22%20fill-opacity%3D%220.08%22/%3E%3C/svg%3E'); background-color:#f0f2f5;" title="Triángulos SVG"> <i class="fas fa-check"></i></button>
+                        
+                        <!-- Tus texturas personales -->
+                        <button class="texture-option" data-texture="wood" style="background-image: url('textures/textura1.jpg');" title="Textura de Madera"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="fabric" style="background-image: url('textures/textura2.jpg');" title="Textura de Tela"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="concrete" style="background-image: url('textures/concrete.png');" title="Textura de Concreto"> <i class="fas fa-check"></i></button>
                     </div>
                 </div>
                  <div id="solidColorPickerContainer"> 
@@ -271,7 +278,11 @@
                 texture2: "background-image: linear-gradient(to right, #8360c3, #2ebf91);", 
                 texture3: "background-color: #f0f2f6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);",
                 texture4: "background-color: #ffffff; background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1.5px); background-size: 12px 12px;", 
-                texture5: "background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200h20L0%2020z%22%20fill%3D%22%236366f1%22%20fill-opacity%3D%220.08%22/%3E%3C/svg%3E'); background-color:#f0f2f5;"
+                texture5: "background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200h20L0%2020z%22%20fill%3D%22%236366f1%22%20fill-opacity%3D%220.08%22/%3E%3C/svg%3E'); background-color:#f0f2f5;",
+                // --- Tus texturas personales ---
+                wood: "background-image: url('textures/textura1.jpg'); background-size: cover; background-repeat: no-repeat;",
+                fabric: "background-image: url('textures/textura2.jpg'); background-size: cover; background-repeat: no-repeat;",
+                concrete: "background-image: url('textures/concrete.png'); background-size: cover; background-repeat: no-repeat;"
             };
             
             function applyCardBackground() {
@@ -280,6 +291,10 @@
                     styleString = textureDefinitions.solid(activeCardBackground.value);
                 } else if (textureDefinitions[activeCardBackground.type]) {
                     styleString = textureDefinitions[activeCardBackground.type];
+                } else {
+                    // Fallback si la textura no está definida (por si acaso)
+                    styleString = textureDefinitions.solid('#FFFFFF'); // Color sólido blanco
+                    console.warn("Textura no definida:", activeCardBackground.type);
                 }
                 
                 const cardWidth = getComputedStyle(document.documentElement).getPropertyValue('--card-width').trim();
@@ -299,6 +314,7 @@
                     transition: background 0.3s;
                     background-size: cover;
                     background-position: center;
+                    background-repeat: no-repeat; /* Añadido aquí también para asegurar */
                     position: relative; 
                     overflow: hidden; 
                     ${styleString} 
@@ -498,7 +514,8 @@
                 else statusMessage.classList.add('text-gray-600');
             }
 
-            cardProfileImage.src = defaultProfilePic; // Aplicar el nuevo default
+            // Inicialización
+            cardProfileImage.src = defaultProfilePic;
             solidColorPickerContainer.style.display = 'block'; 
             updateCardPreviewAndQr();
         });
