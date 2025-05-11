@@ -3,617 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador Avanzado de Códigos QR</title>
+    <title>Generador de Tarjeta Instagram con QR</title>
     <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        :root {
-            --primary: #4f46e5; /* Indigo-600 */
-            --primary-hover: #4338ca; /* Indigo-700 */
-            --success: #10b981; /* Green-500 */
-            --success-hover: #059669; /* Green-600 */
-            --error: #ef4444; /* Red-500 */
-            --warning: #f59e0b; /* Amber-500 */
-            --dark: #1f2937; /* Gray-800 */
-            --light: #f9fafb; /* Gray-50 */
-        }
-        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f3f4f6; /* Gray-100 */
+            background-color: #f0f2f5; /* Gris claro de fondo */
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
-        .qr-preview-placeholder { /* Placeholder for QR code area */
-            transition: all 0.3s ease;
-            min-height: 300px;
-            background: 
-                linear-gradient(135deg, #e5e7eb 25%, transparent 25%) -10px 0,
-                linear-gradient(225deg, #e5e7eb 25%, transparent 25%) -10px 0,
-                linear-gradient(315deg, #e5e7eb 25%, transparent 25%),
-                linear-gradient(45deg,  #e5e7eb 25%, transparent 25%);
-            background-size: 20px 20px;
-            background-color: #f9fafb; /* Gray-50 */
-        }
-        
-        .color-option {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid transparent;
-        }
-        
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-        
-        .color-option.active {
-            transform: scale(1.1);
-            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
-        }
-        
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 8px;
-            border-radius: 4px;
-            background: #d1d5db; /* Gray-300 */
-            outline: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            border: 3px solid white;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
-        input[type="range"]::-moz-range-thumb { /* For Firefox */
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            border: 3px solid white;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        #instaCardPreview {
+            width: 360px; 
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            transition: background-color 0.3s;
         }
 
-        .tab-button {
-            transition: all 0.2s ease;
-            color: #4b5563; /* Gray-600 */
+        #cardProfileImage {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #e0e0e0;
+            border: 3px solid #f0f2f5;
         }
-        
-        .tab-button.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+
+        #cardUsername {
+            font-size: 1.4em; 
+            font-weight: 600;
+            color: #262626;
+            margin-top: 5px;
         }
-        .tab-button:not(.active):hover {
-            background-color: #e5e7eb; /* Gray-200 */
+
+        #cardBio {
+            font-size: 0.9em; 
+            color: #8e8e8e;
+            max-width: 90%;
+            line-height: 1.4;
         }
+
+        #cardQrContainer { 
+            width: 140px; 
+            height: 140px;
+            background-color: #f8f8f8; 
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px; 
+            margin-top: 10px;
+            overflow: hidden; /* Para asegurar que el canvas no se desborde si es más grande */
+        }
+         #cardQrElement canvas, #cardQrElement img { 
+            display: block; /* Importante para el canvas */
+            width: 100% !important;  /* Escalar el canvas al contenedor */
+            height: 100% !important; /* Escalar el canvas al contenedor */
+            object-fit: contain;
+            border-radius: 4px; 
+        }
+
+        .config-label {
+            font-weight: 500; color: #374151; margin-bottom: 0.3rem; display: block; font-size: 0.9rem;
+        }
+        .config-input, .config-textarea {
+            width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #d1d5db; border-radius: 0.375rem; 
+            font-size: 0.9rem; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .config-input:focus, .config-textarea:focus {
+            outline: none; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+        }
+        .color-option { 
+             width: 28px; height: 28px; border-radius: 50%; cursor: pointer; 
+             transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent;
+        }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { transform: scale(1.1); box-shadow: 0 0 0 2px white, 0 0 0 4px #4f46e5;}
+        #qrCustomColorPicker { /* Estilo para el input[type=color] */
+            width: 32px; height: 32px; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 2px; cursor: pointer;
+        }
+        .shape-option { font-size: 0.85rem; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; }
+        .shape-option.active { background-color: #4f46e5; color: white; border-color: #4f46e5;}
+
     </style>
 </head>
-<body class="flex items-center justify-center p-4 md:p-6">
-    <div class="w-full max-w-3xl bg-white rounded-xl shadow-2xl overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-6 text-white">
-            <div class="flex items-center justify-between">
+<body class="p-4 md:p-6">
+    <div class="container mx-auto max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Crea tu Tarjeta de Instagram</h1>
+            <p class="text-gray-600 mt-2">Personaliza tu tarjeta con QR y compártela.</p>
+        </header>
+
+        <div class="grid md:grid-cols-[1fr_380px] gap-8 items-start">
+            <!-- Columna de Configuración -->
+            <div class="bg-white p-6 rounded-xl shadow-xl space-y-5">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Configuración de la Tarjeta</h2>
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Generador Avanzado de QR</h1>
-                    <p class="text-indigo-100 mt-1 text-sm md:text-base">Crea códigos QR personalizados con tu logo</p>
+                    <label for="profileImageInput" class="config-label">Foto de Perfil (para la tarjeta):</label>
+                    <input type="file" id="profileImageInput" class="config-input" accept="image/*">
                 </div>
-                <div class="bg-white/25 p-3 rounded-full shadow-md">
-                    <i class="fas fa-qrcode text-2xl text-white"></i>
+                <div>
+                    <label for="instagramUserInput" class="config-label">Tu @Usuario de Instagram (para mostrar):</label>
+                    <input type="text" id="instagramUserInput" class="config-input" placeholder="ej: tunombredeusuario">
                 </div>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="p-4 md:p-6">
-            <!-- URL Input -->
-            <div class="flex flex-col md:flex-row gap-3 mb-6">
-                <div class="flex-1 relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                        <i class="fas fa-link text-gray-400"></i>
+                <div>
+                    <label for="instagramUrlInput" class="config-label">URL o Usuario de Instagram (para el QR):</label>
+                    <input type="text" id="instagramUrlInput" class="config-input" placeholder="ej: tunombredeusuario o https://instagram.com/...">
+                </div>
+                <div>
+                    <label for="bioInput" class="config-label">Lema o Mensaje:</label>
+                    <textarea id="bioInput" class="config-textarea" rows="2" placeholder="Tu mensaje aquí..."></textarea>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-700 border-b pb-2 pt-3 mb-3">Personalizar QR</h3>
+                <div>
+                    <label for="qrLogoInput" class="config-label">Logo para el centro del QR (opcional):</label>
+                    <input type="file" id="qrLogoInput" class="config-input" accept="image/*">
+                </div>
+                <div>
+                    <label class="config-label">Color de puntos del QR:</label>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <div class="color-option active" style="background-color: #262626;" data-color="#262626" title="Negro Instagram"></div>
+                        <div class="color-option" style="background-color: #4f46e5;" data-color="#4f46e5" title="Índigo"></div>
+                        <div class="color-option" style="background-color: #db2777;" data-color="#db2777" title="Rosa"></div>
+                        <div class="color-option" style="background-color: #c026d3;" data-color="#c026d3" title="Fucsia"></div>
+                        <input type="color" id="qrCustomColorPicker" value="#262626" title="Seleccionar color personalizado">
                     </div>
-                    <input 
-                        type="url" 
-                        id="urlInput" 
-                        placeholder="https://ejemplo.com o tu_usuario_instagram" 
-                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
-                        required
-                    >
                 </div>
-                <button 
-                    id="createQrButton"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow hover:shadow-md"
-                >
-                    <i class="fas fa-bolt"></i>
-                    Generar QR
-                </button>
-            </div>
-            
-            <!-- Tabs -->
-            <div class="flex border-b border-gray-200">
-                <button class="tab-button active px-3 py-2 md:px-4 md:py-3 rounded-t-lg font-medium text-sm md:text-base" data-tab="preview">
-                    <i class="fas fa-eye mr-1 md:mr-2"></i> Vista previa
-                </button>
-                <button class="tab-button px-3 py-2 md:px-4 md:py-3 rounded-t-lg font-medium text-sm md:text-base" data-tab="customize">
-                    <i class="fas fa-sliders-h mr-1 md:mr-2"></i> Personalizar
-                </button>
-            </div>
-            
-            <!-- Preview Tab -->
-            <div id="previewTab" class="tab-content py-4">
-                <div id="qrCodeContainerWrapper" class="qr-preview-placeholder flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 mb-4 p-2">
-                    <div id="qrCodeContainer">
-                        <div class="text-center p-6 text-gray-500">
-                            <i class="fas fa-qrcode text-5xl mb-3 text-gray-400"></i>
-                            <p class="font-medium">Tu código QR aparecerá aquí</p>
-                            <p class="text-sm">Introduce una URL y haz clic en "Generar QR".</p>
-                        </div>
-                    </div>
+                <div>
+                    <label class="config-label">Tamaño del logo en QR (0 = sin logo):</label>
+                    <input type="range" id="qrLogoSizeSlider" min="0" max="0.4" step="0.01" value="0.25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
                 </div>
                 
-                <div id="statusMessage" class="text-center py-2.5 px-4 rounded-lg text-sm min-h-[44px] flex items-center justify-center"></div>
-                
-                <div class="flex flex-wrap gap-3 justify-center mt-4">
-                    <button 
-                        id="downloadQrButton"
-                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow hover:shadow-md hidden"
-                    >
-                        <i class="fas fa-download"></i>
-                        Descargar PNG
-                    </button>
-                    
-                    <button 
-                        id="downloadSvgButton"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow hover:shadow-md hidden"
-                    >
-                        <i class="fas fa-download"></i>
-                        Descargar SVG
-                    </button>
-                    
-                    <button 
-                        id="copyQrButton"
-                        class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow hover:shadow-md hidden"
-                    >
-                        <i class="fas fa-copy"></i>
-                        Copiar Imagen
-                    </button>
-                </div>
+                <button id="downloadCardButton" class="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold py-3 mt-5 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i>
+                    Descargar Tarjeta (PNG)
+                </button>
+                <div id="statusMessage" class="text-center text-sm mt-2 min-h-[20px]"></div>
             </div>
-            
-            <!-- Customize Tab -->
-            <div id="customizeTab" class="tab-content py-4 hidden">
-                 <div class="space-y-6">
-                    <!-- Color Options -->
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 text-base">Color del QR (puntos y esquinas)</h3>
-                        <div class="flex flex-wrap gap-3">
-                            <div class="color-option active" style="background-color: #4f46e5;" data-color="#4f46e5"></div>
-                            <div class="color-option" style="background-color: #1f2937;" data-color="#1f2937"></div>
-                            <div class="color-option" style="background-color: #ef4444;" data-color="#ef4444"></div>
-                            <div class="color-option" style="background-color: #10b981;" data-color="#10b981"></div>
-                            <div class="color-option" style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
-                            <div class="color-option" style="background-color: #ec4899;" data-color="#ec4899"></div>
-                            <input type="color" id="customColorPicker" value="#4f46e5" class="color-option w-10 h-10 border-2 border-gray-300 rounded-md p-0.5">
-                        </div>
-                    </div>
-                    
-                    <!-- Shape Options -->
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 text-base">Forma de los puntos</h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <button class="shape-option active text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="rounded">Redondeados</button>
-                            <button class="shape-option text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="square">Cuadrados</button>
-                            <button class="shape-option text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="dots">Puntos</button>
-                            <button class="shape-option text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="classy">Clásicos</button>
-                            <button class="shape-option text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="classy-rounded">Clásico Red.</button>
-                            <button class="shape-option text-sm border hover:bg-gray-100 border-gray-300 rounded-md py-2 px-3" data-shape="extra-rounded">Extra Red.</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Logo Options -->
-                    <div class="border-t border-gray-200 pt-6">
-                        <h3 class="font-semibold text-gray-700 mb-3 text-base">Logo central</h3>
-                        <div class="flex items-center gap-4 mb-3">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="logoOption" class="form-radio text-indigo-600 h-4 w-4" value="auto" checked>
-                                <span class="ml-2 text-sm text-gray-600">Automático (de la web)</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="logoOption" class="form-radio text-indigo-600 h-4 w-4" value="custom">
-                                <span class="ml-2 text-sm text-gray-600">Personalizado</span>
-                            </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" name="logoOption" class="form-radio text-indigo-600 h-4 w-4" value="none">
-                                <span class="ml-2 text-sm text-gray-600">Ninguno</span>
-                            </label>
-                        </div>
-                        
-                        <div id="customLogoContainer" class="mt-3 hidden">
-                            <div class="flex items-center gap-3">
-                                <input type="file" id="customLogoInput" accept="image/png, image/jpeg, image/svg+xml" class="hidden">
-                                <button id="uploadLogoButton" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-2 px-4 rounded-lg transition-colors border border-gray-300">
-                                    <i class="fas fa-upload mr-2"></i> Subir logo
-                                </button>
-                                <span id="customLogoName" class="text-sm text-gray-500 truncate max-w-[150px]">Ningún archivo</span>
+
+            <!-- Columna de Previsualización de la Tarjeta -->
+            <div class="flex justify-center md:sticky md:top-6">
+                 <div id="instaCardPreviewContainer"> 
+                    <div id="instaCardPreview">
+                        <img id="cardProfileImage" src="https://via.placeholder.com/90/E0E0E0/808080?Text=Foto" alt="Foto de perfil">
+                        <p id="cardUsername">@TuUsuario</p>
+                        <p id="cardBio">Tu lema o mensaje inspirador aquí.</p>
+                        <div id="cardQrContainer">
+                            <div id="cardQrElement">
+                                <span class="text-gray-400 text-xs p-1">QR aquí</span>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1.5">Recomendado: PNG cuadrado con transparencia, <1MB.</p>
                         </div>
                     </div>
-                    
-                    <!-- Size Options -->
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-2 text-base">Tamaño del logo</h3>
-                        <input type="range" id="logoSizeSlider" min="0.1" max="0.4" step="0.01" value="0.3" class="w-full">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>Pequeño</span>
-                            <span>Grande</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-8 border-t border-gray-200 pt-6">
-                    <button id="applyCustomizationButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors w-full shadow hover:shadow-md">
-                        Aplicar personalización y Regenerar QR
-                    </button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="bg-gray-50 px-6 py-4 text-center text-xs text-gray-500 border-t border-gray-200">
-            <p>Generador de QR © <span id="currentYear"></span> | Crea códigos QR personalizados gratis.</p>
-            <p class="mt-1">Para mejores resultados con logos, usa imágenes PNG con fondo transparente.</p>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Elements
-            const urlInput = document.getElementById('urlInput');
-            const createQrButton = document.getElementById('createQrButton');
-            const qrCodeContainer = document.getElementById('qrCodeContainer');
-            const downloadQrButton = document.getElementById('downloadQrButton');
-            const downloadSvgButton = document.getElementById('downloadSvgButton');
-            const copyQrButton = document.getElementById('copyQrButton');
+            const profileImageInput = document.getElementById('profileImageInput');
+            const instagramUserInput = document.getElementById('instagramUserInput');
+            const instagramUrlInput = document.getElementById('instagramUrlInput');
+            const bioInput = document.getElementById('bioInput');
+            const qrLogoInput = document.getElementById('qrLogoInput');
+            const qrCustomColorPicker = document.getElementById('qrCustomColorPicker');
+            const qrColorOptions = document.querySelectorAll('.color-option'); // Presets de color
+            const qrLogoSizeSlider = document.getElementById('qrLogoSizeSlider');
+            const downloadCardButton = document.getElementById('downloadCardButton');
             const statusMessage = document.getElementById('statusMessage');
-            const applyCustomizationButton = document.getElementById('applyCustomizationButton');
-            const uploadLogoButton = document.getElementById('uploadLogoButton');
-            const customLogoInput = document.getElementById('customLogoInput');
-            const customLogoName = document.getElementById('customLogoName');
-            const customLogoContainer = document.getElementById('customLogoContainer');
-            const logoSizeSlider = document.getElementById('logoSizeSlider');
-            const customColorPicker = document.getElementById('customColorPicker');
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-            
-            const placeholderQrContent = `
-                <div class="text-center p-6 text-gray-500">
-                    <i class="fas fa-qrcode text-5xl mb-3 text-gray-400"></i>
-                    <p class="font-medium">Tu código QR aparecerá aquí</p>
-                    <p class="text-sm">Introduce una URL y haz clic en "Generar QR".</p>
-                </div>`;
-            qrCodeContainer.innerHTML = placeholderQrContent;
 
-            // Tab functionality
-            const tabs = document.querySelectorAll('[data-tab]');
-            const tabContents = document.querySelectorAll('.tab-content');
+            const cardProfileImage = document.getElementById('cardProfileImage');
+            const cardUsername = document.getElementById('cardUsername');
+            const cardBio = document.getElementById('cardBio');
+            const cardQrElement = document.getElementById('cardQrElement');
             
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active', 'bg-indigo-600', 'text-white'));
-                    tabs.forEach(t => t.classList.add('text-gray-600'));
-                    tab.classList.add('active', 'bg-indigo-600', 'text-white');
-                    tab.classList.remove('text-gray-600');
-                    
-                    const tabId = tab.getAttribute('data-tab') + 'Tab';
-                    tabContents.forEach(content => content.classList.add('hidden'));
-                    document.getElementById(tabId).classList.remove('hidden');
-                });
-            });
-            
-            document.querySelectorAll('input[name="logoOption"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    customLogoContainer.classList.toggle('hidden', e.target.value !== 'custom');
-                });
-            });
-            
-            uploadLogoButton.addEventListener('click', () => customLogoInput.click());
-            
-            customLogoInput.addEventListener('change', (e) => {
-                customLogoName.textContent = e.target.files.length > 0 ? e.target.files[0].name : 'Ningún archivo';
-                if (e.target.files.length > 0) { // Auto-apply if a QR already exists
-                    currentOptions.customLogoFile = e.target.files[0];
-                    if (qrCodeInstance && urlInput.value.trim()) {
-                        // applyCustomizationButton.click(); // Option: auto-apply
-                    }
-                }
-            });
-            
+            const defaultProfilePic = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iOTAiIHZpZXdCb3g9IjAgMCA5MCA5MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjkwIiBoZWlnaHQ9IjkwIiByeD0iNDUiIGZpbGw9IiNFMUU0RTYiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00NSA0NUM1MS42Mjc0IDQ1IDU3IDUwLjM3MjYgNTcgNTdDNTcgNjMuNjI3NCA1MS42Mjc0IDY5IDQ1IDY5QzM4LjM3MjYgNjkgMzMgNjMuNjI3NCAzMyA1N0MzMyA1MC4zNzI2IDM4LjM3MjYgNDUgNDUgNDVaTTQ1IDQ5LjVDNDkuMTQyMSA0OS41IDUyLjUgNTIuODY3OSA1Mi41IDU3QzUyLjUgNjEuMTMyMSA0OS4xNDIxIDY0LjUgNDUgNjQuNUM0MC44NTc5IDY0LjUgMzcuNSA2MS4xMzIxIDM3LjUgNTdDMzcuNSA1Mi44Njc5IDQwLjg1NzkgNDkuNSA0NSA0OS41WiIgZmlsbD0iI0E4QkJDQyIvPgo8cGF0aCBkPSJNNjAuNzUgMzZDNTYuMDMxMSAzNiA1Mi4wNjMgMzguODEzNyA0OS4zMzc5IDQyLjQ2OTdDNDguODEzNyA0Mi4wNTAzIDQ4LjI0NjUgNDEuNjc4MiA0Ny42MzkzIDQxLjM1NTlDNzAuNzUgMzZDNTYuMDMxMSAzNiA1Mi4wNjMgMzguODEzNyA0OS4zMzc5IDQyLjQ2OTdINDQuOTk5OUM0NC45OTk5IDM4LjEzNDYgNDEuMzI4MiAzNC41IDM2Ljc1IDM0LjVDMzUuMjgwNiAzNC41IDMzLjg5NzEgMzQuODM5NyAzMi42NDYxIDM1LjQ0NDFDMzAuMTc4MiAyOS4yNDI2IDIzLjM0OTggMjYgMTUgMjZWMzZINjAuNzVaIiBmaWxsPSIjQThCQkNDIi8+Cjwvc3ZnPgo='; // SVG Placeholder
             let qrCodeInstance = null;
-            let currentLogoUrl = null; // Stores the actual URL (dataURL, web URL, or placeholder) being used
-            let lastGeneratedUrl = "";
+            let currentQrLogoDataUrl = null; 
+            let activeQrColor = "#262626"; // Color inicial
 
-            let currentOptions = {
-                dotsColor: '#4f46e5',
-                dotsType: 'rounded', // Default shape
-                logoSize: 0.3,
-                customLogoFile: null,
-                logoOption: 'auto' // 'auto', 'custom', 'none'
-            };
-            
-            // Update currentOptions from UI
-            function updateOptionsFromUI() {
-                currentOptions.dotsColor = document.querySelector('.color-option.active')?.dataset.color || customColorPicker.value;
-                currentOptions.dotsType = document.querySelector('.shape-option.active')?.dataset.shape || 'rounded';
-                currentOptions.logoSize = parseFloat(logoSizeSlider.value);
-                currentOptions.logoOption = document.querySelector('input[name="logoOption"]:checked').value;
-                if (customLogoInput.files.length > 0) {
-                    currentOptions.customLogoFile = customLogoInput.files[0];
-                } else {
-                     // If no file is selected but custom is chosen, we might want to clear it or use a placeholder.
-                     // For now, customLogoFile will remain null or the last selected file.
-                }
+            const QR_CANVAS_SIZE = 280; // Tamaño interno del canvas del QR para mayor resolución
+
+            function updateCardPreviewAndQr() {
+                const userDisplay = instagramUserInput.value.trim();
+                cardUsername.textContent = userDisplay ? `@${userDisplay.replace(/^@/, '')}` : "@TuUsuario";
+                cardBio.textContent = bioInput.value.trim() || "Tu lema o mensaje inspirador aquí.";
+                generateOrUpdateQr();
+                setStatus('');
             }
-            
-            document.querySelectorAll('.color-option:not([type="color"])').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    customColorPicker.value = option.dataset.color; // Sync picker
-                    // updateOptionsFromUI(); // No need to call this here, applyCustomization will
-                });
-            });
-            customColorPicker.addEventListener('input', (e) => {
-                 document.querySelectorAll('.color-option:not([type="color"])').forEach(opt => opt.classList.remove('active'));
-                 // Optionally, find a matching preset and activate it
-                 const matchingPreset = Array.from(document.querySelectorAll('.color-option:not([type="color"])')).find(opt => opt.dataset.color === e.target.value);
-                 if (matchingPreset) matchingPreset.classList.add('active');
-                // updateOptionsFromUI();
-            });
-            
-            document.querySelectorAll('.shape-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.shape-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                   // updateOptionsFromUI();
-                });
-            });
-            
-            // logoSizeSlider.addEventListener('input', updateOptionsFromUI); // Call on input for real-time feedback (if desired)
 
-            const placeholderNoLogo = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // Transparent pixel
-            const placeholderDefaultLogo = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNFNUU3RUIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjBweCIgZmlsbD0iIzk2QTNCRSI+TG9nbzwvdGV4dD48L3N2Zz4='; // Neutral placeholder
-            
-            async function handleGenerateOrUpdateQR() {
-                let targetUrl = urlInput.value.trim();
-                
-                if (!targetUrl) {
-                    setStatus('Por favor, introduce una URL o nombre de usuario.', 'error');
-                    urlInput.focus();
-                    return;
-                }
-                
-                // Basic smart URL detection (e.g., for Instagram, Facebook)
-                if (!targetUrl.includes('.') && !targetUrl.startsWith('http') && targetUrl.length > 0) {
-                    // Simple check, could be more robust (e.g. check for common social media patterns)
-                    if (confirm(`"${targetUrl}" no parece una URL completa. ¿Quieres intentar acceder a https://www.${targetUrl}.com o https://www.instagram.com/${targetUrl} si es un usuario? O puedes añadir http(s):// manualmente.`)) {
-                        // Heuristic: if it's a single word, assume instagram or similar.
-                        // This part can be made smarter. For now, let's assume we try prepending https://
-                         if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-                            targetUrl = 'https://' + targetUrl;
-                         }
-                    } else {
-                        // User chose not to auto-correct, re-validate
-                         try { new URL(targetUrl); } catch (_) {
-                            try { new URL('https://' + targetUrl); targetUrl = 'https://' + targetUrl; } catch (e) {
-                                setStatus('La URL introducida no es válida. Asegúrate de que incluya http:// o https://', 'error'); return;
-                            }
-                         }
-                    }
-                } else if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-                    targetUrl = 'https://' + targetUrl;
-                }
-                
-                try {
-                    new URL(targetUrl); // Final validation
-                } catch (_) {
-                    setStatus('La URL introducida no es válida. Asegúrate de que incluya http:// o https://', 'error');
+            async function generateOrUpdateQr() {
+                let qrTargetData = instagramUrlInput.value.trim();
+                if (!qrTargetData) {
+                    cardQrElement.innerHTML = '<span class="text-gray-400 text-xs p-1">Ingresa URL/Usuario IG</span>';
                     return;
                 }
 
-                lastGeneratedUrl = targetUrl; // Store for re-applying customizations
-                updateOptionsFromUI(); // Get latest customization options
-
-                setStatus('Generando QR...', 'loading');
-                qrCodeContainer.innerHTML = `
-                    <div class="text-center p-6 text-gray-500">
-                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto mb-3"></div>
-                        <p>Procesando...</p>
-                    </div>`;
-                
-                downloadQrButton.classList.add('hidden');
-                downloadSvgButton.classList.add('hidden');
-                copyQrButton.classList.add('hidden');
-                
-                let logoForQr = placeholderDefaultLogo;
-
-                if (currentOptions.logoOption === 'none') {
-                    logoForQr = placeholderNoLogo; // Use transparent pixel for no logo
-                } else if (currentOptions.logoOption === 'custom' && currentOptions.customLogoFile) {
-                    try {
-                        logoForQr = await readFileAsDataURL(currentOptions.customLogoFile);
-                        setStatus('Usando logo personalizado. Generando QR...', 'loading');
-                    } catch (error) {
-                        console.error('Error al leer el logo personalizado:', error);
-                        setStatus('Error al cargar logo. Usando genérico.', 'warning');
-                        logoForQr = placeholderDefaultLogo;
-                    }
-                } else if (currentOptions.logoOption === 'auto') {
-                    try {
-                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                        const response = await fetch(proxyUrl, { headers: { 'User-Agent': 'Mozilla/5.0 QRExtractor/1.0' } });
-                        
-                        if (response.ok) {
-                            const htmlText = await response.text();
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(htmlText, 'text/html');
-                            const ogImageMeta = doc.querySelector('meta[property="og:image"], meta[name="twitter:image"]');
-                            
-                            if (ogImageMeta && ogImageMeta.content) {
-                                let fetchedImageUrl = ogImageMeta.content;
-                                if (fetchedImageUrl.startsWith('/')) {
-                                    const urlObject = new URL(targetUrl);
-                                    fetchedImageUrl = `${urlObject.protocol}//${urlObject.hostname}${fetchedImageUrl}`;
-                                }
-                                logoForQr = fetchedImageUrl;
-                                setStatus('Imagen destacada encontrada. Generando QR...', 'loading');
-                            } else {
-                                setStatus('No se encontró imagen destacada (og:image). Usando logo genérico.', 'info');
-                            }
-                        } else {
-                             setStatus(`No se pudo acceder a la web (${response.status}). Usando logo genérico.`, 'warning');
-                        }
-                    } catch (error) {
-                        console.error('Error al obtener imagen destacada:', error);
-                        setStatus('Error al buscar logo en la web. Usando genérico.', 'warning');
+                if (!qrTargetData.toLowerCase().startsWith('http')) {
+                    if (!qrTargetData.includes('.')) { 
+                        qrTargetData = `https://www.instagram.com/${qrTargetData.replace(/^@/, '')}/`;
+                    } else { 
+                        qrTargetData = `https://${qrTargetData}`;
                     }
                 }
-                currentLogoUrl = logoForQr; // Store the logo URL that was actually used
-                generateQRCodeInstance(targetUrl, currentLogoUrl, currentOptions);
-            }
-
-            createQrButton.addEventListener('click', handleGenerateOrUpdateQR);
-            applyCustomizationButton.addEventListener('click', () => {
-                 if (!lastGeneratedUrl) {
-                    setStatus('Primero genera un código QR usando el botón "Generar QR".', 'warning');
+                try { new URL(qrTargetData); } catch (_) {
+                    cardQrElement.innerHTML = '<span class="text-red-500 text-xs p-1">URL de IG inválida</span>';
                     return;
                 }
-                updateOptionsFromUI(); // Get latest customization options
-                // currentLogoUrl should already be set from the last generation or if a custom logo was just picked
-                // If logoOption changed, we need to re-evaluate currentLogoUrl or pass it to handleGenerateOrUpdateQR.
-                // Easiest is to just call the main generation function.
-                handleGenerateOrUpdateQR(); 
-            });
-            
-            downloadQrButton.addEventListener('click', () => downloadQr('png'));
-            downloadSvgButton.addEventListener('click', () => downloadQr('svg'));
-            
-            function downloadQr(extension) {
-                if (qrCodeInstance) {
-                    let filename = "codigo_qr";
-                    try {
-                        const urlObj = new URL(lastGeneratedUrl);
-                        filename = `qr_${urlObj.hostname.replace(/^www\./i, '').replace(/\.[^/.]+$/, "") || "web"}`;
-                    } catch (e) { /* Use default filename */ }
-                    
-                    qrCodeInstance.download({ name: filename, extension });
-                }
-            }
-            
-            copyQrButton.addEventListener('click', async () => {
-                if (!qrCodeInstance) return;
-                try {
-                    const canvas = qrCodeContainer.querySelector('canvas');
-                    if (!canvas) throw new Error("Canvas no encontrado");
 
-                    canvas.toBlob(async (blob) => {
-                        if (!blob) {
-                             setStatus('Error al crear Blob para copiar.', 'error'); return;
-                        }
-                        try {
-                            await navigator.clipboard.write([
-                                new ClipboardItem({ [blob.type]: blob })
-                            ]);
-                            setStatus('¡QR copiado al portapapeles!', 'success');
-                        } catch (err) {
-                            console.error('Error al copiar al portapapeles:', err);
-                            setStatus('No se pudo copiar (quizás por permisos o navegador no compatible).', 'error');
-                        }
-                    }, 'image/png');
-                } catch (err) {
-                    console.error('Error en la función de copiar:', err);
-                    setStatus('Error al intentar copiar el QR.', 'error');
-                }
-            });
-            
-            function generateQRCodeInstance(data, imageUrl, options) {
-                try {
-                    const qrConfig = {
-                        width: 300, // Adjust as needed, can be dynamic
-                        height: 300,
-                        data: data,
-                        image: imageUrl,
-                        dotsOptions: {
-                            color: options.dotsColor,
-                            type: options.dotsType
-                        },
-                        backgroundOptions: { color: "#ffffff" },
-                        imageOptions: {
-                            crossOrigin: "anonymous",
-                            margin: imageUrl === placeholderNoLogo ? 0 : 8, // No margin if no logo
-                            imageSize: options.logoSize
-                        },
-                        cornersSquareOptions: { type: "extra-rounded", color: options.dotsColor },
-                        cornersDotOptions: { type: "dot", color: options.dotsColor }
-                    };
-
-                    if (qrCodeInstance) {
-                        qrCodeInstance.update(qrConfig);
-                    } else {
-                        qrCodeContainer.innerHTML = ''; // Clear spinner/placeholder
-                        qrCodeInstance = new QRCodeStyling(qrConfig);
-                        qrCodeInstance.append(qrCodeContainer);
-                    }
-                    
-                    downloadQrButton.classList.remove('hidden');
-                    downloadSvgButton.classList.remove('hidden');
-                    copyQrButton.classList.remove('hidden');
-                    if (!statusMessage.textContent.includes("Usando logo genérico") && !statusMessage.textContent.includes("Error")) {
-                        setStatus('¡QR generado/actualizado con éxito!', 'success');
-                    }
-                    
-                } catch (error) {
-                    console.error('Error al instanciar/actualizar QR:', error);
-                    qrCodeContainer.innerHTML = `
-                        <div class="text-center p-6 text-red-500">
-                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                            <p>Error al generar el código QR</p>
-                            <p class="text-sm mt-1">${String(error.message || error).substring(0, 100)}</p>
-                        </div>`;
-                    setStatus(`Error crítico al generar el QR: ${String(error.message || error).substring(0,60)}`, 'error');
-                }
-            }
-            
-            function setStatus(message, type = 'info') {
-                statusMessage.innerHTML = message; // Use innerHTML if message might contain simple HTML like <i>
-                statusMessage.className = 'text-center py-2.5 px-4 rounded-lg text-sm min-h-[44px] flex items-center justify-center transition-all duration-300'; 
+                cardQrElement.innerHTML = ''; 
                 
-                const typeClasses = {
-                    error: 'bg-red-100 text-red-700',
-                    success: 'bg-green-100 text-green-700',
-                    warning: 'bg-yellow-100 text-yellow-700',
-                    loading: 'bg-blue-100 text-blue-700 animate-pulse',
-                    info: 'bg-gray-100 text-gray-700'
+                // Determinar el color del QR: si un preset está activo, usar ese, si no, el del picker.
+                const activePreset = document.querySelector('.color-option.active');
+                activeQrColor = activePreset ? activePreset.dataset.color : qrCustomColorPicker.value;
+
+                const qrLogoSizeValue = parseFloat(qrLogoSizeSlider.value);
+                const actualImage = (qrLogoSizeValue > 0 && currentQrLogoDataUrl) ? currentQrLogoDataUrl : '';
+
+
+                const qrConfig = {
+                    width: QR_CANVAS_SIZE, 
+                    height: QR_CANVAS_SIZE,
+                    data: qrTargetData,
+                    image: actualImage,
+                    dotsOptions: { color: activeQrColor, type: "rounded" }, 
+                    backgroundOptions: { color: "transparent" }, 
+                    imageOptions: {
+                        crossOrigin: "anonymous",
+                        margin: actualImage ? 4 : 0, 
+                        imageSize: qrLogoSizeValue 
+                    },
+                    cornersSquareOptions: { type: "extra-rounded", color: activeQrColor },
+                    cornersDotOptions: { type: "dot", color: activeQrColor }
                 };
-                statusMessage.classList.add(...(typeClasses[type] || typeClasses.info).split(' '));
-                if (type !== 'loading') {
-                    statusMessage.classList.remove('animate-pulse');
+                
+                if (qrCodeInstance) {
+                    qrCodeInstance.update(qrConfig);
+                } else {
+                    qrCodeInstance = new QRCodeStyling(qrConfig);
+                    qrCodeInstance.append(cardQrElement);
                 }
             }
+
+            profileImageInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => cardProfileImage.src = e.target.result;
+                    reader.readAsDataURL(file);
+                } else {
+                    cardProfileImage.src = defaultProfilePic;
+                }
+                updateCardPreviewAndQr(); // Actualizar todo por si acaso
+            });
+
+            qrLogoInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    try {
+                        currentQrLogoDataUrl = await readFileAsDataURL(file);
+                        // Si el slider de tamaño estaba en 0, y ahora hay un logo, poner un valor por defecto > 0
+                        if (parseFloat(qrLogoSizeSlider.value) === 0) {
+                            qrLogoSizeSlider.value = "0.25";
+                        }
+                    } catch (error) {
+                        currentQrLogoDataUrl = null;
+                        setStatus('Error al cargar logo del QR.', 'error');
+                    }
+                } else {
+                    currentQrLogoDataUrl = null;
+                }
+                updateCardPreviewAndQr(); 
+            });
             
+            [instagramUserInput, instagramUrlInput, bioInput, qrLogoSizeSlider].forEach(el => {
+                el.addEventListener('input', updateCardPreviewAndQr);
+            });
+
+            // Manejo de selección de color (presets y picker)
+            qrColorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    qrColorOptions.forEach(opt => opt.classList.remove('active')); // Desactiva todos los presets
+                    option.classList.add('active'); // Activa el clicado
+                    activeQrColor = option.dataset.color;
+                    qrCustomColorPicker.value = activeQrColor; // Sincroniza el picker con el preset
+                    updateCardPreviewAndQr();
+                });
+            });
+
+            qrCustomColorPicker.addEventListener('input', (event) => {
+                qrColorOptions.forEach(opt => opt.classList.remove('active')); // Desactiva todos los presets
+                activeQrColor = event.target.value;
+                updateCardPreviewAndQr();
+            });
+
+
+            downloadCardButton.addEventListener('click', () => {
+                const cardElement = document.getElementById('instaCardPreview');
+                const usernameDisplay = (instagramUserInput.value.trim() || "usuario_instagram").replace(/^@/, '');
+                setStatus('Generando imagen...', 'loading');
+
+                html2canvas(cardElement, {
+                    scale: 3, // Aumentamos la escala para el PNG final
+                    useCORS: true,
+                    backgroundColor: null, 
+                    logging: false // Desactivar logs de html2canvas en consola
+                }).then(canvas => {
+                    const imageURL = canvas.toDataURL('image/png');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = imageURL;
+                    downloadLink.download = `tarjeta_instagram_${usernameDisplay}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    setStatus('¡Tarjeta descargada!', 'success');
+                }).catch(error => {
+                    console.error('Error al generar la imagen de la tarjeta:', error);
+                    setStatus('Error al descargar la tarjeta.', 'error');
+                });
+            });
+
             function readFileAsDataURL(file) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -622,9 +345,17 @@
                     reader.readAsDataURL(file);
                 });
             }
-            
-            urlInput.focus();
+            function setStatus(message, type = 'info') {
+                statusMessage.textContent = message;
+                statusMessage.className = 'text-center text-sm mt-2 min-h-[20px]'; 
+                if (type === 'error') statusMessage.classList.add('text-red-500');
+                else if (type === 'success') statusMessage.classList.add('text-green-600');
+                else if (type === 'loading') statusMessage.classList.add('text-blue-500', 'animate-pulse');
+                else statusMessage.classList.add('text-gray-600');
+            }
+
+            cardProfileImage.src = defaultProfilePic;
+            updateCardPreviewAndQr(); // Inicializar
         });
-    </script>
-</body>
+    </script></body>
 </html>
