@@ -13,123 +13,285 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f0f2f5;
+            background: linear-gradient(135deg, #ffb6c1 0%, #fff0f5 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
         :root {
-            --card-width: 320px; 
+            --card-width: 320px;
         }
 
         #instaCardPreview {
-            width: var(--card-width); 
-            height: calc(var(--card-width) / 9 * 16); 
-            background-color: white; 
-            border-radius: 20px; 
+            width: var(--card-width);
+            height: calc(var(--card-width) / 9 * 16);
+            background-color: white;
+            border-radius: 20px;
             box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-            padding: 20px 25px; 
+            padding: 20px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            justify-content: space-around; 
-            gap: 8px; 
+            justify-content: space-around;
+            gap: 8px;
             transition: background 0.3s;
-            background-size: cover; /* Importante para que las imágenes de textura cubran */
+            background-size: cover;
             background-position: center;
-            background-repeat: no-repeat; /* Evitar repetición por defecto si no es tileable */
-            position: relative; 
-            overflow: hidden; 
+            background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
         }
 
         #cardProfileImage {
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%; object-fit: cover;
-            background-color: #e0e0e0; border: 4px solid rgba(255,255,255,0.7); 
+            width: 100px;
+            height: 100px;
+            border-radius: 50%; 
+            object-fit: cover;
+            background-color: #e0e0e0; 
+            border: 4px solid rgba(255,255,255,0.7);
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
             z-index: 1;
-            margin-top: 5px; 
+            margin-top: 5px;
         }
-        #cardUsername { 
-            font-size: 1.2em; /* Reducido para no competir con el fondo */
-            font-weight: 700; color: #262626; 
-            text-shadow: 0 1px 2px rgba(255,255,255,0.5); /* Sombra más notable */
+        
+        #cardUsername {
+            font-size: 1.2em;
+            font-weight: 700; 
+            color: #262626;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
             z-index: 1;
         }
-        #cardBio { 
-            font-size: 0.8em; 
-            color: #333; /* Un poco más oscuro para legibilidad */
-            max-width: 90%; line-height: 1.4; 
+        
+        #cardBio {
+            font-size: 0.8em;
+            color: #333;
+            max-width: 90%; 
+            line-height: 1.4;
             text-shadow: 0 1px 1px rgba(255,255,255,0.4);
             z-index: 1;
         }
 
-        #cardQrContainer { 
-            width: 150px; 
-            height: 150px; 
-            background-color: rgba(250,250,250,0.9); 
-            border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center;
-            padding: 10px; 
-            overflow: hidden; 
+        #cardQrContainer {
+            width: 150px;
+            height: 150px;
+            background-color: rgba(250,250,250,0.9);
+            border-radius: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            padding: 10px;
+            overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
             z-index: 1;
         }
-         #cardQrElement canvas, #cardQrElement img { 
-            display: block; width: 100% !important; height: 100% !important; 
-            object-fit: contain; border-radius: 6px; 
+
+        #cardQrElement canvas, #cardQrElement img {
+            display: block; 
+            width: 100% !important; 
+            height: 100% !important;
+            object-fit: contain; 
+            border-radius: 6px;
         }
+        
         #cardQrCallToAction {
-            font-size: 0.85em; 
-            color: #444; /* Un poco más oscuro */
-            margin-top: 8px; 
+            font-size: 0.85em;
+            color: #444;
+            margin-top: 8px;
             font-weight: 500;
             text-shadow: 0 1px 1px rgba(255,255,255,0.3);
             z-index: 1;
-            margin-bottom: 10px; 
+            margin-bottom: 10px;
         }
-        .config-label { font-weight: 500; color: #374151; margin-bottom: 0.3rem; display: block; font-size: 0.9rem; }
-        .config-input, .config-textarea {
-            width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #d1d5db; border-radius: 0.375rem; 
-            font-size: 0.9rem; transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .config-input:focus, .config-textarea:focus {
-            outline: none; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
-        }
-        .color-option { 
-             width: 28px; height: 28px; border-radius: 50%; cursor: pointer; 
-             transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent;
-        }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.active { transform: scale(1.1); box-shadow: 0 0 0 2px white, 0 0 0 4px #4f46e5;}
-        #qrCustomColorPicker { width: 32px; height: 32px; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 2px; cursor: pointer; }
         
-        .texture-option {
-            width: 48px; height: 48px; border-radius: 0.375rem; 
-            border: 2px solid #d1d5db; 
-            cursor: pointer; background-size: cover; background-position: center;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease-in-out; position: relative; 
-            
+        .config-label { 
+            font-weight: 500; 
+            color: #374151; 
+            margin-bottom: 0.3rem; 
+            display: block; 
+            font-size: 0.9rem; 
         }
-        .texture-option:hover { border-color: #9ca3af; transform: translateY(-2px); }
-        .texture-option.active {
-            border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+        
+        .config-input, .config-textarea {
+            width: 100%; 
+            padding: 0.65rem 0.85rem; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem;
+            font-size: 0.9rem; 
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .texture-option .fa-check { display: none; } 
-        .texture-option.active .fa-check { 
-            display: block; position: absolute; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); color: white; 
-            background-color: rgba(79, 70, 229, 0.7); 
-            border-radius: 50%; padding: 4px; font-size: 0.8em;
+        
+        .config-input:focus, .config-textarea:focus {
+            outline: none; 
+            border-color: #4f46e5; 
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
         }
-        #cardSolidColorPicker { 
-            width: 100%; height: 40px; padding:2px; border: 1px solid #d1d5db; border-radius: 0.375rem; cursor: pointer;
+        
+        .color-option {
+            width: 28px; 
+            height: 28px; 
+            border-radius: 50%; 
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; 
+            border: 2px solid transparent;
+        }
+        
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.active { 
+            transform: scale(1.1); 
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #4f46e5;
+        }
+        
+        #qrCustomColorPicker { 
+            width: 32px; 
+            height: 32px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem; 
+            padding: 2px; 
+            cursor: pointer; 
         }
 
+        .texture-option {
+            width: 48px; 
+            height: 48px; 
+            border-radius: 0.375rem;
+            border: 2px solid #d1d5db;
+            cursor: pointer; 
+            background-size: cover; 
+            background-position: center;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease-in-out; 
+            position: relative;
+        }
+        
+        .texture-option:hover { 
+            border-color: #9ca3af; 
+            transform: translateY(-2px); 
+        }
+        
+        .texture-option.active {
+            border-color: #4f46e5; 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+        }
+        
+        .texture-option .fa-check { display: none; }
+        
+        .texture-option.active .fa-check {
+            display: block; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            color: white;
+            background-color: rgba(79, 70, 229, 0.7);
+            border-radius: 50%; 
+            padding: 4px; 
+            font-size: 0.8em;
+        }
+        
+        #cardSolidColorPicker {
+            width: 100%; 
+            height: 40px; 
+            padding:2px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+        }
+        
+        /* Footer styles */
+        .footer {
+            background: linear-gradient(135deg, #9d174d 0%, #6b21a8 100%);
+            color: white;
+            padding: 4rem 2rem;
+            margin-top: 3rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-links a i {
+            font-size: 0.9rem;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -159,7 +321,7 @@
                     <label for="bioInput" class="config-label">Lema o Mensaje (corto):</label>
                     <textarea id="bioInput" class="config-textarea" rows="2" placeholder="Tu mensaje aquí..."></textarea>
                 </div>
-                <div> 
+                <div>
                     <label for="qrCallToActionInput" class="config-label">Texto debajo del QR:</label>
                     <input type="text" id="qrCallToActionInput" class="config-input" placeholder="ej: ¡Sígueme en Instagram!">
                 </div>
@@ -169,11 +331,11 @@
                     <label class="config-label">Elige una textura o color:</label>
                     <div class="flex flex-wrap gap-3 items-center">
                         <button class="texture-option active" data-texture="solid" title="Color Sólido" style="background-color: #fff;">
-                             <i class="fas fa-check"></i><span class="sr-only">Color sólido</span>
+                            <i class="fas fa-check"></i><span class="sr-only">Color sólido</span>
                         </button>
                         <button class="texture-option" data-texture="texture1" style="background-image: linear-gradient(45deg, #f3ec78, #af4261);" title="Gradiente Atardecer"> <i class="fas fa-check"></i></button>
                         <button class="texture-option" data-texture="texture2" style="background-image: linear-gradient(to right, #8360c3, #2ebf91);" title="Gradiente Esmeralda"> <i class="fas fa-check"></i></button>
-                         
+                        
                         <!-- Tus texturas personales -->
                         <button class="texture-option" data-texture="texture3" style="background-image: url('textures/textura1.jpg');"title="Líneas Diagonales"> <i class="fas fa-check"></i></button>
                         <button class="texture-option" data-texture="texture4" style="background-image: url('textures/textura2.jpg');"title="Puntos Sutiles"> <i class="fas fa-check"></i></button>
@@ -183,7 +345,8 @@
                         <button class="texture-option" data-texture="concrete" style="background-image: url('textures/textura2.jpg');" title="Textura de Concreto"> <i class="fas fa-check"></i></button>
                     </div>
                 </div>
-                 <div id="solidColorPickerContainer"> 
+
+                <div id="solidColorPickerContainer">
                     <label for="cardSolidColorPicker" class="config-label mt-3">Color Sólido de Fondo:</label>
                     <input type="color" id="cardSolidColorPicker" value="#FFFFFF" >
                 </div>
@@ -217,7 +380,7 @@
 
             <!-- Columna de Previsualización de la Tarjeta -->
             <div class="flex justify-center md:sticky md:top-6">
-                 <div id="instaCardPreviewContainer"> 
+                <div id="instaCardPreviewContainer">
                     <div id="instaCardPreview">
                         <img id="cardProfileImage" src="" alt="Foto de perfil">
                         <p id="cardUsername">@TuUsuario</p>
@@ -227,12 +390,61 @@
                                 <span class="text-gray-400 text-xs p-1">QR aquí</span>
                             </div>
                         </div>
-                        <p id="cardQrCallToAction">¡Sígueme!</p> 
+                        <p id="cardQrCallToAction">¡Sígueme!</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Diseño Creativo</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-chevron-right"></i> Tarjetas Digitales</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Banners para Redes</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Logotipos Personalizados</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Portadas de Libros</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Ilustraciones</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Servicios Web</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-chevron-right"></i> Sitios Web para Autores</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Tiendas Online</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Landing Pages</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Optimización SEO</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Mantenimiento Web</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Marketing Digital</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-chevron-right"></i> Estrategias para Autores</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Campañas en Redes</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Email Marketing</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Branding Personal</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Consultoría 1:1</a>
+                </div>
+                
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            &copy; 2023 Todos los derechos reservados | Diseñado con <i class="fas fa-heart text-red-400"></i> para autores creativos
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -240,10 +452,12 @@
             const instagramUserInput = document.getElementById('instagramUserInput');
             const instagramUrlInput = document.getElementById('instagramUrlInput');
             const bioInput = document.getElementById('bioInput');
-            const qrCallToActionInput = document.getElementById('qrCallToActionInput'); 
+            const qrCallToActionInput = document.getElementById('qrCallToActionInput');
+
             const qrLogoInput = document.getElementById('qrLogoInput');
             const qrCustomColorPicker = document.getElementById('qrCustomColorPicker');
-            const qrColorOptions = document.querySelectorAll('.color-option'); 
+            const qrColorOptions = document.querySelectorAll('.color-option');
+
             const qrLogoSizeSlider = document.getElementById('qrLogoSizeSlider');
             const downloadCardButton = document.getElementById('downloadCardButton');
             const statusMessage = document.getElementById('statusMessage');
@@ -251,41 +465,44 @@
             const cardProfileImage = document.getElementById('cardProfileImage');
             const cardUsername = document.getElementById('cardUsername');
             const cardBio = document.getElementById('cardBio');
-            const cardQrCallToAction = document.getElementById('cardQrCallToAction'); 
-            const cardQrElement = document.getElementById('cardQrElement'); 
+            const cardQrCallToAction = document.getElementById('cardQrCallToAction');
+
+            const cardQrElement = document.getElementById('cardQrElement');
+
             const instaCardPreview = document.getElementById('instaCardPreview');
-            
+
             const cardSolidColorPicker = document.getElementById('cardSolidColorPicker');
             const textureOptions = document.querySelectorAll('.texture-option');
             const solidColorPickerContainer = document.getElementById('solidColorPickerContainer');
-            
+
             const defaultProfilePic = `data:image/svg+xml;utf8,${encodeURIComponent(`
                 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="48" fill="#E0E0E0"/> 
+                    <circle cx="50" cy="50" r="48" fill="#E0E0E0"/>
                     <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, sans-serif" font-size="16px" fill="#888888" dy=".1em">tu foto</text>
                 </svg>
             `)}`;
+            
             let qrCodeInstance = null;
-            let currentQrLogoDataUrl = null; 
-            let activeQrColor = "#262626"; 
-            let activeCardBackground = { type: 'solid', value: '#FFFFFF' }; 
+            let currentQrLogoDataUrl = null;
+            let activeQrColor = "#262626";
+            let activeCardBackground = { type: 'solid', value: '#FFFFFF' };
 
-            const QR_CANVAS_SIZE_PREVIEW = 280; 
-            const QR_CANVAS_SIZE_DOWNLOAD = 500; 
+            const QR_CANVAS_SIZE_PREVIEW = 280;
+            const QR_CANVAS_SIZE_DOWNLOAD = 500;
 
             const textureDefinitions = {
-                solid: (color) => `background-color: ${color}; background-image: none;`, 
-                texture1: "background-image: linear-gradient(45deg, #f3ec78, #af4261);", 
-                texture2: "background-image: linear-gradient(to right, #8360c3, #2ebf91);", 
-                   // --- Tus texturas personales ---
+                solid: (color) => `background-color: ${color}; background-image: none;`,
+                texture1: "background-image: linear-gradient(45deg, #f3ec78, #af4261);",
+                texture2: "background-image: linear-gradient(to right, #8360c3, #2ebf91);",
+                // --- Tus texturas personales ---
                 texture3:  "background-image: url('textures/textura1.jpg'); background-size: cover; background-repeat: no-repeat;",
-                texture4:  "background-image: url('textures/textura2.jpg'); background-size: cover; background-repeat: no-repeat;", 
+                texture4:  "background-image: url('textures/textura2.jpg'); background-size: cover; background-repeat: no-repeat;",
                 texture5:  "background-image: url('textures/textura3.jpg'); background-size: cover; background-repeat: no-repeat;",
                 wood: "background-image: url('textures/textura4.jpg'); background-size: cover; background-repeat: no-repeat;",
                 fabric: "background-image: url('textures/textura5.jpg'); background-size: cover; background-repeat: no-repeat;",
                 concrete: "background-image: url('textures/concrete.png'); background-size: cover; background-repeat: no-repeat;"
             };
-            
+
             function applyCardBackground() {
                 let styleString = "";
                 if (activeCardBackground.type === 'solid') {
@@ -297,12 +514,12 @@
                     styleString = textureDefinitions.solid('#FFFFFF'); // Color sólido blanco
                     console.warn("Textura no definida:", activeCardBackground.type);
                 }
-                
+
                 const cardWidth = getComputedStyle(document.documentElement).getPropertyValue('--card-width').trim();
                 const cardHeight = `calc(${cardWidth} / 9 * 16)`;
 
                 instaCardPreview.style.cssText = `
-                    width: ${cardWidth}; 
+                    width: ${cardWidth};
                     height: ${cardHeight};
                     border-radius: 20px;
                     padding: 20px 25px;
@@ -311,14 +528,14 @@
                     align-items: center;
                     text-align: center;
                     justify-content: space-around;
-                    gap: 8px; 
+                    gap: 8px;
                     transition: background 0.3s;
                     background-size: cover;
                     background-position: center;
-                    background-repeat: no-repeat; /* Añadido aquí también para asegurar */
-                    position: relative; 
-                    overflow: hidden; 
-                    ${styleString} 
+                    background-repeat: no-repeat;
+                    position: relative;
+                    overflow: hidden;
+                    ${styleString}
                 `;
             }
 
@@ -327,9 +544,10 @@
                 cardUsername.textContent = userDisplay ? `@${userDisplay.replace(/^@/, '')}` : "@TuUsuario";
                 cardBio.textContent = bioInput.value.trim() || "Tu lema o mensaje inspirador aquí.";
                 cardQrCallToAction.textContent = qrCallToActionInput.value.trim() || "¡Sígueme en Instagram!";
-                
-                applyCardBackground(); 
-                generateOrUpdateQr(isForDownload); 
+
+                applyCardBackground();
+                generateOrUpdateQr(isForDownload);
+
                 if (!isForDownload) setStatus('');
             }
 
@@ -341,48 +559,49 @@
                 }
 
                 if (!qrTargetData.toLowerCase().startsWith('http')) {
-                    if (!qrTargetData.includes('.')) { 
+                    if (!qrTargetData.includes('.')) {
                         qrTargetData = `https://www.instagram.com/${qrTargetData.replace(/^@/, '')}/`;
-                    } else { 
+                    } else {
                         qrTargetData = `https://${qrTargetData}`;
                     }
                 }
+                
                 try { new URL(qrTargetData); } catch (_) {
                     if (!isForDownload) cardQrElement.innerHTML = '<span class="text-red-500 text-xs p-1">URL de IG inválida</span>';
                     return;
                 }
 
-                if (!isForDownload) cardQrElement.innerHTML = ''; 
-                
+                if (!isForDownload) cardQrElement.innerHTML = '';
+
                 const activePreset = document.querySelector('.color-option.active');
                 activeQrColor = activePreset ? activePreset.dataset.color : qrCustomColorPicker.value;
 
                 const qrLogoSizeValue = parseFloat(qrLogoSizeSlider.value);
                 const actualImage = (qrLogoSizeValue > 0 && currentQrLogoDataUrl) ? currentQrLogoDataUrl : '';
-                
+
                 const canvasSize = isForDownload ? QR_CANVAS_SIZE_DOWNLOAD : QR_CANVAS_SIZE_PREVIEW;
 
                 const qrConfig = {
-                    width: canvasSize, 
+                    width: canvasSize,
                     height: canvasSize,
                     data: qrTargetData,
                     image: actualImage,
-                    dotsOptions: { color: activeQrColor, type: "rounded" }, 
-                    backgroundOptions: { color: "transparent" }, 
+                    dotsOptions: { color: activeQrColor, type: "rounded" },
+                    backgroundOptions: { color: "transparent" },
                     imageOptions: {
                         crossOrigin: "anonymous",
-                        margin: actualImage ? Math.round(canvasSize * 0.03) : 0, 
-                        imageSize: qrLogoSizeValue 
+                        margin: actualImage ? Math.round(canvasSize * 0.03) : 0,
+                        imageSize: qrLogoSizeValue
                     },
                     cornersSquareOptions: { type: "extra-rounded", color: activeQrColor },
                     cornersDotOptions: { type: "dot", color: activeQrColor }
                 };
-                
+
                 if (isForDownload) {
-                    cardQrElement.innerHTML = ''; 
+                    cardQrElement.innerHTML = '';
                     const downloadQrInstance = new QRCodeStyling(qrConfig);
-                    downloadQrInstance.append(cardQrElement); 
-                    return; 
+                    downloadQrInstance.append(cardQrElement);
+                    return;
                 }
 
                 if (qrCodeInstance) {
@@ -420,25 +639,25 @@
                 } else {
                     currentQrLogoDataUrl = null;
                 }
-                updateCardPreviewAndQr(); 
+                updateCardPreviewAndQr();
             });
-            
+
             [instagramUserInput, instagramUrlInput, bioInput, qrLogoSizeSlider, qrCallToActionInput].forEach(el => {
                 el.addEventListener('input', () => updateCardPreviewAndQr());
             });
-            
+
             qrColorOptions.forEach(option => {
                 option.addEventListener('click', () => {
-                    qrColorOptions.forEach(opt => opt.classList.remove('active')); 
-                    option.classList.add('active'); 
+                    qrColorOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
                     activeQrColor = option.dataset.color;
-                    qrCustomColorPicker.value = activeQrColor; 
+                    qrCustomColorPicker.value = activeQrColor;
                     updateCardPreviewAndQr();
                 });
             });
 
             qrCustomColorPicker.addEventListener('input', (event) => {
-                qrColorOptions.forEach(opt => opt.classList.remove('active')); 
+                qrColorOptions.forEach(opt => opt.classList.remove('active'));
                 activeQrColor = event.target.value;
                 updateCardPreviewAndQr();
             });
@@ -447,13 +666,13 @@
                 option.addEventListener('click', () => {
                     textureOptions.forEach(opt => opt.classList.remove('active'));
                     option.classList.add('active');
-                    
+
                     const selectedTexture = option.dataset.texture;
                     activeCardBackground.type = selectedTexture;
 
                     if (selectedTexture === 'solid') {
                         solidColorPickerContainer.style.display = 'block';
-                        activeCardBackground.value = cardSolidColorPicker.value; 
+                        activeCardBackground.value = cardSolidColorPicker.value;
                     } else {
                         solidColorPickerContainer.style.display = 'none';
                     }
@@ -462,7 +681,7 @@
             });
 
             cardSolidColorPicker.addEventListener('input', (event) => {
-                if (activeCardBackground.type === 'solid') { 
+                if (activeCardBackground.type === 'solid') {
                     activeCardBackground.value = event.target.value;
                     updateCardPreviewAndQr();
                 }
@@ -472,14 +691,14 @@
                 const cardElement = document.getElementById('instaCardPreview');
                 const usernameDisplay = (instagramUserInput.value.trim() || "usuario_instagram").replace(/^@/, '');
                 setStatus('Generando imagen de alta calidad...', 'loading');
-                
-                await generateOrUpdateQr(true); 
+
+                await generateOrUpdateQr(true);
                 await new Promise(resolve => setTimeout(resolve, 100));
 
                 html2canvas(cardElement, {
-                    scale: 2, 
+                    scale: 2,
                     useCORS: true,
-                    backgroundColor: null, 
+                    backgroundColor: null,
                     logging: false,
                 }).then(canvas => {
                     const imageURL = canvas.toDataURL('image/png');
@@ -494,7 +713,7 @@
                     console.error('Error al generar la imagen de la tarjeta:', error);
                     setStatus('Error al descargar la tarjeta.', 'error');
                 }).finally(() => {
-                    updateCardPreviewAndQr(false); 
+                    updateCardPreviewAndQr(false);
                 });
             });
 
@@ -506,9 +725,11 @@
                     reader.readAsDataURL(file);
                 });
             }
+            
             function setStatus(message, type = 'info') {
                 statusMessage.textContent = message;
-                statusMessage.className = 'text-center text-sm mt-2 min-h-[20px]'; 
+                statusMessage.className = 'text-center text-sm mt-2 min-h-[20px]';
+
                 if (type === 'error') statusMessage.classList.add('text-red-500');
                 else if (type === 'success') statusMessage.classList.add('text-green-600');
                 else if (type === 'loading') statusMessage.classList.add('text-blue-500', 'animate-pulse');
@@ -517,7 +738,7 @@
 
             // Inicialización
             cardProfileImage.src = defaultProfilePic;
-            solidColorPickerContainer.style.display = 'block'; 
+            solidColorPickerContainer.style.display = 'block';
             updateCardPreviewAndQr();
         });
     </script>
