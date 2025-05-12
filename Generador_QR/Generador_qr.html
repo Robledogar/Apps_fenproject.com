@@ -485,7 +485,7 @@
                     const imageURL = canvas.toDataURL('image/png');
                     const downloadLink = document.createElement('a');
                     downloadLink.href = imageURL;
-                    downloadLink.download = `tarjeta_instagram_9x16_${usernameDisplay}.png`;
+                    downloadLink.download = `tarjeta_instagram_${usernameDisplay}.png`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
