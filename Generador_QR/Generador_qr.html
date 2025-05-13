@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #ffb6c1 0%, #fff0f5 100%);
+            background-color: #fdf2f8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -297,14 +297,14 @@
 <body class="p-4 md:p-6">
     <div class="container mx-auto max-w-5xl">
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Crea tu Tarjeta de Autora para Instagram</h1>
-            <p class="text-gray-600 mt-2">Invita a tus seguidoras a descubrir más de ti y tus obras</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Tarjeta de Autora para Instagram</h1>
+            <p class="text-gray-600 mt-2">Personaliza tu tarjeta con QR y compártela</p>
         </header>
 
         <div class="grid md:grid-cols-[1fr_calc(var(--card-width)_+_40px)] gap-8 items-start">
             <!-- Columna de Configuración -->
             <div class="bg-white p-6 rounded-xl shadow-xl space-y-5">
-                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Personaliza tu Tarjeta de Autora</h2>
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Configuración</h2>
                 <div>
                     <label for="profileImageInput" class="config-label">Foto de Perfil (para la tarjeta):</label>
                     <input type="file" id="profileImageInput" class="config-input" accept="image/*">
@@ -371,7 +371,7 @@
                     <input type="range" id="qrLogoSizeSlider" min="0" max="0.4" step="0.01" value="0.25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
                 </div>
                 
-                <button id="downloadCardButton" class="w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold py-3 mt-5 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
+                <button id="downloadCardButton" class="w-full bg-gradient-to-br from-pink-900 to-purple-800 hover:from-pink-800 hover:to-purple-700 transition-all duration-300 text-white font-semibold py-3 mt-5 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
                     <i class="fas fa-download"></i>
                     Descargar Tarjeta (PNG)
                 </button>
@@ -401,48 +401,31 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-column">
-                <h3>Diseño Creativo</h3>
+                <h3>Servicios de ilustracion digital IA</h3>
                 <div class="footer-links">
-                    <a href="#"><i class="fas fa-chevron-right"></i> Tarjetas Digitales</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Banners para Redes</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Logotipos Personalizados</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Portadas de Libros</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Ilustraciones</a>
+                    <a href="https://fenproject.com/ilustracion-digital-ia-cuentos-infantiles/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Para cuentos infantiles</a>
+                    <a href="https://fenproject.com/ilustracion-digital-ia-novelas/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Para novelas</a>
+                    <a href="https://fenproject.com/precios-servicios-de-ilustracion-ia/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Precios y paquetes</a>
+
                 </div>
             </div>
             
             <div class="footer-column">
-                <h3>Servicios Web</h3>
+                <h3>Enlaces de interés</h3>
                 <div class="footer-links">
-                    <a href="#"><i class="fas fa-chevron-right"></i> Sitios Web para Autores</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Tiendas Online</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Landing Pages</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Optimización SEO</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Mantenimiento Web</a>
+                    <a href="https://fenproject.com/newsletter-para-autoras-autopublicadas/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Newsletter para autoras + Regalo</a>
+                    <a href="https://fenproject.com/herramientas-autoras/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Más herramientas para autoras</a>
+                    <a href="https://www.instagram.com/fenproject_ilustracion_ia/" target="_blank" rel="noopener noreferrer"><i class="fas fa-chevron-right"></i> Sígueme en Instagram <i class="fab fa-instagram"></i></a>
+
+
                 </div>
             </div>
             
-            <div class="footer-column">
-                <h3>Marketing Digital</h3>
-                <div class="footer-links">
-                    <a href="#"><i class="fas fa-chevron-right"></i> Estrategias para Autores</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Campañas en Redes</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Email Marketing</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Branding Personal</a>
-                    <a href="#"><i class="fas fa-chevron-right"></i> Consultoría 1:1</a>
-                </div>
-                
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
+
         </div>
         
         <div class="footer-bottom">
-            &copy; 2023 Todos los derechos reservados | Diseñado con <i class="fas fa-heart text-red-400"></i> para autores creativos
+            &copy; 2025 <a href="https://fenproject.com/" target="_blank" rel="noopener noreferrer"> fenproject.com</a> | Diseñado con <i class="fas fa-heart text-red-400"></i> para autoras de cuentos infantiles y novelas
         </div>
     </footer>
 
@@ -478,7 +461,7 @@
             const defaultProfilePic = `data:image/svg+xml;utf8,${encodeURIComponent(`
                 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="48" fill="#E0E0E0"/>
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, sans-serif" font-size="16px" fill="#888888" dy=".1em">tu foto</text>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, sans-serif" font-size="16px" fill="#888888" dy=".1em">Foto Perfil</text>
                 </svg>
             `)}`;
             
@@ -554,7 +537,7 @@
             async function generateOrUpdateQr(isForDownload = false) {
                 let qrTargetData = instagramUrlInput.value.trim();
                 if (!qrTargetData) {
-                    cardQrElement.innerHTML = '<span class="text-gray-400 text-xs p-1">Ingresa URL/Usuario IG</span>';
+                    cardQrElement.innerHTML = '<span class="text-gray-400 text-xs p-1">Código QR</span>';
                     return;
                 }
 
