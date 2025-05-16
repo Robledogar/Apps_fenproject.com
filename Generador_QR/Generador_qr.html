@@ -333,16 +333,16 @@
                         <button class="texture-option active" data-texture="solid" title="Color Sólido" style="background-color: #fff;">
                             <i class="fas fa-check"></i><span class="sr-only">Color sólido</span>
                         </button>
-                        <button class="texture-option" data-texture="texture1" style="background-image: linear-gradient(45deg, #f3ec78, #af4261);" title="Gradiente Atardecer"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="texture2" style="background-image: linear-gradient(to right, #8360c3, #2ebf91);" title="Gradiente Esmeralda"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="texture1" style="background-image: linear-gradient(45deg, #fff0f6, #fcc2d7);" title="Gradiente Atardecer"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="texture2" style="background-image: linear-gradient(to right, #e0f9ff, #d8b4fe);" title="Gradiente Esmeralda"> <i class="fas fa-check"></i></button>
                         
                         <!-- Tus texturas personales -->
-                        <button class="texture-option" data-texture="texture3" style="background-image: url('textures/textura1.jpg');"title="Líneas Diagonales"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="texture4" style="background-image: url('textures/textura2.jpg');"title="Puntos Sutiles"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="texture5" style="background-image: url('textures/textura3.jpg'); background-color:#f0f2f5;" title="Triángulos SVG"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="wood" style="background-image: url('textures/textura4.jpg');" title="Textura de Madera"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="fabric" style="background-image: url('textures/textura5.jpg');" title="Textura de Tela"> <i class="fas fa-check"></i></button>
-                        <button class="texture-option" data-texture="concrete" style="background-image: url('textures/textura2.jpg');" title="Textura de Concreto"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="texture3" style="background-image: url('textures/textura1.webp');"title="Líneas Diagonales"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="texture4" style="background-image: url('textures/textura2.webp');"title="Puntos Sutiles"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="texture5" style="background-image: url('textures/textura3.webp'); background-color:#f0f2f5;" title="Triángulos SVG"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="wood" style="background-image: url('textures/textura4.webp');" title="Textura de Madera"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="fabric" style="background-image: url('textures/textura5.webp');" title="Textura de Tela"> <i class="fas fa-check"></i></button>
+                        <button class="texture-option" data-texture="concrete" style="background-image: url('textures/textura6.webp');" title="Textura de Concreto"> <i class="fas fa-check"></i></button>
                     </div>
                 </div>
 
@@ -475,15 +475,15 @@
 
             const textureDefinitions = {
                 solid: (color) => `background-color: ${color}; background-image: none;`,
-                texture1: "background-image: linear-gradient(45deg, #f3ec78, #af4261);",
-                texture2: "background-image: linear-gradient(to right, #8360c3, #2ebf91);",
+                texture1: "background-image: linear-gradient(45deg, #fff0f6, #fcc2d7);",  // Rosa claro a rosa pálido
+                texture2: "background-image: linear-gradient(to right, #e0f9ff, #d8b4fe);",  // Azul claro a lila pastel
                 // --- Tus texturas personales ---
-                texture3:  "background-image: url('textures/textura1.jpg'); background-size: cover; background-repeat: no-repeat;",
-                texture4:  "background-image: url('textures/textura2.jpg'); background-size: cover; background-repeat: no-repeat;",
-                texture5:  "background-image: url('textures/textura3.jpg'); background-size: cover; background-repeat: no-repeat;",
-                wood: "background-image: url('textures/textura4.jpg'); background-size: cover; background-repeat: no-repeat;",
-                fabric: "background-image: url('textures/textura5.jpg'); background-size: cover; background-repeat: no-repeat;",
-                concrete: "background-image: url('textures/concrete.png'); background-size: cover; background-repeat: no-repeat;"
+                texture3:  "background-image: url('textures/textura1.webp'); background-size: cover; background-repeat: no-repeat;",
+                texture4:  "background-image: url('textures/textura2.webp'); background-size: cover; background-repeat: no-repeat;",
+                texture5:  "background-image: url('textures/textura3.webp'); background-size: cover; background-repeat: no-repeat;",
+                wood: "background-image: url('textures/textura4.webp'); background-size: cover; background-repeat: no-repeat;",
+                fabric: "background-image: url('textures/textura5.webp'); background-size: cover; background-repeat: no-repeat;",
+                concrete: "background-image: url('textures/textura6.webp'); background-size: cover; background-repeat: no-repeat;"
             };
 
             function applyCardBackground() {
