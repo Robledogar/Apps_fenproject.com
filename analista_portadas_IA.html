@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizador de Portadas con IA</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos personalizados y extensiones de Tailwind */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc; /* stone-50 */
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+
+        <!-- Encabezado -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-stone-900 flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500"><path d="M10 3L6 7L10 11L6 15L10 19M14 3L18 7L14 11L18 15L14 19"></path></svg>
+                Analizador de Portadas con IA
+            </h1>
+            <p class="mt-4 text-lg text-stone-600 max-w-2xl mx-auto">
+                Recibe una "primera impresión" de tu portada. Sube una imagen y nuestra IA te dará una valoración constructiva y fácil de entender.
+            </p>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="grid md:grid-cols-2 gap-8 md:gap-12">
+
+            <!-- Columna Izquierda: Subida y Previsualización -->
+            <div id="left-column" class="flex flex-col items-center">
+                <div id="upload-container" class="w-full">
+                    <input type="file" id="file-input" class="hidden" accept="image/png, image/jpeg, image/webp">
+                    <label for="file-input" id="drop-zone" class="flex flex-col items-center justify-center w-full h-80 border-2 border-dashed border-stone-300 rounded-2xl cursor-pointer bg-white hover:bg-stone-100 transition-colors duration-300">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                            <svg class="w-10 h-10 mb-4 text-stone-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3.75 3.75M12 9.75l3.75 3.75M3 17.25V8.25c0-1.12.93-2.03 2.08-1.92l1.62.24c.46.07.92.28 1.31.6L12 9.75l3.99-2.01a2.25 2.25 0 012.31-.12l1.62.24A2.07 2.07 0 0121 8.25v9c0 1.12-.93 2.03-2.08 1.92l-1.62-.24a2.25 2.25 0 01-1.31-.6L12 14.25l-3.99 2.01a2.25 2.25 0 01-2.31.12l-1.62-.24A2.07 2.07 0 013 17.25z" />
+                            </svg>
+                            <p id="drop-zone-text" class="mb-2 text-lg font-semibold text-teal-700">Haz clic o arrastra tu imagen aquí</p>
+                            <p class="text-xs text-stone-500">PNG, JPG o WEBP</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div id="preview-container" class="w-full hidden text-center">
+                    <img id="image-preview" src="" alt="Previsualización de la portada" class="max-w-full max-h-[400px] h-auto rounded-xl shadow-lg mx-auto">
+                    <button id="reset-button" class="mt-6 bg-amber-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-amber-600 transition-transform duration-200 hover:scale-105 disabled:bg-stone-300 disabled:cursor-not-allowed disabled:scale-100">
+                        Analizar otra portada
+                    </button>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Análisis -->
+            <div id="right-column" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm min-h-[400px] flex items-center justify-center">
+                <div id="placeholder" class="text-center text-stone-500">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-stone-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <p class="font-semibold text-lg">El análisis aparecerá aquí</p>
+                </div>
+
+                <div id="loading" class="hidden text-center text-stone-600">
+                    <div class="w-12 h-12 rounded-full border-4 border-stone-200 border-t-teal-600 animate-spin mx-auto mb-4"></div>
+                    <p class="font-semibold text-lg animate-pulse">Nuestra IA está analizando tu portada...</p>
+                    <p class="text-sm">Esto puede tardar unos segundos.</p>
+                </div>
+
+                <div id="results" class="hidden w-full"></div>
+                
+                <div id="error" class="hidden text-center text-red-600 bg-red-50 p-6 rounded-lg">
+                     <p class="font-bold">¡Oh, no! Algo salió mal.</p>
+                     <p id="error-message" class="text-sm mt-2"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Pie de página y sección de servicios -->
+        <footer class="text-center mt-12 pt-8 border-t border-stone-200">
+             <div class="mb-12">
+                <h3 class="text-2xl font-bold text-stone-800 font-serif">¿Buscas dar vida a tu portada o ilustraciones?</h3>
+                <p class="mt-3 text-stone-600 max-w-3xl mx-auto">
+                    Ofrezco servicios de ilustración digital con IA para autoras como tú. Estoy aquí para ayudarte a crear una portada impactante o ilustraciones únicas que capturen la esencia de tu historia y den vida a tus proyectos.
+                </p>
+            </div>
+            <p class="text-sm text-stone-500">Powered by Gemini API</p>
+        </footer>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- ELEMENTOS DEL DOM ---
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const dropZoneText = document.getElementById('drop-zone-text');
+        
+        const uploadContainer = document.getElementById('upload-container');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const resetButton = document.getElementById('reset-button');
+        
+        const placeholder = document.getElementById('placeholder');
+        const loading = document.getElementById('loading');
+        const resultsContainer = document.getElementById('results');
+        const errorContainer = document.getElementById('error');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- CONFIGURACIÓN DE LA API ---
+        // IMPORTANTE: Reemplaza la siguiente línea con tu propia clave de API de Google Gemini.
+        // Puedes obtener una en Google AI Studio.
+        const API_KEY = "AIzaSyAt_EptzW8QhC6ABhDGijRANS3GbntEiPc";
+
+        // --- MANEJADORES DE EVENTOS ---
+
+        // Abrir selector de archivos al hacer clic
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Manejar archivo seleccionado
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Eventos de arrastrar y soltar
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-teal-500', 'bg-teal-50');
+            dropZoneText.textContent = '¡Suelta la imagen aquí!';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            resetDropZoneStyle();
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            resetDropZoneStyle();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Botón de reinicio
+        resetButton.addEventListener('click', resetUI);
+
+        // --- FUNCIONES LÓGICAS ---
+
+        function resetDropZoneStyle() {
+            dropZone.classList.remove('border-teal-500', 'bg-teal-50');
+            dropZoneText.textContent = 'Haz clic o arrastra tu imagen aquí';
+        }
+
+        /**
+         * Valida el archivo y lo procesa.
+         * @param {File} file El archivo subido.
+         */
+        function handleFile(file) {
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Formato de archivo no válido. Por favor, sube un PNG, JPG o WEBP.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result.split(',')[1];
+                showPreview(reader.result);
+                startAnalysis(base64String, file.type);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /**
+         * Muestra la previsualización de la imagen y oculta el uploader.
+         * @param {string} imageDataUrl La URL de datos de la imagen.
+         */
+        function showPreview(imageDataUrl) {
+            uploadContainer.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            imagePreview.src = imageDataUrl;
+        }
+
+        /**
+         * Inicia el proceso de análisis, mostrando el estado de carga.
+         * @param {string} base64Image La imagen en formato base64.
+         * @param {string} mimeType El tipo MIME de la imagen.
+         */
+        function startAnalysis(base64Image, mimeType) {
+            placeholder.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            loading.classList.remove('hidden');
+            resetButton.disabled = true;
+
+            callGeminiAPI(base64Image, mimeType);
+        }
+
+        /**
+         * Llama a la API de Gemini para obtener el análisis.
+         * @param {string} base64Image La imagen en formato base64.
+         * @param {string} mimeType El tipo MIME de la imagen.
+         */
+        async function callGeminiAPI(base64Image, mimeType) {
+            if (API_KEY === "TU_API_KEY_DE_GEMINI_AQUI") {
+                 showError("Por favor, introduce tu clave de API de Gemini en el archivo script para continuar.");
+                 loading.classList.add('hidden');
+                 resetButton.disabled = false;
+                 return;
+            }
+
+            // CAMBIO: Se actualiza la URL para usar el modelo gemini-2.5-flash-preview-04-17
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${API_KEY}`;
+            
+            const systemInstruction = {
+                role: "system",
+                parts: [{
+                    text: "Eres un experto en diseño editorial y marketing de libros, con una especial sensibilidad para la literatura infantil y novelas. Tu tono es siempre amable, constructivo y alentador. No eres excesivamente técnico. Tu objetivo es dar una primera impresión útil a autoras que no son expertas en diseño."
+                }]
+            };
+
+            const contents = [{
+                role: "user",
+                parts: [
+                    {
+                        text: "Analiza esta portada de libro. Proporcióname una valoración completa pero fácil de entender. Estructura tu respuesta en un único objeto JSON con las siguientes claves exactas: `primeraImpresion`, `elementosVisuales`, `publicoObjetivo`, `potencialComercial`, y `sugerencias`. El valor de cada clave debe ser un párrafo de texto en español."
+                    },
+                    {
+                        inlineData: {
+                            mimeType: mimeType,
+                            data: base64Image
+                        }
+                    }
+                ]
+            }];
+
+            const payload = {
+                systemInstruction: systemInstruction,
+                contents: contents,
+                generationConfig: {
+                    responseMimeType: "application/json",
+                }
+            };
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    const specificError = errorBody.error?.message || `Error de la API: ${response.statusText}`;
+                    throw new Error(specificError);
+                }
+                
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const analysisText = result.candidates[0].content.parts[0].text;
+                    const analysisJson = JSON.parse(analysisText);
+                    displayResults(analysisJson);
+                } else {
+                    throw new Error("La respuesta de la API no tiene el formato esperado.");
+                }
+
+            } catch (err) {
+                console.error("Error en la llamada a la API:", err);
+                showError(err.message);
+            } finally {
+                loading.classList.add('hidden');
+                resetButton.disabled = false;
+            }
+        }
+        
+        /**
+         * Muestra los resultados del análisis en la UI.
+         * @param {object} data El objeto JSON con los resultados.
+         */
+        function displayResults(data) {
+            const sectionTitles = {
+                primeraImpresion: "Primera Impresión",
+                elementosVisuales: "Elementos Visuales",
+                publicoObjetivo: "Público Objetivo y Género",
+                potencialComercial: "Potencial Comercial",
+                sugerencias: "Sugerencias Constructivas"
+            };
+
+            resultsContainer.innerHTML = `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-teal-800 font-serif mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        Análisis de la Portada
+                    </h2>
+                    <div class="space-y-6 text-stone-700">
+                        ${Object.keys(sectionTitles).map(key => `
+                            <div>
+                                <h3 class="font-bold text-lg text-stone-800 mb-2">${sectionTitles[key]}</h3>
+                                <p class="leading-relaxed">${data[key] || 'No se proporcionó información para esta sección.'}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+        }
+
+        /**
+         * Muestra un mensaje de error en la UI.
+         * @param {string} message El mensaje de error a mostrar.
+         */
+        function showError(message) {
+            loading.classList.add('hidden');
+            placeholder.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('hidden');
+            resetButton.disabled = false;
+        }
+
+        /**
+         * Reinicia la UI a su estado inicial.
+         */
+        function resetUI() {
+            fileInput.value = ''; // Limpiar el input de archivo
+            
+            previewContainer.classList.add('hidden');
+            uploadContainer.classList.remove('hidden');
+
+            loading.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            
+            resetButton.disabled = false;
+        }
+    });
+    </script>
+</body>
+</html>
